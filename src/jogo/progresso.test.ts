@@ -6,6 +6,7 @@ import {
   obraLiberada,
   progressoNovo,
   registrarAcerto,
+  registrarPartidaDoCodeWars,
   reiniciarObra,
   salvarProgresso,
   type Armazenamento,
@@ -108,5 +109,18 @@ describe('progresso', () => {
 
   it('modo livre abre todas as obras', () => {
     expect(obraLiberada(OBRAS, { ...progressoNovo(), modoLivre: true }, 9)).toBe(true);
+  });
+
+  it('progresso salvo antes do Code Wars, ou com recorde estranho, carrega com recorde zero', () => {
+    const antigo = { versao: 1, obras: {}, som: true, modoLivre: false, ultimaObra: null, mecanicasVistas: [] };
+    expect(carregarProgresso(armazenamentoEmMemoria({ [CHAVE_DO_PROGRESSO]: JSON.stringify(antigo) })).codeWars).toEqual({ recorde: 0, partidas: 0 });
+    const estranho = { ...antigo, codeWars: { recorde: -5, partidas: 'muitas' } };
+    expect(carregarProgresso(armazenamentoEmMemoria({ [CHAVE_DO_PROGRESSO]: JSON.stringify(estranho) })).codeWars).toEqual({ recorde: 0, partidas: 0 });
+  });
+
+  it('a partida do Code Wars conta e guarda só o maior placar', () => {
+    let progresso = registrarPartidaDoCodeWars(progressoNovo(), 900);
+    progresso = registrarPartidaDoCodeWars(progresso, 400);
+    expect(progresso.codeWars).toEqual({ recorde: 900, partidas: 2 });
   });
 });

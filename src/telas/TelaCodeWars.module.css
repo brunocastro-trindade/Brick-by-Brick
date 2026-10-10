@@ -1,0 +1,403 @@
+.tela {
+  min-height: 100dvh;
+  background: var(--cor-fundo);
+}
+
+.barra {
+  position: sticky;
+  top: 0;
+  z-index: var(--camada-hud);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espaco-4) var(--espaco-6);
+  padding: var(--espaco-2) var(--espaco-6);
+  border-bottom: var(--borda-grossa) solid var(--cor-contorno);
+  background: var(--cor-superficie);
+}
+
+.logo {
+  display: inline-flex;
+  padding: var(--espaco-1);
+  border: none;
+  border-radius: var(--raio-medio);
+  background: transparent;
+}
+
+.logo img {
+  display: block;
+  width: auto;
+  height: var(--espaco-8);
+}
+
+.titulo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espaco-3);
+  font-size: var(--tipo-titulo-pequeno-tamanho);
+}
+
+.titulo svg {
+  color: var(--cor-acento);
+}
+
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-3);
+  margin-left: auto;
+}
+
+/* Antes da partida (e quando ainda não há obra concluída) */
+.inicio {
+  display: grid;
+  place-items: center;
+  padding: var(--espaco-8) var(--espaco-6);
+}
+
+.convite {
+  display: grid;
+  grid-template-columns: auto minmax(0, 36rem);
+  gap: var(--espaco-7);
+  align-items: center;
+  padding: var(--espaco-7);
+  border: var(--borda-grossa) solid var(--cor-contorno);
+  border-radius: var(--raio-grande);
+  background: var(--cor-superficie);
+  box-shadow: var(--sombra-media);
+}
+
+.gugloDoConvite {
+  width: 10rem;
+  height: 12.5rem;
+}
+
+.conviteTexto {
+  display: grid;
+  gap: var(--espaco-5);
+  justify-items: start;
+}
+
+.conviteTitulo {
+  font-size: var(--tipo-titulo-pequeno-tamanho);
+}
+
+.regras {
+  display: grid;
+  gap: var(--espaco-3);
+  margin: 0;
+  padding-left: var(--espaco-6);
+}
+
+.fonte {
+  font-size: var(--tipo-corpo-pequeno-tamanho);
+  font-weight: var(--peso-medio);
+  color: var(--cor-texto-suave);
+}
+
+.avisoToque {
+  display: none;
+  padding: var(--espaco-1) var(--espaco-4);
+  border: var(--borda-fina) solid var(--cor-contorno);
+  border-radius: var(--raio-grande);
+  background: var(--cor-aviso-fundo);
+  font-size: var(--tipo-corpo-pequeno-tamanho);
+}
+
+@media (pointer: coarse) {
+  .avisoToque {
+    display: block;
+  }
+}
+
+/* Partida */
+.jogo {
+  display: grid;
+  grid-template-columns: minmax(0, 40rem) 18rem;
+  justify-content: center;
+  gap: var(--espaco-6);
+  padding: var(--espaco-6);
+  align-items: start;
+}
+
+.campo {
+  display: grid;
+  gap: var(--espaco-3);
+}
+
+.placar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-3);
+  margin: 0;
+}
+
+.placar div {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--espaco-2);
+  padding: var(--espaco-1) var(--espaco-4);
+  border: var(--borda-fina) solid var(--cor-contorno);
+  border-radius: var(--raio-grande);
+  background: var(--cor-superficie);
+}
+
+.placar dt {
+  font-size: var(--tipo-legenda-tamanho);
+  font-weight: var(--peso-forte);
+  color: var(--cor-texto-suave);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.placar dd {
+  margin: 0;
+  font-family: var(--fonte-titulo);
+  font-weight: var(--peso-titulo);
+}
+
+/* O poço: fileiras de altura fixa, a peça desce uma por vez, como no Tetris. */
+.poco {
+  --altura-da-fileira: var(--espaco-8);
+  position: relative;
+  height: calc(var(--altura-da-fileira) * var(--fileiras));
+  overflow: hidden;
+  container-type: inline-size;
+  border: var(--borda-grossa) solid var(--cor-contorno);
+  border-radius: var(--raio-medio);
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0 calc(var(--altura-da-fileira) - var(--borda-fina)),
+      color-mix(in srgb, var(--cor-contorno-suave) 45%, transparent) calc(var(--altura-da-fileira) - var(--borda-fina)) var(--altura-da-fileira)
+    ),
+    var(--cor-superficie);
+  box-shadow: var(--sombra-media);
+  cursor: text;
+}
+
+.fileira {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  height: var(--altura-da-fileira);
+  padding: var(--espaco-1) var(--espaco-3);
+  font-size: min(var(--tipo-corpo-tamanho), 2.6cqi);
+  transform: translateY(calc(var(--altura-da-fileira) * var(--fileira)));
+}
+
+.pecaDaVez {
+  transition: transform var(--duracao-rapida) linear;
+}
+
+.pontosGanhos {
+  position: absolute;
+  top: 0;
+  right: var(--espaco-4);
+  display: flex;
+  align-items: center;
+  height: var(--altura-da-fileira);
+  font-family: var(--fonte-titulo);
+  font-size: var(--tipo-destaque-tamanho);
+  font-weight: var(--peso-titulo);
+  color: var(--cor-acento-forte);
+  transform: translateY(calc(var(--altura-da-fileira) * var(--fileira)));
+  animation: subir 900ms var(--curva-saida) forwards;
+  pointer-events: none;
+}
+
+@keyframes subir {
+  60% {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(calc(var(--altura-da-fileira) * (var(--fileira) - 1)));
+  }
+}
+
+.rotulo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espaco-3);
+  font-weight: var(--peso-forte);
+}
+
+.obra {
+  padding: 0 var(--espaco-3);
+  border: var(--borda-fina) solid var(--cor-contorno-suave);
+  border-radius: var(--raio-grande);
+  background: var(--cor-fundo-alternativo);
+  font-size: var(--tipo-legenda-tamanho);
+  font-weight: var(--peso-medio);
+  color: var(--cor-texto-suave);
+}
+
+.entrada {
+  width: 100%;
+  min-height: var(--espaco-8);
+  padding: var(--espaco-3) var(--espaco-4);
+  border: var(--borda-grossa) solid var(--cor-contorno);
+  border-radius: var(--raio-medio);
+  background: var(--cor-editor-fundo);
+  color: var(--cor-editor-texto);
+  caret-color: var(--cor-codigo-entrada);
+  font-family: var(--fonte-codigo);
+  font-size: var(--tipo-destaque-tamanho);
+}
+
+.entrada:focus-visible {
+  outline: var(--borda-grossa) solid var(--cor-foco);
+  outline-offset: var(--espaco-1);
+}
+
+.entradaComDesvio {
+  border-color: var(--cor-problema);
+}
+
+.atalhos {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espaco-2);
+  font-size: var(--tipo-legenda-tamanho);
+  color: var(--cor-texto-suave);
+}
+
+.lateral {
+  display: grid;
+  gap: var(--espaco-4);
+}
+
+.cartao {
+  display: grid;
+  gap: var(--espaco-2);
+  justify-items: center;
+  padding: var(--espaco-4);
+  border: var(--borda-fina) solid var(--cor-contorno-suave);
+  border-radius: var(--raio-medio);
+  background: var(--cor-superficie);
+  text-align: center;
+}
+
+.cartaoTitulo {
+  font-size: var(--tipo-legenda-tamanho);
+  font-family: var(--fonte-texto);
+  font-weight: var(--peso-forte);
+  color: var(--cor-texto-suave);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.cartaoNota {
+  font-size: var(--tipo-corpo-pequeno-tamanho);
+  color: var(--cor-texto-suave);
+}
+
+.proxima {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  overflow: hidden;
+  height: var(--espaco-7);
+  font-size: var(--tipo-legenda-tamanho);
+}
+
+.gugloDaPartida {
+  width: 6rem;
+  height: 7.5rem;
+}
+
+.recordeValor {
+  font-family: var(--fonte-titulo);
+  font-size: var(--tipo-titulo-pequeno-tamanho);
+  font-weight: var(--peso-titulo);
+}
+
+/* Fim de partida */
+.fim {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--espaco-6);
+  align-items: center;
+}
+
+.gugloDoFim {
+  width: 8rem;
+  height: 10rem;
+}
+
+.fimTexto {
+  display: grid;
+  gap: var(--espaco-4);
+  justify-items: start;
+}
+
+.selo {
+  padding: var(--espaco-1) var(--espaco-4);
+  border: var(--borda-fina) solid var(--cor-contorno);
+  border-radius: var(--raio-grande);
+  background: var(--cor-aviso);
+  font-weight: var(--peso-forte);
+}
+
+.numeros {
+  display: grid;
+  grid-template-columns: repeat(4, auto);
+  gap: var(--espaco-5);
+  margin: 0;
+}
+
+.numeros dt {
+  font-size: var(--tipo-legenda-tamanho);
+  font-weight: var(--peso-forte);
+  color: var(--cor-texto-suave);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.numeros dd {
+  margin: 0;
+  font-family: var(--fonte-titulo);
+  font-size: var(--tipo-titulo-pequeno-tamanho);
+  font-weight: var(--peso-titulo);
+}
+
+@media (max-width: 860px) /* fora-da-escala: breakpoint */ {
+  /* No celular o cabeçalho rola junto: fixo, ele comeria o poço quando o teclado abre. */
+  .barra {
+    position: static;
+    padding: var(--espaco-2) var(--espaco-4);
+  }
+
+  .logo {
+    display: none;
+  }
+
+  .jogo {
+    grid-template-columns: minmax(0, 1fr);
+    padding: var(--espaco-4);
+  }
+
+  .poco {
+    --altura-da-fileira: var(--espaco-7);
+  }
+
+  .lateral {
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  }
+
+  .convite,
+  .fim {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .numeros {
+    grid-template-columns: repeat(2, auto);
+  }
+}

@@ -61,6 +61,11 @@
   height: 7.5rem;
 }
 
+.peca {
+  height: var(--espaco-8);
+  font-size: var(--tipo-corpo-pequeno-tamanho);
+}
+
 .predio {
   width: 100%;
   height: 10rem;

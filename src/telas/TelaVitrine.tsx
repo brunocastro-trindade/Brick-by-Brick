@@ -9,9 +9,11 @@ import { BlocoDeCodigo } from '../components/CodigoColorido';
 import { ConsoleDaObra } from '../components/ConsoleDaObra';
 import { Estrelas } from '../components/Estrelas';
 import { GugloPixelado, type AcaoDoGuglo } from '../components/GugloPixelado';
+import { PecaDeEntulho, PecaQueCai, SilhuetaDaPeca } from '../components/PecaQueCai';
 import { Pinguim, type PoseDoPinguim } from '../components/Pinguim';
 import { MEDIDAS, PredioDaCidade, type SituacaoDoPredio } from '../components/PredioDaCidade';
 import { TijoloDeCodigo, type EstadoDoTijolo } from '../components/TijoloDeCodigo';
+import { criarPeca } from '../jogo/codeWars';
 import type { Fala } from '../jogo/falas';
 import { MODELOS_DE_PREDIO } from '../jogo/tipos';
 import styles from './TelaVitrine.module.css';
@@ -56,6 +58,20 @@ const FALAS: Fala[] = [
 
 const POSES: PoseDoPinguim[] = ['parado', 'andando', 'carregando', 'comemorando', 'pensando', 'ops'];
 const ACOES_DO_GUGLO_PIXELADO: AcaoDoGuglo[] = ['parado', 'andando', 'acenando', 'comemorando'];
+
+const LINHA_DE_EXEMPLO = { texto: 'for i in range(3):', obra: 'Fábrica' };
+const COPIAR = criarPeca(1, LINHA_DE_EXEMPLO, 1);
+const LACUNA = criarPeca(2, LINHA_DE_EXEMPLO, 3);
+const PECAS: Array<{ rotulo: string; conteudo: ReactNode }> = [
+  { rotulo: 'copiar, vazia', conteudo: <PecaQueCai peca={COPIAR} digitado="" /> },
+  { rotulo: 'copiar, no caminho', conteudo: <PecaQueCai peca={COPIAR} digitado="for i in ra" /> },
+  { rotulo: 'copiar, com desvio', conteudo: <PecaQueCai peca={COPIAR} digitado="for i im" /> },
+  { rotulo: 'lacuna, vazia', conteudo: <PecaQueCai peca={LACUNA} digitado="" /> },
+  { rotulo: 'lacuna, digitando', conteudo: <PecaQueCai peca={LACUNA} digitado={LACUNA.resposta.slice(0, 2)} /> },
+  { rotulo: 'lacuna, com desvio', conteudo: <PecaQueCai peca={LACUNA} digitado="x" /> },
+  { rotulo: 'entulho', conteudo: <PecaDeEntulho texto={LINHA_DE_EXEMPLO.texto} /> },
+  { rotulo: 'silhueta da próxima', conteudo: <SilhuetaDaPeca comprimento={LINHA_DE_EXEMPLO.texto.length} /> },
+];
 const ESTADOS_DO_TIJOLO: EstadoDoTijolo[] = ['solto', 'encaixado', 'problema', 'fantasma'];
 const SITUACOES: SituacaoDoPredio[] = ['bloqueado', 'disponivel', 'em-obra', 'concluido'];
 
@@ -141,6 +157,14 @@ export default function TelaVitrine() {
             <div className={styles.pinguim}>
               <GugloPixelado acao={acao} />
             </div>
+          </Amostra>
+        ))}
+      </Secao>
+
+      <Secao titulo="Peças do Code Wars">
+        {PECAS.map(({ rotulo, conteudo }) => (
+          <Amostra key={rotulo} rotulo={rotulo}>
+            <div className={styles.peca}>{conteudo}</div>
           </Amostra>
         ))}
       </Secao>
