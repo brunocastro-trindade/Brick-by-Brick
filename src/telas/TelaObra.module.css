@@ -1,0 +1,123 @@
+.tela {
+  min-height: 100dvh;
+  background: var(--cor-fundo);
+}
+
+.area {
+  display: grid;
+  grid-template-columns: minmax(18rem, 0.82fr) minmax(0, 1.18fr);
+  gap: var(--espaco-6);
+  max-width: 96rem;
+  margin: 0 auto;
+  padding: var(--espaco-6);
+}
+
+.colunaDaCena {
+  position: sticky;
+  top: calc(var(--espaco-9) + var(--espaco-6));
+  align-self: start;
+  display: grid;
+  gap: var(--espaco-5);
+}
+
+.cena {
+  width: 100%;
+  max-width: min(100%, calc((100dvh - 18rem) * 420 / 520));
+  margin: 0 auto;
+}
+
+.colunaDoTrabalho {
+  display: grid;
+  gap: var(--espaco-5);
+  align-content: start;
+  min-width: 0;
+}
+
+.missao {
+  display: grid;
+  gap: var(--espaco-3);
+  padding: var(--espaco-5) var(--espaco-6);
+  border: var(--borda-grossa) solid var(--cor-contorno);
+  border-radius: var(--raio-grande);
+  background: var(--cor-superficie);
+  box-shadow: var(--sombra-baixa);
+}
+
+.missaoTopo {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--espaco-3);
+}
+
+.etiqueta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espaco-2);
+  padding: var(--espaco-1) var(--espaco-3);
+  border-radius: var(--raio-pequeno);
+  background: var(--cor-editor-fundo);
+  color: var(--cor-texto-sobre-escuro);
+  font-size: var(--tipo-legenda-tamanho);
+  font-weight: var(--peso-forte);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.missaoTitulo {
+  font-size: var(--tipo-titulo-pequeno-tamanho);
+  line-height: var(--tipo-titulo-pequeno-altura);
+}
+
+.acoesDaConclusao {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-3);
+}
+
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espaco-4);
+}
+
+.acaoPrincipal {
+  margin-left: auto;
+}
+
+.falas:empty {
+  display: none;
+}
+
+.flutuante {
+  position: fixed;
+  z-index: var(--camada-flutuante);
+  pointer-events: none;
+}
+
+@media (max-width: 960px) /* fora-da-escala: breakpoint */ {
+  .area {
+    grid-template-columns: 1fr;
+    padding: var(--espaco-4);
+  }
+
+  /* No celular: cena compacta no topo, trabalho no meio, console no fim */
+  .colunaDaCena {
+    display: contents;
+  }
+
+  .cena {
+    order: 1;
+    max-width: 16rem;
+  }
+
+  .colunaDoTrabalho {
+    order: 2;
+  }
+
+  .colunaDaCena > section {
+    order: 3;
+  }
+}

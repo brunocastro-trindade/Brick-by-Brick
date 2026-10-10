@@ -1,0 +1,89 @@
+{
+  "$comentario": "Primitivos. Componentes NUNCA leem estes valores direto: só via tokens/semantico.json (HARNESS §2.1).",
+  "cor": {
+    "laranja-tijolo": "#FF4000",
+    "laranja-tijolo-claro": "#FF7A45",
+    "laranja-tijolo-palido": "#FFB08A",
+    "laranja-tijolo-escuro": "#C43100",
+    "laranja-tijolo-profundo": "#8F2400",
+    "creme": "#FFEFB5",
+    "creme-claro": "#FFF8E1",
+    "creme-escuro": "#F5DC8E",
+    "areia": "#E8C98A",
+    "areia-escura": "#C9A464",
+    "verde-petroleo": "#319190",
+    "verde-petroleo-claro": "#8FCFCB",
+    "verde-petroleo-escuro": "#1C5F5E",
+    "amarelo": "#FFC803",
+    "amarelo-claro": "#FFE58A",
+    "amarelo-escuro": "#C99A00",
+    "marrom-escuro": "#260D0D",
+    "marrom-medio": "#4A2219",
+    "marrom-suave": "#7A4A3A",
+    "marrom-claro": "#B08A6A",
+    "branco": "#FFFFFF",
+    "branco-translucido": "rgba(255, 255, 255, 0.35)",
+    "marrom-escuro-veu": "rgba(38, 13, 13, 0.55)",
+    "marrom-escuro-sombra": "rgba(38, 13, 13, 0.18)"
+  },
+  "espaco": {
+    "1": "2px",
+    "2": "4px",
+    "3": "8px",
+    "4": "12px",
+    "5": "16px",
+    "6": "24px",
+    "7": "32px",
+    "8": "48px",
+    "9": "64px"
+  },
+  "fonte": {
+    "titulo": "'Rubik Variable', 'Rubik', system-ui, sans-serif",
+    "texto": "'Rubik Variable', 'Rubik', system-ui, sans-serif",
+    "codigo": "'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, monospace"
+  },
+  "tipo": {
+    "legenda": { "tamanho": "0.8125rem", "altura": "1.4" },
+    "corpo-pequeno": { "tamanho": "0.9375rem", "altura": "1.5" },
+    "corpo": { "tamanho": "1.0625rem", "altura": "1.55" },
+    "destaque": { "tamanho": "1.25rem", "altura": "1.4" },
+    "titulo-pequeno": { "tamanho": "1.5rem", "altura": "1.25" },
+    "titulo": { "tamanho": "2rem", "altura": "1.15" },
+    "titulo-grande": { "tamanho": "3rem", "altura": "1.05" }
+  },
+  "peso": {
+    "normal": "400",
+    "medio": "500",
+    "forte": "700",
+    "titulo": "800"
+  },
+  "raio": {
+    "pequeno": "6px",
+    "medio": "12px",
+    "grande": "20px"
+  },
+  "borda": {
+    "fina": "2px",
+    "grossa": "3px"
+  },
+  "sombra": {
+    "baixa": "0 3px 0 #260D0D",
+    "media": "0 5px 0 #260D0D, 0 10px 24px rgba(38, 13, 13, 0.18)",
+    "alta": "0 8px 0 #260D0D, 0 24px 48px rgba(38, 13, 13, 0.28)"
+  },
+  "duracao": {
+    "rapida": "120ms",
+    "media": "240ms",
+    "lenta": "480ms"
+  },
+  "curva": {
+    "saida": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "mola": "cubic-bezier(0.34, 1.56, 0.64, 1)"
+  },
+  "camada": {
+    "hud": "10",
+    "flutuante": "50",
+    "modal": "100",
+    "transicao": "200"
+  }
+}

@@ -1,0 +1,83 @@
+.painel {
+  display: grid;
+  gap: var(--espaco-6);
+}
+
+.comemoracao {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--espaco-6);
+  align-items: center;
+}
+
+.pinguim {
+  width: 9rem;
+  height: 11rem;
+}
+
+.placar {
+  display: grid;
+  gap: var(--espaco-4);
+  justify-items: start;
+}
+
+.recorde {
+  padding: var(--espaco-1) var(--espaco-4);
+  border: var(--borda-fina) solid var(--cor-contorno);
+  border-radius: var(--raio-grande);
+  background: var(--cor-aviso);
+  font-weight: var(--peso-forte);
+}
+
+.numeros {
+  display: grid;
+  grid-template-columns: repeat(4, auto);
+  gap: var(--espaco-5);
+  margin: 0;
+}
+
+.numeros dt {
+  font-size: var(--tipo-legenda-tamanho);
+  font-weight: var(--peso-forte);
+  color: var(--cor-texto-suave);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.numeros dd {
+  margin: 0;
+  font-family: var(--fonte-titulo);
+  font-size: var(--tipo-titulo-pequeno-tamanho);
+  font-weight: var(--peso-titulo);
+}
+
+.programa {
+  display: grid;
+  gap: var(--espaco-3);
+}
+
+.programaCabecalho {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--espaco-3);
+}
+
+.rotulo {
+  font-size: var(--tipo-corpo-tamanho);
+  font-family: var(--fonte-texto);
+  font-weight: var(--peso-forte);
+}
+
+
+@media (max-width: 640px) /* fora-da-escala: breakpoint */ {
+  .comemoracao {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .numeros {
+    grid-template-columns: repeat(2, auto);
+  }
+}

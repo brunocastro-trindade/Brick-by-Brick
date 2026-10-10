@@ -1,0 +1,8 @@
+.fechada {
+  display: grid;
+  gap: var(--espaco-5);
+  justify-items: start;
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: var(--espaco-9) var(--espaco-6);
+}

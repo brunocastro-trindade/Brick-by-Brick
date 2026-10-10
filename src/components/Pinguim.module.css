@@ -1,0 +1,150 @@
+.svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.pinguim {
+  overflow: visible;
+}
+
+.corpoTodo,
+.nadadeiraEsquerda,
+.nadadeiraDireita,
+.peEsquerdo,
+.peDireito {
+  transform-box: fill-box;
+}
+
+.corpoTodo {
+  transform-origin: 50% 100%;
+}
+
+.nadadeiraEsquerda {
+  transform-origin: 80% 10%;
+  transition: transform var(--duracao-media) var(--curva-mola);
+}
+
+.nadadeiraDireita {
+  transform-origin: 20% 10%;
+  transition: transform var(--duracao-media) var(--curva-mola);
+}
+
+.peEsquerdo,
+.peDireito {
+  transform-origin: 50% 50%;
+}
+
+/* parado: respiração lenta */
+.parado .corpoTodo,
+.carregando .corpoTodo {
+  animation: respirar 2.8s ease-in-out infinite;
+}
+
+.carregando .nadadeiraEsquerda {
+  transform: rotate(-38deg) translate(4%, 6%);
+}
+
+.carregando .nadadeiraDireita {
+  transform: rotate(38deg) translate(-4%, 6%);
+}
+
+/* andando: gingado de pinguim */
+.andando .corpoTodo {
+  animation: gingar 340ms ease-in-out infinite alternate;
+}
+
+.andando .peEsquerdo {
+  animation: passo 340ms ease-in-out infinite alternate;
+}
+
+.andando .peDireito {
+  animation: passo 340ms ease-in-out infinite alternate-reverse;
+}
+
+/* comemorando: pulo com nadadeiras para cima */
+.comemorando .corpoTodo {
+  animation: pular 520ms var(--curva-saida) 2;
+}
+
+.comemorando .nadadeiraEsquerda {
+  transform: rotate(70deg);
+}
+
+.comemorando .nadadeiraDireita {
+  transform: rotate(-70deg);
+}
+
+/* pensando: cabeça inclinada */
+.pensando .corpoTodo {
+  transform: rotate(-5deg);
+  transition: transform var(--duracao-media) var(--curva-saida);
+}
+
+.pensando .nadadeiraDireita {
+  transform: rotate(-120deg) translate(-10%, 10%);
+}
+
+/* ops: tremidinha sem drama */
+.ops .corpoTodo {
+  animation: tremer 420ms ease-in-out 1;
+}
+
+@keyframes respirar {
+  0%,
+  100% {
+    transform: translateY(0) scaleY(1);
+  }
+  50% {
+    transform: translateY(1.5%) scaleY(0.985);
+  }
+}
+
+@keyframes gingar {
+  from {
+    transform: rotate(-7deg) translateY(0);
+  }
+  to {
+    transform: rotate(7deg) translateY(-3%);
+  }
+}
+
+@keyframes passo {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-14%);
+  }
+}
+
+@keyframes pular {
+  0% {
+    transform: translateY(0) scaleY(1);
+  }
+  25% {
+    transform: translateY(2%) scaleY(0.92);
+  }
+  55% {
+    transform: translateY(-16%) scaleY(1.04);
+  }
+  100% {
+    transform: translateY(0) scaleY(1);
+  }
+}
+
+@keyframes tremer {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20%,
+  60% {
+    transform: translateX(-4%) rotate(-3deg);
+  }
+  40%,
+  80% {
+    transform: translateX(4%) rotate(3deg);
+  }
+}

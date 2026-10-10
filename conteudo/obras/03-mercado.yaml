@@ -1,0 +1,129 @@
+id: mercado
+ordem: 3
+nome: Mercado
+conceito: Números e contas
+nivel: basico
+modelo: mercado
+aula:
+  titulo: Python é uma calculadora
+  texto: |
+    Números não levam aspas, e com eles dá para fazer contas: `+` soma, `-` subtrai, `*` multiplica e `/` divide.
+
+    Há dois tipos de número: **inteiros** (`int`), como 3 e 120, e **decimais** (`float`), como 2.5. Repare: o decimal usa ponto, não vírgula.
+
+    Duas contas especiais aparecem muito: `//` divide e joga fora a parte quebrada, e `%` dá o resto da divisão.
+  exemplo: |
+    print(7 * 3)
+    print(7 / 2)
+  saida: |
+    21
+    3.5
+desafios:
+  - tipo: montar
+    titulo: Preço do tijolo
+    contexto: >-
+      No Mercado, cada tijolo custa **2,50**. Guarde esse preço em `preco`, do jeito que o
+      Python escreve decimais.
+    linha: 'preco = `2.5`'
+    extras:
+      - texto: '2,5'
+        porque: >-
+          Em Python a vírgula separa valores, então `2,5` vira um par de números, (2, 5), e
+          não dois e meio. Decimal usa ponto: `2.5`.
+      - texto: '"2.5"'
+        porque: >-
+          Com aspas, o preço vira texto e não dá para multiplicar por uma quantidade.
+          Número vai sem aspas.
+    dica: >-
+      Na programação, o separador decimal é o ponto, como no inglês.
+    explicacao: >-
+      `2.5` é um float, um número com casas decimais. O zero no fim é opcional: `2.50` e
+      `2.5` são o mesmo número.
+
+  - tipo: montar
+    titulo: Quatro tijolos, por favor
+    contexto: >-
+      Uma cliente quer **4** tijolos. Calcule o total multiplicando o preço por 4.
+    linha: 'total = `preco` `*` `4`'
+    extras:
+      - texto: 'x'
+        porque: >-
+          Em Python, multiplicação é `*`, o asterisco. A letra `x` seria lida como o nome
+          de uma variável que não existe.
+      - texto: '"preco"'
+        porque: >-
+          Com aspas vira o texto preco, não o valor guardado. E texto vezes 4 repete o
+          texto: `precoprecoprecopreco`.
+    dica: >-
+      O sinal de multiplicar em Python é o asterisco.
+    explicacao: >-
+      `*` multiplica. Como `preco` é um float, o resultado também é: `total` guarda `10.0`.
+
+  - tipo: montar
+    titulo: A conta, por favor
+    contexto: >-
+      Mostre **Total:** seguido do valor de `total`.
+    linha: 'print(`"Total:"`, `total`)'
+    extras:
+      - texto: '"total"'
+        porque: >-
+          Com aspas, sairia a palavra total, e não o valor da conta. A variável vai sem
+          aspas.
+    dica: >-
+      Um texto com aspas e a variável sem aspas, separados pela vírgula.
+    explicacao: >-
+      Saiu `Total: 10.0`. Repare no `.0`: quando um float entra na conta, o resultado
+      também é float, mesmo que seja um número redondo.
+
+  - tipo: montar
+    titulo: Caixas fechadas
+    contexto: >-
+      O Mercado embala tijolos em caixas de **5**. Com **23** tijolos, quantas caixas
+      cheias dá para fechar? Use a divisão que joga fora a parte quebrada.
+    linha: 'caixas = 23 `//` 5'
+    extras:
+      - texto: '/'
+        tipo: funciona_mas
+        porque: >-
+          Funciona, mas `/` divide com casas decimais: 23 / 5 dá 4.6, e não existe 0.6 de
+          caixa fechada. Para contar caixas inteiras, use `//`.
+      - texto: '%'
+        porque: >-
+          `%` dá o resto da divisão, não o resultado. 23 % 5 é 3: os tijolos que sobram
+          fora das caixas.
+    dica: >-
+      São duas barras.
+    explicacao: >-
+      `//` é a divisão inteira: 23 // 5 dá 4, porque cabem quatro caixas cheias. A parte
+      quebrada é descartada.
+
+  - tipo: montar
+    titulo: O que sobrou fora da caixa
+    contexto: >-
+      E quantos tijolos sobram sem caixa? Use o operador que dá o **resto** da divisão.
+    linha: 'sobra = 23 `%` 5'
+    extras:
+      - texto: '//'
+        porque: >-
+          `//` diz quantas vezes o 5 cabe no 23, que são 4. O que sobra fora é o resto, e
+          o resto se calcula com `%`.
+      - texto: '-'
+        porque: >-
+          23 - 5 dá 18: só tira uma caixa. O resto da divisão inteira se calcula com `%`.
+    dica: >-
+      O operador de resto parece o símbolo de porcentagem, mas não tem nada a ver com
+      porcentagem.
+    explicacao: >-
+      `%` é o operador de resto: 23 = 4 × 5 + 3, então 23 % 5 dá 3. Ele aparece muito,
+      por exemplo para saber se um número é par: `n % 2` dá 0.
+
+  - tipo: digitar
+    titulo: Fechando o caixa
+    contexto: >-
+      Mostre `caixas` e `sobra` na mesma linha, com um único `print`.
+    codigo: 'print(caixas, sobra)'
+    dica: >-
+      Dentro do `print`, separe as duas variáveis com vírgula.
+    explicacao: >-
+      Saiu `4 3`: quatro caixas cheias e três tijolos soltos. Você acabou de usar o Python
+      como calculadora.

@@ -1,0 +1,128 @@
+id: cinema
+ordem: 5
+nome: Cinema
+conceito: if, elif e else
+nivel: intermediario
+modelo: cinema
+entradas:
+  - ["15"]
+  - ["10"]
+  - ["12"]
+  - ["65"]
+  - ["30"]
+aula:
+  titulo: O programa toma decisões
+  texto: |
+    Com `if`, o programa só executa um trecho **se** uma condição for verdadeira. A condição é uma pergunta de sim ou não, como `idade >= 14`.
+
+    As comparações são `==` (igual), `!=` (diferente), `<`, `>`, `<=` e `>=`. Cada uma responde `True` (verdadeiro) ou `False` (falso).
+
+    O trecho de dentro do `if` vem **recuado**, com 4 espaços. Em Python o recuo não é enfeite: é ele que diz o que pertence ao bloco. `else` é o "senão", e `elif` é o "senão, se".
+  exemplo: |
+    chuva = True
+    if chuva:
+        print("Leve o guarda-chuva")
+    else:
+        print("Dia de sol!")
+  saida: |
+    Leve o guarda-chuva
+inicial: |
+  idade = int(input("Sua idade? "))
+desafios:
+  - tipo: montar
+    titulo: Classificação do filme
+    contexto: >-
+      O filme em cartaz é para quem tem **14** anos ou mais. Monte a pergunta: a idade é
+      maior ou igual a 14?
+    linha: '`if` idade `>=` `14``:`'
+    extras:
+      - texto: '=>'
+        porque: >-
+          `=>` não existe em Python. "Maior ou igual" se escreve `>=`, na mesma ordem em
+          que a gente fala.
+      - texto: 'se'
+        porque: >-
+          As palavras do Python são em inglês: o "se" é `if`.
+    dica: >-
+      Palavra-chave, comparação e, no fim, os dois-pontos que abrem o bloco.
+    explicacao: >-
+      `if` + condição + dois-pontos. Os dois-pontos avisam que vem um bloco recuado logo
+      abaixo, com o que fazer quando a condição for verdadeira.
+
+  - tipo: empilhar
+    titulo: Pode entrar?
+    contexto: >-
+      Complete a decisão: quem tem 14 anos ou mais ouve **Pode entrar!**, e o resto ouve
+      **Esse filme ainda não é para você.** Empilhe as linhas e ajuste o recuo.
+    codigo:
+      - '    print("Pode entrar!")'
+      - 'else:'
+      - '    print("Esse filme ainda não é para você.")'
+    extras:
+      - texto: 'else idade < 14:'
+        porque: >-
+          `else` não leva condição: ele já significa "em todos os outros casos". Se
+          precisasse de uma condição nova, seria `elif`.
+    dica: >-
+      O que acontece quando a condição é verdadeira fica recuado embaixo do `if`. O `else`
+      volta para a margem, alinhado com o `if`.
+    explicacao: >-
+      O recuo mostra a quem cada linha pertence: o primeiro `print` é do `if`, o segundo é
+      do `else`. Veja no console os testes com idades diferentes: só um dos dois aparece
+      em cada um.
+
+  - tipo: montar
+    titulo: Preço do ingresso
+    contexto: >-
+      Agora o preço. Criança com menos de **12** anos paga ingresso infantil. Monte a
+      primeira pergunta.
+    linha: 'if idade `<` `12`:'
+    extras:
+      - texto: '<='
+        porque: >-
+          `<=` inclui o próprio 12: quem tem 12 anos pagaria infantil. "Menos de 12" é
+          `< 12`.
+      - texto: '"12"'
+        porque: >-
+          `idade` é número, e `"12"` é texto. Comparar número com texto usando `<` dá
+          TypeError em Python.
+    dica: >-
+      "Menos de 12" é estritamente menor: o 12 não entra.
+    explicacao: >-
+      `<` é "menor que", sem incluir o próprio número. Com 12 anos, a condição já é falsa.
+
+  - tipo: empilhar
+    titulo: Infantil, sênior ou inteira
+    contexto: >-
+      Complete a tabela de preços. Menos de 12 anos: **Ingresso infantil**. Senão, 60 anos
+      ou mais: **Ingresso sênior**. Senão: **Ingresso inteiro**.
+    codigo:
+      - '    print("Ingresso infantil")'
+      - 'elif idade >= 60:'
+      - '    print("Ingresso sênior")'
+      - 'else:'
+      - '    print("Ingresso inteiro")'
+    extras:
+      - texto: 'if idade >= 60:'
+        porque: >-
+          Com um `if` novo, a pergunta recomeça do zero, e o `else` passa a ser só dele:
+          quem tem 10 anos ganharia ingresso infantil e inteiro ao mesmo tempo. O `elif`
+          continua a mesma decisão.
+    dica: >-
+      `elif` e `else` ficam alinhados com o `if` lá de cima; cada `print` fica recuado
+      embaixo da pergunta a que responde.
+    explicacao: >-
+      `if`, `elif` e `else` formam uma única decisão: o Python testa de cima para baixo e
+      executa só o primeiro bloco cuja condição for verdadeira.
+
+  - tipo: digitar
+    titulo: Verdadeiro ou falso
+    contexto: >-
+      Toda comparação vira `True` ou `False`. Escreva uma linha que mostre se `idade` é
+      maior ou igual a **18**.
+    codigo: 'print(idade >= 18)'
+    dica: >-
+      Coloque a comparação inteira dentro do `print`.
+    explicacao: >-
+      A comparação é um valor como outro qualquer, do tipo `bool`: só pode ser `True` ou
+      `False`. É exatamente isso que o `if` testa por baixo dos panos.

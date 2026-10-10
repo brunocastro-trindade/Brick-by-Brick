@@ -1,0 +1,121 @@
+.placa {
+  display: grid;
+  gap: var(--espaco-4);
+  padding: var(--espaco-5);
+  border: var(--borda-grossa) solid var(--cor-contorno);
+  border-radius: var(--raio-grande);
+  background: var(--cor-superficie);
+  box-shadow: var(--sombra-media);
+  animation: chegar var(--duracao-media) var(--curva-mola);
+}
+
+.cabecalho {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-4);
+}
+
+.numero {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: var(--espaco-8);
+  height: var(--espaco-8);
+  border: var(--borda-grossa) solid var(--cor-contorno);
+  border-radius: 50%;
+  background: var(--cor-acento);
+  font-family: var(--fonte-titulo);
+  font-size: var(--tipo-destaque-tamanho);
+  font-weight: var(--peso-titulo);
+}
+
+.concluido .numero {
+  background: var(--cor-sucesso);
+}
+
+.bloqueado .numero {
+  background: var(--cor-fundo-alternativo);
+}
+
+.nomes {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+
+.nome {
+  font-size: var(--tipo-titulo-pequeno-tamanho);
+  line-height: var(--tipo-titulo-pequeno-altura);
+}
+
+.bairro {
+  color: var(--cor-texto-suave);
+  font-size: var(--tipo-legenda-tamanho);
+  font-weight: var(--peso-medio);
+}
+
+.conceito {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-3);
+  font-family: var(--fonte-codigo);
+  font-weight: var(--peso-forte);
+}
+
+.rotulo {
+  padding: var(--espaco-1) var(--espaco-3);
+  border-radius: var(--raio-pequeno);
+  background: var(--cor-editor-fundo);
+  color: var(--cor-texto-sobre-escuro);
+  font-family: var(--fonte-texto);
+  font-size: var(--tipo-legenda-tamanho);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.chamada {
+  color: var(--cor-texto-suave);
+}
+
+.trava {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-3);
+  padding: var(--espaco-4);
+  border: var(--borda-fina) dashed var(--cor-contorno-suave);
+  border-radius: var(--raio-medio);
+  font-weight: var(--peso-medio);
+}
+
+.progresso {
+  display: grid;
+  gap: var(--espaco-2);
+}
+
+.barra {
+  height: var(--espaco-4);
+  overflow: hidden;
+  border: var(--borda-fina) solid var(--cor-contorno);
+  border-radius: var(--raio-grande);
+  background: var(--cor-fundo-alternativo);
+}
+
+.barra span {
+  display: block;
+  height: 100%;
+  background: repeating-linear-gradient(90deg, var(--cor-acento) 0 var(--espaco-5), var(--cor-acento-forte) var(--espaco-5) calc(var(--espaco-5) + var(--espaco-1)));
+  transition: width var(--duracao-lenta) var(--curva-saida);
+}
+
+.contagem {
+  font-size: var(--tipo-legenda-tamanho);
+  font-weight: var(--peso-forte);
+  color: var(--cor-texto-suave);
+}
+
+@keyframes chegar {
+  from {
+    opacity: 0;
+    transform: translateY(var(--espaco-4));
+  }
+}

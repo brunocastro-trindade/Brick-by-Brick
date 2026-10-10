@@ -1,0 +1,108 @@
+id: correio
+ordem: 1
+nome: Correio
+conceito: print() e textos
+nivel: basico
+modelo: casa
+aula:
+  titulo: O Python fala com print()
+  texto: |
+    Todo programa precisa mostrar alguma coisa para quem usa. Em Python, quem faz isso é a função `print()`: o que você coloca entre os parênteses aparece na tela.
+
+    Texto em Python se chama **string** e vai sempre entre aspas. As aspas avisam ao Python: isto é texto, não é comando.
+
+    Cada `print()` mostra uma linha. O programa roda de cima para baixo, uma linha de cada vez, como uma parede que sobe uma fiada de tijolos por vez.
+  exemplo: |
+    print("Bom dia, cidade!")
+  saida: |
+    Bom dia, cidade!
+desafios:
+  - tipo: montar
+    titulo: Diga olá para a cidade
+    contexto: >-
+      O Correio vai mandar um cartão-postal para toda a cidade. A primeira linha já está
+      na planta, com `print(` e `)`. Falta o tijolo do meio, com o texto **Olá, mundo!**
+    linha: 'print(`"Olá, mundo!"`)'
+    extras:
+      - texto: 'Olá, mundo!'
+        porque: >-
+          Sem aspas, o Python acha que `Olá` é o nome de alguma coisa e não entende a
+          vírgula nem o ponto de exclamação. Texto vai sempre entre aspas.
+    dica: >-
+      Texto em Python fica entre aspas.
+    explicacao: >-
+      `print()` mostra na tela o que está entre os parênteses. As aspas marcam onde o
+      texto começa e onde termina; elas não aparecem na saída.
+
+  - tipo: montar
+    titulo: Agora a linha inteira
+    contexto: >-
+      Hora de montar uma linha completa. O cartão continua com **Cartas e pacotes**.
+      Encaixe o nome da função, os parênteses e o texto.
+    linha: '`print``(``"Cartas e pacotes"``)`'
+    extras:
+      - texto: 'Print'
+        porque: >-
+          O Python diferencia maiúsculas de minúsculas. `Print`, com P maiúsculo, não
+          existe; o nome da função é `print`.
+      - texto: 'imprimir'
+        porque: >-
+          Os comandos do Python são palavras em inglês. `print` quer dizer imprimir, mas o
+          Python só conhece `print`.
+    dica: >-
+      O nome da função vem primeiro, e o texto fica dentro dos parênteses.
+    explicacao: >-
+      Toda chamada de função tem o mesmo formato: o nome e, logo depois, os parênteses
+      com o que a função precisa receber.
+
+  - tipo: montar
+    titulo: Um bilhete para quem lê o código
+    contexto: >-
+      Antes da próxima linha, deixe um comentário dizendo o que ela faz. Comentário é um
+      bilhete para pessoas: o Python pula essa linha.
+    linha: '`#` Quem enviou o cartão'
+    extras:
+      - texto: '//'
+        porque: >-
+          `//` marca comentário em outras linguagens, como JavaScript. Em Python, `//` é
+          divisão inteira, e a linha daria erro. Comentário em Python começa com `#`.
+      - texto: '"'
+        porque: >-
+          Uma aspa sozinha abre um texto que nunca fecha, e o Python acusa erro de
+          sintaxe. Para comentar, use `#`.
+    dica: >-
+      Procure o símbolo que, em Python, faz o resto da linha ser ignorado.
+    explicacao: >-
+      Tudo depois do `#` é ignorado pelo Python. Repare que nada novo apareceu na tela:
+      comentário serve para quem lê o código, não para quem usa o programa.
+
+  - tipo: montar
+    titulo: Quem mandou?
+    contexto: >-
+      O `print()` aceita vários valores separados por vírgula e coloca um espaço entre
+      eles. Mostre **Remetente:** e **Guglo** na mesma linha.
+    linha: 'print(`"Remetente:"``,` `"Guglo"`)'
+    extras:
+      - texto: '+'
+        tipo: funciona_mas
+        porque: >-
+          Com `+` o Python cola os textos sem espaço nenhum: sairia
+          `Remetente:Guglo`. A vírgula separa os valores, e o `print` põe o
+          espaço para você.
+    dica: >-
+      Entre um texto e outro, use o tijolo que separa valores.
+    explicacao: >-
+      Cada valor separado por vírgula é um argumento. O `print` mostra todos na mesma
+      linha, com um espaço entre eles.
+
+  - tipo: digitar
+    titulo: O lema da cidade
+    contexto: >-
+      Feche o cartão com o lema da cidade. Agora é com você: digite a linha inteira que
+      mostra **Tijolo por tijolo** na tela.
+    codigo: 'print("Tijolo por tijolo")'
+    dica: >-
+      É o mesmo formato das linhas anteriores: `print`, parênteses e o texto entre aspas.
+    explicacao: >-
+      Você escreveu sua primeira linha de Python do zero! Aspas simples também valem:
+      `print('Tijolo por tijolo')` faz a mesma coisa.

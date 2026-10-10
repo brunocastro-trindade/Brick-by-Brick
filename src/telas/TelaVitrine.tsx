@@ -1,0 +1,182 @@
+// Vitrine do design system (HARNESS §2.5): cada componente em todos os estados da matriz.
+// Rota #/design-system, só no modo de desenvolvimento. É também o alvo das capturas de tela.
+import { Hammer } from 'lucide-react';
+import type { ReactNode } from 'react';
+import { BalaoDoPinguim, SeloDeClassificacao } from '../components/BalaoDoPinguim';
+import { Botao } from '../components/Botao';
+import { ChipDoPython } from '../components/ChipDoPython';
+import { BlocoDeCodigo } from '../components/CodigoColorido';
+import { ConsoleDaObra } from '../components/ConsoleDaObra';
+import { Estrelas } from '../components/Estrelas';
+import { Pinguim, type PoseDoPinguim } from '../components/Pinguim';
+import { MEDIDAS, PredioDaCidade, type SituacaoDoPredio } from '../components/PredioDaCidade';
+import { TijoloDeCodigo, type EstadoDoTijolo } from '../components/TijoloDeCodigo';
+import type { Fala } from '../jogo/falas';
+import { MODELOS_DE_PREDIO } from '../jogo/tipos';
+import styles from './TelaVitrine.module.css';
+
+function Secao({ titulo, children }: { titulo: string; children: ReactNode }) {
+  return (
+    <section className={styles.secao}>
+      <h2 className={styles.titulo}>{titulo}</h2>
+      <div className={styles.grade}>{children}</div>
+    </section>
+  );
+}
+
+function Amostra({ rotulo, children, escura = false }: { rotulo: string; children: ReactNode; escura?: boolean }) {
+  return (
+    <figure className={`${styles.amostra} ${escura ? styles.escura : ''}`}>
+      <div className={styles.palco}>{children}</div>
+      <figcaption>{rotulo}</figcaption>
+    </figure>
+  );
+}
+
+const FALAS: Fala[] = [
+  { humor: 'comemorando', selo: 'melhor', titulo: 'Encaixou certinho!', texto: '`print()` mostra na tela o que está entre os parênteses.' },
+  { humor: 'pensando', selo: 'funciona_mas', titulo: 'Funciona, mas…', texto: 'Daqui a trinta linhas ninguém lembra o que é `x`.' },
+  {
+    humor: 'ops',
+    selo: 'problema',
+    titulo: 'O Python reclamou',
+    texto: 'O Python não conhece esse nome.',
+    erro: { nome: 'Nome desconhecido', tipo: 'NameError', mensagem: "name 'Quantidade' is not defined. Did you mean: 'quantidade'?", linha: 4 },
+  },
+  { humor: 'neutro', selo: 'dica', titulo: 'Dica', texto: 'Texto em Python fica entre aspas.' },
+  {
+    humor: 'pensando',
+    selo: 'problema',
+    titulo: 'Rodou, mas mostrou outra coisa',
+    texto: 'Compare as duas:',
+    comparacao: { esperado: 'Total produzido: 50\n', obtido: 'Total produzido: 10\nTotal produzido: 20\n' },
+  },
+];
+
+const POSES: PoseDoPinguim[] = ['parado', 'andando', 'carregando', 'comemorando', 'pensando', 'ops'];
+const ESTADOS_DO_TIJOLO: EstadoDoTijolo[] = ['solto', 'encaixado', 'problema', 'fantasma'];
+const SITUACOES: SituacaoDoPredio[] = ['bloqueado', 'disponivel', 'em-obra', 'concluido'];
+
+export default function TelaVitrine() {
+  return (
+    <main className={styles.vitrine}>
+      <h1>Design system · Brick by Brick</h1>
+      <p>Componentes do sistema em todos os estados. Esta rota só existe em desenvolvimento.</p>
+
+      <Secao titulo="Botão">
+        {(['primario', 'secundario', 'fantasma'] as const).map((variante) => (
+          <Amostra key={variante} rotulo={variante}>
+            <Botao variante={variante} icone={<Hammer size={18} aria-hidden="true" />}>
+              Assentar linha
+            </Botao>
+          </Amostra>
+        ))}
+        <Amostra rotulo="grande + atalho">
+          <Botao tamanho="grande" atalho="Enter">
+            Próximo tijolo
+          </Botao>
+        </Amostra>
+        <Amostra rotulo="desabilitado">
+          <Botao desabilitado>Assentar linha</Botao>
+        </Amostra>
+        <Amostra rotulo="carregando">
+          <Botao carregando>Assentar linha</Botao>
+        </Amostra>
+      </Secao>
+
+      <Secao titulo="Tijolo de código: categorias">
+        {['print', 'nome', 'if', '"Olá"', '2.5', '>=', '(', '#'].map((texto) => (
+          <Amostra key={texto} rotulo={texto} escura>
+            <TijoloDeCodigo texto={texto} numero={1} />
+          </Amostra>
+        ))}
+      </Secao>
+
+      <Secao titulo="Tijolo de código: estados">
+        {ESTADOS_DO_TIJOLO.map((estado) => (
+          <Amostra key={estado} rotulo={estado} escura>
+            <TijoloDeCodigo texto="input(" estado={estado} classificacao="problema" />
+          </Amostra>
+        ))}
+        <Amostra rotulo="linha (empilhar)" escura>
+          <TijoloDeCodigo texto='print("Pode entrar!")' formato="linha" />
+        </Amostra>
+        <Amostra rotulo="desabilitado" escura>
+          <TijoloDeCodigo texto="print" desabilitado />
+        </Amostra>
+      </Secao>
+
+      <Secao titulo="Selos de classificação">
+        {(['melhor', 'funciona_mas', 'problema', 'dica'] as const).map((selo) => (
+          <Amostra key={selo} rotulo={selo}>
+            <SeloDeClassificacao selo={selo} />
+          </Amostra>
+        ))}
+      </Secao>
+
+      <section className={styles.secao}>
+        <h2 className={styles.titulo}>Balão do Guglo</h2>
+        <div className={styles.coluna}>
+          {FALAS.map((fala) => (
+            <BalaoDoPinguim key={fala.titulo + fala.selo} fala={fala} />
+          ))}
+        </div>
+      </section>
+
+      <Secao titulo="Guglo">
+        {POSES.map((pose) => (
+          <Amostra key={pose} rotulo={pose}>
+            <div className={styles.pinguim}>
+              <Pinguim pose={pose} capacete={pose !== 'parado'} />
+            </div>
+          </Amostra>
+        ))}
+      </Secao>
+
+      <Secao titulo="Estrelas e Python">
+        {[0, 1, 2, 3].map((quantidade) => (
+          <Amostra key={quantidade} rotulo={`${quantidade} estrelas`}>
+            <Estrelas quantidade={quantidade} />
+          </Amostra>
+        ))}
+        <Amostra rotulo="estado atual do Python">
+          <ChipDoPython />
+        </Amostra>
+      </Secao>
+
+      <section className={styles.secao}>
+        <h2 className={styles.titulo}>Prédios da cidade</h2>
+        {MODELOS_DE_PREDIO.map((modelo) => (
+          <div key={modelo} className={styles.grade}>
+            {SITUACOES.map((situacao) => (
+              <Amostra key={situacao} rotulo={`${modelo} · ${situacao}`}>
+                <svg viewBox={`-130 ${-MEDIDAS[modelo].altura - 130} 260 ${MEDIDAS[modelo].altura + 150}`} className={styles.predio}>
+                  <PredioDaCidade modelo={modelo} situacao={situacao} progresso={0.5} idUnico={`vitrine-${modelo}-${situacao}`} />
+                </svg>
+              </Amostra>
+            ))}
+          </div>
+        ))}
+      </section>
+
+      <Secao titulo="Código e console">
+        <Amostra rotulo="bloco de código">
+          <BlocoDeCodigo codigo={'idade = int(input("Sua idade? "))\nif idade >= 14:\n    print("Pode entrar!")  # bloco'} />
+        </Amostra>
+        <Amostra rotulo="console vazio">
+          <ConsoleDaObra execucoes={null} estadoDoPython="pronto" programaVazio />
+        </Amostra>
+        <Amostra rotulo="console com abas">
+          <ConsoleDaObra
+            estadoDoPython="pronto"
+            programaVazio={false}
+            execucoes={[
+              { entradas: ['15'], resultado: { saida: 'Sua idade? \u000215\u0003\nPode entrar!\n', saidaVerificacao: '', erro: null, variaveis: {} } },
+              { entradas: ['10'], resultado: { saida: 'Sua idade? \u000210\u0003\n', saidaVerificacao: '', erro: null, variaveis: {} } },
+            ]}
+          />
+        </Amostra>
+      </Secao>
+    </main>
+  );
+}

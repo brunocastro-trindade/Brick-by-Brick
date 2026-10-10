@@ -1,0 +1,128 @@
+.tela {
+  position: relative;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  min-height: 100dvh;
+  overflow: hidden;
+  background: var(--cor-fundo);
+}
+
+.palco {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  align-items: center;
+  gap: var(--espaco-8);
+  width: 100%;
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: var(--espaco-8) var(--espaco-6) var(--espaco-9);
+}
+
+.texto {
+  display: grid;
+  gap: var(--espaco-6);
+  justify-items: start;
+}
+
+.titulo {
+  width: 100%;
+}
+
+.logo {
+  display: block;
+  width: min(100%, 30rem);
+  height: auto;
+  animation: assentar 700ms var(--curva-mola) both;
+}
+
+.chamada {
+  font-family: var(--fonte-titulo);
+  font-size: var(--tipo-titulo-pequeno-tamanho);
+  font-weight: var(--peso-forte);
+  line-height: var(--tipo-titulo-pequeno-altura);
+}
+
+.chamada strong {
+  color: var(--cor-acento-forte);
+}
+
+.descricao {
+  max-width: 34rem;
+  color: var(--cor-texto-suave);
+  font-size: var(--tipo-destaque-tamanho);
+  line-height: var(--tipo-corpo-altura);
+}
+
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-4);
+}
+
+.mascote img {
+  display: block;
+  width: min(100%, 26rem);
+  height: auto;
+  margin: 0 auto;
+  border: var(--borda-grossa) solid var(--cor-contorno);
+  border-radius: 50%;
+  box-shadow: var(--sombra-alta);
+  animation: chegar 900ms var(--curva-mola) 150ms both;
+}
+
+.rodape {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: var(--espaco-4);
+  padding: var(--espaco-4) var(--espaco-6) var(--espaco-8);
+  color: var(--cor-texto-suave);
+  font-size: var(--tipo-corpo-pequeno-tamanho);
+}
+
+/* uma fiada de tijolos no pé da tela */
+.muro {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: var(--espaco-7);
+  border-top: var(--borda-grossa) solid var(--cor-contorno);
+  background:
+    repeating-linear-gradient(
+      to right,
+      var(--cor-tijolo-nome) 0 calc(var(--espaco-9) - var(--espaco-1)),
+      var(--cor-argamassa) calc(var(--espaco-9) - var(--espaco-1)) var(--espaco-9)
+    );
+}
+
+@keyframes assentar {
+  from {
+    opacity: 0;
+    transform: translateY(calc(var(--espaco-9) * -1));
+  }
+}
+
+@keyframes chegar {
+  from {
+    opacity: 0;
+    transform: scale(0.8) rotate(-6deg);
+  }
+}
+
+@media (max-width: 820px) /* fora-da-escala: breakpoint */ {
+  .palco {
+    grid-template-columns: 1fr;
+    gap: var(--espaco-6);
+    padding: var(--espaco-6) var(--espaco-5) var(--espaco-8);
+  }
+
+  .mascote {
+    order: -1;
+  }
+
+  .mascote img {
+    width: min(60%, 14rem);
+  }
+}

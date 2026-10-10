@@ -1,0 +1,128 @@
+id: biblioteca
+ordem: 7
+nome: Biblioteca
+conceito: Listas
+nivel: intermediario
+modelo: biblioteca
+aula:
+  titulo: Listas guardam várias coisas em ordem
+  texto: |
+    Uma **lista** guarda vários valores numa variável só: entre colchetes, separados por vírgula.
+
+    Cada item tem uma posição, o **índice**, que começa no **0**. `livros[0]` é o primeiro, `livros[1]` o segundo, e `livros[-1]` o último.
+
+    Listas crescem: `append()` coloca um item no fim. E `len()` conta quantos itens há.
+  exemplo: |
+    cores = ["azul", "verde"]
+    cores.append("roxo")
+    print(cores[0], len(cores))
+  saida: |
+    azul 3
+desafios:
+  - tipo: montar
+    titulo: A estante
+    contexto: >-
+      A Biblioteca abriu com três livros. Escolha o tijolo que cria a lista `livros`, que
+      ainda vai crescer.
+    linha: 'livros = `["Python Básico", "Tijolo a Tijolo", "O Pinguim"]`'
+    extras:
+      - texto: '("Python Básico", "Tijolo a Tijolo", "O Pinguim")'
+        tipo: funciona_mas
+        porque: >-
+          Funciona, mas parênteses criam uma tupla, e tupla não muda depois de criada. Uma
+          estante que recebe livros novos precisa de lista, com colchetes.
+      - texto: '{"Python Básico", "Tijolo a Tijolo", "O Pinguim"}'
+        porque: >-
+          Chaves criam um conjunto (set), que não guarda ordem nem posição: não daria para
+          pedir o primeiro livro.
+    dica: >-
+      Lista usa colchetes.
+    explicacao: >-
+      Os colchetes criam a lista, e a ordem em que os itens foram escritos é a ordem em que
+      eles ficam na estante.
+
+  - tipo: montar
+    titulo: O primeiro da estante
+    contexto: >-
+      Mostre o **primeiro** livro da lista.
+    linha: 'print(livros[`0`])'
+    extras:
+      - texto: '1'
+        porque: >-
+          O índice começa no 0. `livros[1]` é o segundo livro: Tijolo a Tijolo.
+      - texto: '"Python Básico"'
+        porque: >-
+          Dentro dos colchetes vai a posição, não o item. Para pegar o primeiro, use o
+          índice 0.
+    dica: >-
+      Em Python, a contagem de posições começa do zero.
+    explicacao: >-
+      A primeira posição é a 0. Parece estranho no começo, mas quase todas as linguagens
+      contam assim.
+
+  - tipo: montar
+    titulo: Chegou livro novo
+    contexto: >-
+      Chegou o livro **Laços Infinitos**. Coloque-o no fim da estante.
+    linha: 'livros.`append(`"Laços Infinitos")'
+    extras:
+      - texto: 'push('
+        porque: >-
+          `push` é de JavaScript. Em Python, listas crescem com `append`.
+      - texto: 'add('
+        porque: >-
+          `add` é dos conjuntos (set). Lista usa `append`, que quer dizer "acrescentar no
+          fim".
+    dica: >-
+      O método que acrescenta no fim começa com "app".
+    explicacao: >-
+      `append` é um **método**: uma função que pertence ao valor e é chamada com ponto. A
+      lista agora tem quatro livros.
+
+  - tipo: montar
+    titulo: Quantos livros?
+    contexto: >-
+      Mostre quantos livros a estante tem agora.
+    linha: 'print(`len(livros)`)'
+    extras:
+      - texto: 'livros.length'
+        porque: >-
+          `.length` é de JavaScript. Em Python, o tamanho se pede com a função `len()`.
+      - texto: 'livros.len()'
+        porque: >-
+          `len` não é método da lista: é uma função solta, que recebe a lista entre os
+          parênteses.
+    dica: >-
+      É uma função que recebe a lista entre parênteses.
+    explicacao: >-
+      `len()` conta os itens: 4. Ela funciona com listas, textos, dicionários e outros
+      valores que têm tamanho.
+
+  - tipo: empilhar
+    titulo: Catálogo completo
+    contexto: >-
+      Mostre o catálogo: cada livro numa linha, com um traço na frente.
+    codigo: |
+      for livro in livros:
+          print("-", livro)
+    extras:
+      - texto: 'for livro in range(livros):'
+        porque: >-
+          `range` espera um número, não uma lista, e daria TypeError. Para passar pelos
+          itens da lista, use direto `for livro in livros`.
+    dica: >-
+      O `for` passa pela própria lista; o `print` vai dentro dele.
+    explicacao: >-
+      O `for` percorre a lista na ordem: a cada volta, `livro` é o próximo item. Nada de
+      índice para controlar.
+
+  - tipo: digitar
+    titulo: O mais novo
+    contexto: >-
+      Índices negativos contam do fim: `-1` é o último. Mostre o último livro da estante.
+    codigo: 'print(livros[-1])'
+    dica: >-
+      Use o índice -1 dentro dos colchetes.
+    explicacao: >-
+      `livros[-1]` é sempre o último item, não importa o tamanho da lista. Saiu Laços
+      Infinitos, que acabou de chegar.

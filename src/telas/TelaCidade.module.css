@@ -1,0 +1,216 @@
+.tela {
+  min-height: 100dvh;
+  background: var(--cor-fundo);
+}
+
+.barra {
+  position: sticky;
+  top: 0;
+  z-index: var(--camada-hud);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espaco-4) var(--espaco-6);
+  padding: var(--espaco-2) var(--espaco-6);
+  border-bottom: var(--borda-grossa) solid var(--cor-contorno);
+  background: var(--cor-superficie);
+}
+
+.logo {
+  display: inline-flex;
+  padding: var(--espaco-1);
+  border: none;
+  border-radius: var(--raio-medio);
+  background: transparent;
+}
+
+.logo img {
+  display: block;
+  width: auto;
+  height: var(--espaco-8);
+}
+
+.placar {
+  display: flex;
+  gap: var(--espaco-4);
+}
+
+.medida {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espaco-2);
+  padding: var(--espaco-1) var(--espaco-4);
+  border: var(--borda-fina) solid var(--cor-contorno);
+  border-radius: var(--raio-grande);
+  background: var(--cor-fundo);
+  font-family: var(--fonte-titulo);
+  font-weight: var(--peso-titulo);
+}
+
+.medida svg {
+  fill: var(--cor-aviso);
+}
+
+.ferramentas {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-3);
+  margin-left: auto;
+}
+
+.icone {
+  display: grid;
+  place-items: center;
+  width: var(--espaco-8);
+  height: var(--espaco-8);
+  border: var(--borda-fina) solid var(--cor-contorno);
+  border-radius: var(--raio-medio);
+  background: var(--cor-fundo);
+}
+
+.icone:hover {
+  background: var(--cor-fundo-alternativo);
+}
+
+.area {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 22rem;
+  gap: var(--espaco-6);
+  max-width: 110rem;
+  margin: 0 auto;
+  padding: var(--espaco-6);
+  align-items: start;
+}
+
+.mapa {
+  display: grid;
+  gap: var(--espaco-3);
+}
+
+.aviso {
+  justify-self: start;
+  padding: var(--espaco-1) var(--espaco-4);
+  border: var(--borda-fina) solid var(--cor-contorno);
+  border-radius: var(--raio-grande);
+  background: var(--cor-aviso-fundo);
+  font-size: var(--tipo-corpo-pequeno-tamanho);
+  font-weight: var(--peso-medio);
+}
+
+.lateral {
+  position: sticky;
+  top: calc(var(--espaco-9) + var(--espaco-5));
+  display: grid;
+  gap: var(--espaco-5);
+}
+
+.lista {
+  display: grid;
+  gap: var(--espaco-3);
+}
+
+.listaTitulo {
+  font-size: var(--tipo-corpo-tamanho);
+  font-family: var(--fonte-texto);
+  font-weight: var(--peso-forte);
+  color: var(--cor-texto-suave);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.lista ol {
+  display: grid;
+  gap: var(--espaco-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-3);
+  width: 100%;
+  min-height: var(--espaco-8);
+  padding: var(--espaco-2) var(--espaco-4);
+  border: var(--borda-fina) solid var(--cor-contorno-suave);
+  border-radius: var(--raio-medio);
+  background: var(--cor-superficie);
+  text-align: left;
+}
+
+.item:hover {
+  border-color: var(--cor-contorno);
+}
+
+.itemEscolhido {
+  border: var(--borda-grossa) solid var(--cor-contorno);
+  background: var(--cor-aviso-fundo);
+}
+
+.bloqueado {
+  opacity: 0.7;
+}
+
+.itemNumero {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: var(--espaco-7);
+  height: var(--espaco-7);
+  border: var(--borda-fina) solid var(--cor-contorno);
+  border-radius: 50%;
+  background: var(--cor-fundo-alternativo);
+  font-family: var(--fonte-titulo);
+  font-weight: var(--peso-titulo);
+}
+
+.concluido .itemNumero {
+  background: var(--cor-sucesso);
+}
+
+.itemTextos {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+
+.itemNome {
+  font-weight: var(--peso-forte);
+}
+
+.itemConceito {
+  overflow: hidden;
+  color: var(--cor-texto-suave);
+  font-family: var(--fonte-codigo);
+  font-size: var(--tipo-legenda-tamanho);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.itemEstrelas {
+  color: var(--cor-aviso);
+  -webkit-text-stroke: 1px var(--cor-contorno); /* fora-da-escala: contorno fino da estrela */
+  letter-spacing: 0.05em;
+}
+
+@media (max-width: 1100px) /* fora-da-escala: breakpoint */ {
+  .area {
+    grid-template-columns: 1fr;
+    padding: var(--espaco-4);
+  }
+
+  .lateral {
+    position: static;
+  }
+}
+
+@media (max-width: 640px) /* fora-da-escala: breakpoint */ {
+  .barra {
+    padding: var(--espaco-2) var(--espaco-4);
+  }
+
+  .ferramentas {
+    margin-left: 0;
+  }
+}

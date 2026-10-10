@@ -1,0 +1,173 @@
+// Progresso salvo no navegador (fase de testes: sem servidor, ADR-0002).
+// Leitura defensiva: dado corrompido ou de versão antiga vira progresso novo, nunca tela quebrada.
+import { estrelasDaObra, totalDePontos, type Estrelas, type ResultadoDesafio } from './pontuacao';
+import type { Obra, TipoDesafio } from './tipos';
+
+export interface ProgressoObra {
+  /** Próximo desafio a fazer nesta rodada. */
+  passo: number;
+  resultados: ResultadoDesafio[];
+  combo: number;
+  aulaVista: boolean;
+  /** Já foi concluída ao menos uma vez (libera a próxima obra). */
+  concluida: boolean;
+  estrelas: 0 | Estrelas;
+  melhorPontuacao: number;
+}
+
+export interface Progresso {
+  versao: 1;
+  obras: Record<string, ProgressoObra>;
+  som: boolean;
+  /** Abre todas as obras — útil para quem escreve conteúdo testar fora de ordem. */
+  modoLivre: boolean;
+  ultimaObra: string | null;
+  mecanicasVistas: TipoDesafio[];
+}
+
+export interface Armazenamento {
+  getItem(chave: string): string | null;
+  setItem(chave: string, valor: string): void;
+}
+
+export const CHAVE_DO_PROGRESSO = 'brick-by-brick:progresso:v1';
+
+export function progressoNovo(): Progresso {
+  return { versao: 1, obras: {}, som: true, modoLivre: false, ultimaObra: null, mecanicasVistas: [] };
+}
+
+export function progressoDeObraNovo(): ProgressoObra {
+  return { passo: 0, resultados: [], combo: 0, aulaVista: false, concluida: false, estrelas: 0, melhorPontuacao: 0 };
+}
+
+export function progressoDaObra(progresso: Progresso, obraId: string): ProgressoObra {
+  return progresso.obras[obraId] ?? progressoDeObraNovo();
+}
+
+const ehInteiro = (valor: unknown): valor is number => typeof valor === 'number' && Number.isInteger(valor) && valor >= 0;
+
+function sanearResultado(bruto: unknown): ResultadoDesafio | null {
+  if (typeof bruto !== 'object' || bruto === null) return null;
+  const r = bruto as Record<string, unknown>;
+  if (typeof r.desafioId !== 'string' || !ehInteiro(r.linhas) || !ehInteiro(r.errosAntes) || !ehInteiro(r.pontos)) return null;
+  if (typeof r.usouDica !== 'boolean' || typeof r.dePrimeira !== 'boolean') return null;
+  return {
+    desafioId: r.desafioId,
+    linhas: r.linhas,
+    errosAntes: r.errosAntes,
+    usouDica: r.usouDica,
+    dePrimeira: r.dePrimeira,
+    pontos: r.pontos,
+  };
+}
+
+function sanearObra(bruto: unknown): ProgressoObra | null {
+  if (typeof bruto !== 'object' || bruto === null) return null;
+  const o = bruto as Record<string, unknown>;
+  if (!ehInteiro(o.passo) || !ehInteiro(o.combo) || !ehInteiro(o.melhorPontuacao) || !Array.isArray(o.resultados)) return null;
+  const estrelas = o.estrelas;
+  if (estrelas !== 0 && estrelas !== 1 && estrelas !== 2 && estrelas !== 3) return null;
+  const resultados = o.resultados.map(sanearResultado);
+  if (resultados.some((resultado) => resultado === null)) return null;
+  return {
+    passo: o.passo,
+    resultados: resultados as ResultadoDesafio[],
+    combo: o.combo,
+    aulaVista: o.aulaVista === true,
+    concluida: o.concluida === true,
+    estrelas,
+    melhorPontuacao: o.melhorPontuacao,
+  };
+}
+
+export function carregarProgresso(armazenamento: Armazenamento | null): Progresso {
+  const novo = progressoNovo();
+  try {
+    const bruto = armazenamento?.getItem(CHAVE_DO_PROGRESSO);
+    if (!bruto) return novo;
+    const dados = JSON.parse(bruto) as Record<string, unknown>;
+    if (dados.versao !== 1 || typeof dados.obras !== 'object' || dados.obras === null) return novo;
+    const obras: Record<string, ProgressoObra> = {};
+    for (const [id, valor] of Object.entries(dados.obras)) {
+      const saneada = sanearObra(valor);
+      if (saneada) obras[id] = saneada;
+    }
+    const tipos: TipoDesafio[] = ['montar', 'empilhar', 'digitar'];
+    return {
+      versao: 1,
+      obras,
+      som: dados.som !== false,
+      modoLivre: dados.modoLivre === true,
+      ultimaObra: typeof dados.ultimaObra === 'string' ? dados.ultimaObra : null,
+      mecanicasVistas: Array.isArray(dados.mecanicasVistas)
+        ? tipos.filter((tipo) => (dados.mecanicasVistas as unknown[]).includes(tipo))
+        : [],
+    };
+  } catch {
+    return novo;
+  }
+}
+
+/** Devolve false se o navegador recusou gravar (modo privado, cota cheia): o jogo segue sem salvar. */
+export function salvarProgresso(progresso: Progresso, armazenamento: Armazenamento | null): boolean {
+  try {
+    armazenamento?.setItem(CHAVE_DO_PROGRESSO, JSON.stringify(progresso));
+    return armazenamento !== null;
+  } catch {
+    return false;
+  }
+}
+
+export function obraLiberada(obras: Obra[], progresso: Progresso, indice: number): boolean {
+  if (indice === 0 || progresso.modoLivre) return true;
+  const anterior = obras[indice - 1];
+  return anterior !== undefined && progressoDaObra(progresso, anterior.id).concluida;
+}
+
+function comObra(progresso: Progresso, obraId: string, mudar: (obra: ProgressoObra) => ProgressoObra): Progresso {
+  return { ...progresso, obras: { ...progresso.obras, [obraId]: mudar(progressoDaObra(progresso, obraId)) } };
+}
+
+/** Registra um desafio vencido; ao vencer o último, conclui a obra guardando o melhor placar. */
+export function registrarAcerto(progresso: Progresso, obra: Obra, resultado: ResultadoDesafio, combo: number): Progresso {
+  return comObra(progresso, obra.id, (atual) => {
+    const resultados = [...atual.resultados, resultado];
+    const passo = atual.passo + 1;
+    if (passo < obra.desafios.length) return { ...atual, passo, resultados, combo };
+    const estrelas = estrelasDaObra(resultados);
+    return {
+      ...atual,
+      passo,
+      resultados,
+      combo,
+      concluida: true,
+      estrelas: Math.max(atual.estrelas, estrelas) as Estrelas,
+      melhorPontuacao: Math.max(atual.melhorPontuacao, totalDePontos(resultados)),
+    };
+  });
+}
+
+/** Começa a obra de novo do alicerce, mantendo conclusão e recordes. */
+export function reiniciarObra(progresso: Progresso, obraId: string): Progresso {
+  return comObra(progresso, obraId, (atual) => ({ ...atual, passo: 0, resultados: [], combo: 0 }));
+}
+
+export function marcarAulaVista(progresso: Progresso, obraId: string): Progresso {
+  return comObra(progresso, obraId, (atual) => ({ ...atual, aulaVista: true }));
+}
+
+export function marcarMecanicaVista(progresso: Progresso, tipo: TipoDesafio): Progresso {
+  if (progresso.mecanicasVistas.includes(tipo)) return progresso;
+  return { ...progresso, mecanicasVistas: [...progresso.mecanicasVistas, tipo] };
+}
+
+export function totalDeEstrelas(progresso: Progresso): number {
+  return Object.values(progresso.obras).reduce((soma, obra) => soma + obra.estrelas, 0);
+}
+
+export function totalDeLinhasAssentadas(progresso: Progresso): number {
+  return Object.values(progresso.obras).reduce(
+    (soma, obra) => soma + obra.resultados.reduce((parcial, resultado) => parcial + resultado.linhas, 0),
+    0,
+  );
+}
