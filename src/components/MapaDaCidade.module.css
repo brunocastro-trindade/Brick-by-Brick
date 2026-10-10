@@ -1,0 +1,116 @@
+.mapa {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: var(--borda-grossa) solid var(--cor-contorno);
+  border-radius: var(--raio-grande);
+  box-shadow: var(--sombra-media);
+  background: var(--cor-ilustra-chao);
+  user-select: none;
+}
+
+.nuvens {
+  animation: flutuar 30s ease-in-out infinite alternate;
+}
+
+.placaTitulo {
+  font-family: var(--fonte-titulo);
+  font-weight: var(--peso-titulo);
+  font-size: 18px; /* fora-da-escala: unidade do SVG do mapa */
+  fill: var(--cor-texto);
+}
+
+.placaSubtitulo {
+  font-family: var(--fonte-texto);
+  font-weight: var(--peso-medio);
+  font-size: 14px; /* fora-da-escala: unidade do SVG do mapa */
+  fill: var(--cor-texto-suave);
+}
+
+.lugar {
+  cursor: pointer;
+  outline: none;
+}
+
+.areaDeToque {
+  fill: transparent;
+}
+
+.desenho {
+  transition: transform var(--duracao-media) var(--curva-mola);
+}
+
+.lugar:hover .desenho,
+.lugar:focus-visible .desenho,
+.escolhido .desenho {
+  transform: translateY(-6px); /* fora-da-escala: unidade do SVG do mapa */
+}
+
+.anel {
+  fill: var(--cor-ilustra-destaque);
+  fill-opacity: 0;
+  stroke: var(--cor-ilustra-contorno);
+  stroke-width: 0;
+  stroke-dasharray: 10 7;
+  transition:
+    fill-opacity var(--duracao-media),
+    stroke-width var(--duracao-media);
+}
+
+.lugar:hover .anel {
+  fill-opacity: 0.35;
+}
+
+.escolhido .anel {
+  fill-opacity: 0.6;
+  stroke-width: 3;
+}
+
+.lugar:focus-visible .anel {
+  fill-opacity: 0.6;
+  stroke: var(--cor-foco);
+  stroke-width: 5;
+  stroke-dasharray: none;
+}
+
+.numero {
+  font-family: var(--fonte-titulo);
+  font-weight: var(--peso-titulo);
+  font-size: 17px; /* fora-da-escala: unidade do SVG do mapa */
+  fill: var(--cor-texto);
+}
+
+.exclamacao {
+  animation: quicar 900ms ease-in-out infinite alternate;
+}
+
+.exclamacaoTexto {
+  font-family: var(--fonte-titulo);
+  font-weight: var(--peso-titulo);
+  font-size: 28px; /* fora-da-escala: unidade do SVG do mapa */
+  fill: var(--cor-texto);
+}
+
+.jato {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: jorrar 1.6s ease-in-out infinite alternate;
+}
+
+@keyframes flutuar {
+  to {
+    transform: translateX(60px); /* fora-da-escala: unidade do SVG do mapa */
+  }
+}
+
+@keyframes quicar {
+  to {
+    transform: translateY(-14px); /* fora-da-escala: unidade do SVG do mapa */
+  }
+}
+
+@keyframes jorrar {
+  to {
+    transform: scaleY(1.25);
+  }
+}

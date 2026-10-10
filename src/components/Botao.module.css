@@ -1,0 +1,97 @@
+.botao {
+  --cor-de-fundo: var(--cor-acento);
+  --cor-do-texto: var(--cor-texto-sobre-acento);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espaco-3);
+  min-height: var(--espaco-8);
+  padding: var(--espaco-3) var(--espaco-6);
+  border: var(--borda-grossa) solid var(--cor-contorno);
+  border-radius: var(--raio-medio);
+  background: var(--cor-de-fundo);
+  color: var(--cor-do-texto);
+  font-family: var(--fonte-titulo);
+  font-weight: var(--peso-forte);
+  font-size: var(--tipo-corpo-tamanho);
+  line-height: 1;
+  box-shadow: var(--sombra-baixa);
+  transition:
+    transform var(--duracao-rapida) var(--curva-saida),
+    box-shadow var(--duracao-rapida) var(--curva-saida),
+    background var(--duracao-rapida) var(--curva-saida);
+  touch-action: manipulation;
+  user-select: none;
+}
+
+.botao:hover:not(:disabled) {
+  --cor-de-fundo: var(--cor-acento-hover);
+  transform: translateY(calc(var(--espaco-1) * -0.5));
+}
+
+.botao:active:not(:disabled) {
+  transform: translateY(var(--espaco-1));
+  box-shadow: none;
+}
+
+.botao:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  box-shadow: none;
+}
+
+.secundario {
+  --cor-de-fundo: var(--cor-superficie);
+  --cor-do-texto: var(--cor-texto);
+}
+
+.secundario:hover:not(:disabled) {
+  --cor-de-fundo: var(--cor-superficie-destaque);
+}
+
+.fantasma {
+  --cor-de-fundo: transparent;
+  --cor-do-texto: var(--cor-texto);
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.fantasma:hover:not(:disabled) {
+  --cor-de-fundo: var(--cor-fundo-alternativo);
+}
+
+.grande {
+  min-height: var(--espaco-9);
+  padding: var(--espaco-4) var(--espaco-7);
+  font-size: var(--tipo-destaque-tamanho);
+  border-radius: var(--raio-grande);
+}
+
+.larguraTotal {
+  width: 100%;
+}
+
+.atalho {
+  padding: var(--espaco-1) var(--espaco-2);
+  border: var(--borda-fina) solid currentColor;
+  border-radius: var(--raio-pequeno);
+  font-size: var(--tipo-legenda-tamanho);
+  font-weight: var(--peso-medio);
+  opacity: 0.75;
+}
+
+.giro {
+  width: 1em;
+  height: 1em;
+  border: var(--borda-grossa) solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: girar 700ms linear infinite;
+}
+
+@keyframes girar {
+  to {
+    transform: rotate(1turn);
+  }
+}

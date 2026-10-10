@@ -1,0 +1,148 @@
+.barra {
+  position: sticky;
+  top: 0;
+  z-index: var(--camada-hud);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espaco-4) var(--espaco-6);
+  padding: var(--espaco-3) var(--espaco-6);
+  border-bottom: var(--borda-grossa) solid var(--cor-contorno);
+  background: var(--cor-superficie);
+}
+
+.voltar,
+.som {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espaco-2);
+  min-height: var(--espaco-8);
+  min-width: var(--espaco-8);
+  padding: 0 var(--espaco-4);
+  border: var(--borda-fina) solid var(--cor-contorno);
+  border-radius: var(--raio-medio);
+  background: var(--cor-fundo);
+  font-weight: var(--peso-forte);
+}
+
+.voltar:hover,
+.som:hover {
+  background: var(--cor-fundo-alternativo);
+}
+
+.som {
+  padding: 0;
+}
+
+.titulo {
+  display: grid;
+  min-width: 0;
+}
+
+.nome {
+  font-size: var(--tipo-titulo-pequeno-tamanho);
+  line-height: 1.1;
+}
+
+.conceito {
+  color: var(--cor-texto-suave);
+  font-size: var(--tipo-corpo-pequeno-tamanho);
+}
+
+.fiadas {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--espaco-1);
+}
+
+.fiada,
+.fiadaPronta {
+  width: var(--espaco-4);
+  height: var(--espaco-4);
+  border: var(--borda-fina) solid var(--cor-contorno);
+  border-radius: var(--espaco-1);
+}
+
+.fiada {
+  border-style: dashed;
+  background: transparent;
+  opacity: 0.5;
+}
+
+.fiadaPronta {
+  background: var(--cor-acento);
+  animation: aparecer var(--duracao-media) var(--curva-mola);
+}
+
+.contagem {
+  margin-left: var(--espaco-2);
+  font-size: var(--tipo-legenda-tamanho);
+  font-weight: var(--peso-forte);
+}
+
+.placar {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-3);
+  margin-left: auto;
+}
+
+.pontos {
+  font-family: var(--fonte-titulo);
+  font-size: var(--tipo-destaque-tamanho);
+  font-weight: var(--peso-titulo);
+}
+
+.pontos small {
+  font-size: var(--tipo-legenda-tamanho);
+  color: var(--cor-texto-suave);
+}
+
+.combo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espaco-1);
+  padding: var(--espaco-1) var(--espaco-3);
+  border: var(--borda-fina) solid var(--cor-contorno);
+  border-radius: var(--raio-grande);
+  background: var(--cor-aviso);
+  font-size: var(--tipo-legenda-tamanho);
+  font-weight: var(--peso-forte);
+  animation: aparecer var(--duracao-media) var(--curva-mola);
+}
+
+.ferramentas {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-3);
+}
+
+@keyframes aparecer {
+  from {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+}
+
+@media (max-width: 720px) /* fora-da-escala: breakpoint */ {
+  .barra {
+    position: static;
+    padding: var(--espaco-3) var(--espaco-4);
+  }
+
+  .voltar span {
+    display: none;
+  }
+
+  .fiadas {
+    order: 5;
+    width: 100%;
+  }
+
+  .fiada,
+  .fiadaPronta {
+    flex: 1;
+    max-width: var(--espaco-5);
+  }
+}

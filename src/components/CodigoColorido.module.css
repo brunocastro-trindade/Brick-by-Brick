@@ -1,0 +1,56 @@
+.codigo {
+  font-family: var(--fonte-codigo);
+  color: var(--cor-codigo-padrao);
+  white-space: pre;
+}
+
+.palavra-chave {
+  color: var(--cor-codigo-palavra-chave);
+  font-weight: var(--peso-forte);
+}
+
+.funcao {
+  color: var(--cor-codigo-funcao);
+}
+
+.texto {
+  color: var(--cor-codigo-texto);
+}
+
+.numero {
+  color: var(--cor-codigo-numero);
+}
+
+.comentario {
+  color: var(--cor-codigo-comentario);
+  font-style: italic;
+}
+
+.operador,
+.pontuacao {
+  color: var(--cor-codigo-simbolo);
+}
+
+.nome,
+.espaco {
+  color: var(--cor-codigo-padrao);
+}
+
+.desconhecido {
+  color: var(--cor-problema-fundo);
+  text-decoration: underline wavy;
+}
+
+.bloco {
+  margin: 0;
+  padding: var(--espaco-4) var(--espaco-5);
+  border-radius: var(--raio-medio);
+  background: var(--cor-editor-fundo);
+  font-size: var(--tipo-corpo-pequeno-tamanho);
+  line-height: var(--tipo-corpo-altura);
+  overflow-x: auto;
+}
+
+.linhaDoBloco {
+  min-height: 1.5em;
+}

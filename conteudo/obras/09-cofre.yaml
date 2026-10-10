@@ -1,0 +1,130 @@
+id: cofre
+ordem: 9
+nome: Cofre
+conceito: Dicionários
+nivel: avancado
+modelo: cofre
+aula:
+  titulo: Cada chave abre uma gaveta
+  texto: |
+    Um **dicionário** guarda pares `chave: valor`, entre chaves `{ }`. Em vez de posição, você pega cada valor pelo nome da chave: `cofre["ouro"]`.
+
+    Para mudar um valor ou criar um par novo, atribua: `cofre["prata"] = 7`.
+
+    Com `.items()` você percorre chave e valor juntos num `for`. E `.get()` busca uma chave sem dar erro se ela não existir.
+  exemplo: |
+    telefones = {"Ana": "9999-0000"}
+    print(telefones["Ana"])
+  saida: |
+    9999-0000
+desafios:
+  - tipo: montar
+    titulo: O inventário do cofre
+    contexto: >-
+      O Cofre guarda **3** barras de ouro e **10** de prata. Escolha o tijolo que cria o
+      dicionário `cofre`.
+    linha: 'cofre = `{"ouro": 3, "prata": 10}`'
+    extras:
+      - texto: '["ouro": 3, "prata": 10]'
+        porque: >-
+          Colchetes com dois-pontos não existem em Python e dariam erro de sintaxe. Pares
+          de chave e valor vão entre chaves.
+      - texto: '{"ouro" = 3, "prata" = 10}'
+        porque: >-
+          No dicionário, chave e valor se ligam com dois-pontos, não com `=`.
+    dica: >-
+      Chaves por fora, dois-pontos entre a chave e o valor.
+    explicacao: >-
+      Cada par tem uma chave (o nome do metal) e um valor (a quantidade). As chaves
+      costumam ser textos, e cada uma aparece uma vez só.
+
+  - tipo: montar
+    titulo: Quanto ouro?
+    contexto: >-
+      Mostre quantas barras de ouro há no cofre.
+    linha: 'print(cofre[`"ouro"`])'
+    extras:
+      - texto: '0'
+        porque: >-
+          Dicionário não tem posição numérica: você abre a gaveta pelo nome da chave.
+          `cofre[0]` dá KeyError, porque não existe a chave 0.
+      - texto: 'ouro'
+        porque: >-
+          Sem aspas, `ouro` seria uma variável, e ela não existe: NameError. A chave é o
+          texto `"ouro"`.
+    dica: >-
+      Entre os colchetes vai a chave, do mesmo jeito que foi escrita no dicionário.
+    explicacao: >-
+      `cofre["ouro"]` abre a gaveta ouro e devolve o que está nela: 3.
+
+  - tipo: montar
+    titulo: Chegou bronze
+    contexto: >-
+      Chegaram **25** barras de bronze. Crie o par novo no cofre.
+    linha: 'cofre[`"bronze"`] `=` 25'
+    extras:
+      - texto: ':'
+        porque: >-
+          Os dois-pontos só ligam chave e valor dentro das chaves `{ }`. Fora delas, para
+          guardar, use `=`.
+      - texto: '=='
+        porque: >-
+          `==` compara em vez de guardar. Como a chave bronze ainda não existe, a
+          comparação nem consegue ler o valor e dá KeyError. Para criar o par, use `=`.
+    dica: >-
+      É uma atribuição, como nas variáveis.
+    explicacao: >-
+      Atribuir a uma chave que não existe cria o par; atribuir a uma que existe troca o
+      valor. O dicionário cresce sozinho.
+
+  - tipo: empilhar
+    titulo: Contagem geral
+    contexto: >-
+      Mostre cada metal com sua quantidade, no formato **ouro -> 3**, usando um `for` que
+      percorre chave e valor juntos.
+    codigo: |
+      for metal, qtd in cofre.items():
+          print(metal, "->", qtd)
+    extras:
+      - texto: 'for metal, qtd in cofre:'
+        porque: >-
+          Percorrer o dicionário direto entrega só as chaves, uma por vez. O Python
+          tentaria dividir o texto ouro em duas variáveis e daria ValueError. Para chave e
+          valor juntos, use `.items()`.
+    dica: >-
+      O método que entrega os pares é o `items()`.
+    explicacao: >-
+      `.items()` entrega cada par como (chave, valor), e o `for` desempacota o par nas duas
+      variáveis. Os pares saem na ordem em que entraram.
+
+  - tipo: montar
+    titulo: Tem rubi?
+    contexto: >-
+      Pergunte ao cofre se existe a chave **rubi**. A resposta deve ser `True` ou `False`.
+    linha: 'print(`"rubi"` `in` `cofre`)'
+    extras:
+      - texto: 'cofre["rubi"]'
+        porque: >-
+          Pedir uma chave que não existe dá KeyError. Para só perguntar se ela existe, use
+          `in`.
+      - texto: 'has'
+        porque: >-
+          `has` não é palavra do Python. Para saber se uma chave está no dicionário, use
+          `in`.
+    dica: >-
+      A palavra-chave `in` pergunta se algo está dentro de outra coisa.
+    explicacao: >-
+      `"rubi" in cofre` pergunta se existe a chave rubi e responde `False`. O `in` também
+      funciona com listas e textos.
+
+  - tipo: digitar
+    titulo: Rubis com segurança
+    contexto: >-
+      Mostre quantos rubis há no cofre usando `.get()`, com **0** como valor padrão para
+      quando a chave não existe.
+    codigo: 'print(cofre.get("rubi", 0))'
+    dica: >-
+      `get` recebe a chave e, depois da vírgula, o valor padrão.
+    explicacao: >-
+      `.get("rubi", 0)` procura a chave e, se ela não existir, devolve o padrão em vez de
+      dar erro. Saiu 0.

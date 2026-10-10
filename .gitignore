@@ -1,0 +1,18 @@
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+.env
+.env.*
+!.env.example
+.vite/
+.DS_Store
+# capturas geradas pelo teste de fumaça
+artefatos/
+
+# Material interno do projeto: referências e documentos de trabalho do autor e do agente.
+# Ficam só na máquina local; o repositório público leva apenas README.md e CONTRIBUTING.md.
+refs/
+HARNESS.md
+CLAUDE.md
+contexto/

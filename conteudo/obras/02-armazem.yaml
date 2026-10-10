@@ -1,0 +1,133 @@
+id: armazem
+ordem: 2
+nome: Armazém
+conceito: Variáveis
+nivel: basico
+modelo: armazem
+aula:
+  titulo: Variáveis são caixas com etiqueta
+  texto: |
+    Uma **variável** guarda um valor para usar depois. Pense numa caixa com etiqueta: o nome fica na etiqueta, e o valor fica dentro.
+
+    O sinal `=` não é o "igual" da matemática. Em Python ele quer dizer: **guarde o valor da direita no nome da esquerda**.
+
+    Para usar o que está guardado, escreva o nome da variável sem aspas. Com aspas, vira só um texto.
+  exemplo: |
+    fruta = "banana"
+    print(fruta)
+  saida: |
+    banana
+desafios:
+  - tipo: montar
+    titulo: Etiquete a primeira caixa
+    contexto: >-
+      O Armazém recebeu tijolos. Crie a variável `produto` guardando o texto **tijolo**.
+    linha: '`produto` `=` `"tijolo"`'
+    extras:
+      - texto: '=='
+        porque: >-
+          `==` compara dois valores e responde verdadeiro ou falso. Para guardar um valor,
+          use um `=` só.
+      - texto: 'x'
+        tipo: funciona_mas
+        porque: >-
+          Funciona, mas daqui a trinta linhas ninguém lembra o que é `x`. Nome de variável
+          bom conta o que tem dentro.
+    dica: >-
+      Primeiro o nome da caixa, depois o sinal que guarda, depois o valor.
+    explicacao: >-
+      `produto = "tijolo"` cria a caixa `produto` com o texto tijolo dentro. Nada aparece
+      na tela: guardar não é mostrar.
+
+  - tipo: montar
+    titulo: Quantos chegaram?
+    contexto: >-
+      Chegaram **120** tijolos. Guarde esse número na variável `quantidade`.
+    linha: 'quantidade = `120`'
+    extras:
+      - texto: '"120"'
+        porque: >-
+          Com aspas, 120 vira texto, e texto não entra em conta. Número em Python não leva
+          aspas.
+      - texto: '120 tijolos'
+        porque: >-
+          Sem aspas, o Python lê o número `120` e depois a palavra solta `tijolos`, e acusa
+          erro de sintaxe. A caixa guarda só o número.
+    dica: >-
+      Números são escritos direto, sem aspas.
+    explicacao: >-
+      Uma variável pode guardar texto ou número. `quantidade` guarda o número 120, que
+      depois dá para somar, subtrair e comparar.
+
+  - tipo: montar
+    titulo: Abra a caixa
+    contexto: >-
+      Mostre na tela o que está guardado em `produto`.
+    linha: '`print(``produto``)`'
+    extras:
+      - texto: '"produto"'
+        porque: >-
+          Com aspas, o `print` mostra a palavra produto, e não o que está guardado na
+          caixa. Para usar a variável, escreva o nome sem aspas.
+    dica: >-
+      O nome da variável vai sem aspas.
+    explicacao: >-
+      Sem aspas, `produto` é o nome da caixa, e o `print` mostra o que está dentro dela:
+      tijolo.
+
+  - tipo: montar
+    titulo: Conte o estoque
+    contexto: >-
+      Agora mostre o valor de `quantidade`. Atenção à grafia do nome.
+    linha: 'print(`quantidade`)'
+    extras:
+      - texto: 'Quantidade'
+        porque: >-
+          Para o Python, `Quantidade` e `quantidade` são nomes diferentes: maiúsculas
+          contam. A caixa `Quantidade` não existe, e daria NameError.
+      - texto: 'quantidade()'
+        porque: >-
+          Parênteses servem para chamar funções. `quantidade` é uma variável com um número
+          dentro, não uma função, e o Python reclamaria com TypeError.
+    dica: >-
+      Escreva o nome exatamente como foi criado.
+    explicacao: >-
+      O nome precisa ser idêntico ao da criação, letra por letra. Por isso vale escolher
+      nomes simples, em minúsculas.
+
+  - tipo: montar
+    titulo: Saíram 25 tijolos
+    contexto: >-
+      Um caminhão levou **25** tijolos. Atualize a caixa: o novo valor de `quantidade` é
+      o valor atual menos 25.
+    linha: 'quantidade = `quantidade - 25`'
+    extras:
+      - texto: '95'
+        tipo: funciona_mas
+        porque: >-
+          Funciona, mas você fez a conta de cabeça. Se o estoque mudar, o 95 fica errado.
+          Deixe o Python calcular a partir do valor atual.
+      - texto: 'quantidade - "25"'
+        porque: >-
+          Número menos texto não existe: o Python daria TypeError. O 25 vai sem aspas.
+      - texto: '-25'
+        porque: >-
+          Isso guarda menos vinte e cinco na caixa e joga fora os 120. Para tirar 25 do
+          que já existe, use a própria variável na conta.
+    dica: >-
+      Do lado direito do `=`, use a própria variável: pegue o valor atual e tire 25.
+    explicacao: >-
+      O Python calcula primeiro o lado direito (`120 - 25`, que dá 95) e só depois guarda
+      o resultado na caixa. O valor antigo é substituído.
+
+  - tipo: digitar
+    titulo: Relatório do dia
+    contexto: >-
+      Mostre a mensagem **Sobraram** seguida do valor de `quantidade`, na mesma linha.
+      Lembre: a vírgula separa valores dentro do `print`.
+    codigo: 'print("Sobraram", quantidade)'
+    dica: >-
+      Um texto entre aspas, uma vírgula e o nome da variável, tudo dentro do `print`.
+    explicacao: >-
+      Texto e variável podem andar juntos no `print`, separados por vírgula. A saída
+      mostra o valor atualizado: 95.

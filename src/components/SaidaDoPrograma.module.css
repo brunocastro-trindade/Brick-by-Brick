@@ -1,0 +1,21 @@
+.saida {
+  margin: 0;
+  font-family: var(--fonte-codigo);
+  font-size: var(--tipo-corpo-pequeno-tamanho);
+  line-height: var(--tipo-corpo-pequeno-altura);
+  color: var(--cor-editor-texto);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.vazia {
+  color: var(--cor-editor-texto-suave);
+  font-style: italic;
+}
+
+.entrada {
+  color: var(--cor-codigo-entrada);
+  font-weight: var(--peso-forte);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}

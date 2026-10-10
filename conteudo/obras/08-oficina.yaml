@@ -1,0 +1,148 @@
+id: oficina
+ordem: 8
+nome: Oficina
+conceito: Funções
+nivel: avancado
+modelo: oficina
+aula:
+  titulo: Funções são máquinas
+  texto: |
+    Uma **função** é uma máquina com nome: você monta uma vez com `def` e usa quantas vezes quiser.
+
+    Os **parâmetros** são as entradas da máquina. O `return` é a saída: ele devolve um resultado para quem chamou a função.
+
+    Atenção: definir não executa nada. O bloco da função só roda quando alguém a **chama**, escrevendo o nome com parênteses.
+  exemplo: |
+    def dobro(n):
+        return n * 2
+
+    print(dobro(5))
+  saida: |
+    10
+desafios:
+  - tipo: montar
+    titulo: A máquina de saudar
+    contexto: >-
+      Crie a função `saudacao`, que recebe um parâmetro chamado `nome`.
+    linha: '`def` saudacao(`nome`)`:`'
+    extras:
+      - texto: 'function'
+        porque: >-
+          `function` é de JavaScript. Em Python, função se define com `def`.
+      - texto: '"nome"'
+        porque: >-
+          Parâmetro é um nome de variável, sem aspas. Ele vai receber o valor passado
+          quando a função for chamada.
+    dica: >-
+      Palavra-chave de definição, nome da função, parâmetro entre parênteses e
+      dois-pontos.
+    explicacao: >-
+      `def` avisa que vem uma função. `nome` é o parâmetro: uma variável que só existe
+      dentro da função e recebe o valor de quem chamar.
+
+  - tipo: montar
+    titulo: O que a máquina faz
+    contexto: >-
+      Dentro da função, mostre **Olá,** seguido do nome recebido.
+    recuo: 1
+    linha: 'print("Olá,", `nome`)'
+    extras:
+      - texto: '"nome"'
+        porque: >-
+          Com aspas, a máquina diria sempre Olá, nome. Sem aspas, ela usa o valor que
+          recebeu.
+    verificar: |
+      saudacao("Teste")
+    dica: >-
+      Use o parâmetro, sem aspas.
+    explicacao: >-
+      Repare: nada apareceu no console. Definir a função só monta a máquina; ela ainda não
+      foi ligada.
+
+  - tipo: empilhar
+    titulo: Ligue a máquina
+    contexto: >-
+      Agora chame a função duas vezes: primeiro para **Ana**, depois para **Beto**. As
+      chamadas ficam fora da função, na margem.
+    codigo: |
+      saudacao("Ana")
+      saudacao("Beto")
+    extras:
+      - texto: 'saudacao()'
+        porque: >-
+          A função pede um nome. Chamada sem nada, o Python reclama que faltou um
+          argumento: TypeError.
+    dica: >-
+      Nome da função com o valor entre parênteses, sem recuo.
+    explicacao: >-
+      Cada chamada roda o bloco da função de novo, com um valor diferente em `nome`. Uma
+      máquina, vários usos.
+
+  - tipo: empilhar
+    titulo: A máquina de calcular área
+    contexto: >-
+      Crie a função `area`, que recebe `largura` e `altura` e **devolve** a multiplicação
+      das duas.
+    codigo: |
+      def area(largura, altura):
+          return largura * altura
+    extras:
+      - texto: 'print(largura * altura)'
+        porque: >-
+          `print` só mostra o número na tela; quem chamou a função não recebe nada de volta
+          (recebe `None`). Para entregar o resultado, use `return`.
+    verificar: |
+      print(area(2, 3))
+    dica: >-
+      O `return` fica dentro da função, recuado.
+    explicacao: >-
+      `return` entrega o resultado para quem chamou. É ele que permite guardar a resposta
+      numa variável ou usá-la em outra conta.
+
+  - tipo: montar
+    titulo: Uma parede de 4 por 3
+    contexto: >-
+      Use a função para calcular a área de uma parede de **4** por **3** metros e guarde o
+      resultado em `parede`.
+    linha: 'parede = `area(4, 3)`'
+    extras:
+      - texto: 'area'
+        porque: >-
+          Sem parênteses você não chama a função: só pega a máquina em si. `parede`
+          guardaria a função, e não o número 12.
+      - texto: 'area[4, 3]'
+        porque: >-
+          Colchetes servem para listas e índices. Para chamar uma função, use parênteses.
+    dica: >-
+      Para ligar a máquina, use parênteses com os valores dentro.
+    explicacao: >-
+      A chamada `area(4, 3)` roda a função com `largura = 4` e `altura = 3`, e o `return`
+      entrega 12, que vai para `parede`.
+
+  - tipo: montar
+    titulo: Relatório da obra
+    contexto: >-
+      Mostre **A parede tem**, o valor de `parede` e **m²**.
+    linha: 'print("A parede tem", `parede`, "m²")'
+    extras:
+      - texto: 'area'
+        porque: >-
+          `area` é a máquina, não o resultado: o `print` mostraria algo como
+          `<function area at 0x...>`. O número calculado está em `parede`.
+    dica: >-
+      O resultado da conta foi guardado numa variável no tijolo anterior.
+    explicacao: >-
+      Saiu `A parede tem 12 m²`. Guardar o retorno numa variável permite usar o resultado
+      quantas vezes quiser.
+
+  - tipo: digitar
+    titulo: Outra parede
+    contexto: >-
+      Mostre direto na tela a área de uma parede de **2** por **5**, chamando a função
+      dentro do `print`.
+    codigo: 'print(area(2, 5))'
+    dica: >-
+      Uma chamada de função pode ir direto dentro de outra.
+    explicacao: >-
+      O Python resolve de dentro para fora: primeiro `area(2, 5)` vira 10, depois o
+      `print` mostra o 10.

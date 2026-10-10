@@ -1,0 +1,86 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`obra Armazém > a obra completa mostra a saída esperada 1`] = `
+"tijolo
+120
+Sobraram 95
+"
+`;
+
+exports[`obra Biblioteca > a obra completa mostra a saída esperada 1`] = `
+"Python Básico
+4
+- Python Básico
+- Tijolo a Tijolo
+- O Pinguim
+- Laços Infinitos
+Laços Infinitos
+"
+`;
+
+exports[`obra Cinema > a obra completa mostra a saída esperada 1`] = `
+"Sua idade? 15
+Pode entrar!
+Ingresso inteiro
+False
+"
+`;
+
+exports[`obra Cofre > a obra completa mostra a saída esperada 1`] = `
+"3
+ouro -> 3
+prata -> 10
+bronze -> 25
+False
+0
+"
+`;
+
+exports[`obra Construtora > a obra completa mostra a saída esperada 1`] = `
+"Casa de Ana com 2 andares
+3
+"
+`;
+
+exports[`obra Correio > a obra completa mostra a saída esperada 1`] = `
+"Olá, mundo!
+Cartas e pacotes
+Remetente: Guglo
+Tijolo por tijolo
+"
+`;
+
+exports[`obra Fábrica > a obra completa mostra a saída esperada 1`] = `
+"Tijolo 1 pronto
+Tijolo 2 pronto
+Tijolo 3 pronto
+Total produzido: 50
+Esfriando... 3
+Esfriando... 2
+Esfriando... 1
+Forno frio!
+"
+`;
+
+exports[`obra Mercado > a obra completa mostra a saída esperada 1`] = `
+"Total: 10.0
+4 3
+"
+`;
+
+exports[`obra Oficina > a obra completa mostra a saída esperada 1`] = `
+"Olá, Ana
+Olá, Beto
+A parede tem 12 m²
+10
+"
+`;
+
+exports[`obra Prefeitura > a obra completa mostra a saída esperada 1`] = `
+"Qual é o seu nome? Ana
+Boas-vindas, Ana!
+Quantos anos você tem? 12
+Daqui a 10 anos você terá 22
+Até logo, Ana!
+"
+`;

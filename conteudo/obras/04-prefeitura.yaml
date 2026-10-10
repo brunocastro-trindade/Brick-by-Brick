@@ -1,0 +1,119 @@
+id: prefeitura
+ordem: 4
+nome: Prefeitura
+conceito: input() e conversão
+nivel: basico
+modelo: prefeitura
+entradas:
+  - ["Ana", "12"]
+  - ["Beto", "30"]
+aula:
+  titulo: Perguntando com input()
+  texto: |
+    `input()` mostra uma pergunta e espera a resposta de quem usa o programa. O que a pessoa digitar volta como **texto**, mesmo que seja um número.
+
+    Para fazer conta com a resposta, converta: `int()` transforma texto em número inteiro, e `float()` em número decimal.
+
+    Para misturar texto e variável numa frase, use uma **f-string**: um `f` antes das aspas e o nome da variável entre chaves, como `f"Oi, {nome}"`.
+  exemplo: |
+    cor = input("Cor favorita? ")
+    print(f"Pintando de {cor}!")
+  saida: |
+    Cor favorita? azul
+    Pintando de azul!
+desafios:
+  - tipo: montar
+    titulo: Cadastro de morador
+    contexto: >-
+      A Prefeitura precisa saber o nome de quem chega. Pergunte **Qual é o seu nome?** e
+      guarde a resposta em `nome`.
+    linha: 'nome = `input(``"Qual é o seu nome? "``)`'
+    extras:
+      - texto: 'print('
+        porque: >-
+          `print` só mostra; ele não espera resposta nenhuma. Para perguntar e guardar o
+          que a pessoa digitar, use `input`.
+      - texto: 'Input('
+        porque: >-
+          Com I maiúsculo o nome não existe: o Python diferencia maiúsculas de minúsculas.
+          A função é `input`.
+    dica: >-
+      A função que pergunta e espera a resposta é a mesma que dá nome à aula.
+    explicacao: >-
+      O `input` mostra a pergunta, espera a pessoa digitar e devolve o que ela digitou. O
+      `=` guarda essa resposta em `nome`. O espaço no fim da pergunta separa a resposta
+      do ponto de interrogação.
+
+  - tipo: montar
+    titulo: Boas-vindas personalizadas
+    contexto: >-
+      Dê boas-vindas usando o nome digitado. Escolha o tijolo que mostra
+      **Boas-vindas, Ana!** quando o nome for Ana.
+    linha: 'print(`f"Boas-vindas, {nome}!"`)'
+    extras:
+      - texto: '"Boas-vindas, {nome}!"'
+        porque: >-
+          Sem o `f` antes das aspas, as chaves são texto comum: sairia
+          `Boas-vindas, {nome}!`, com chaves e tudo.
+      - texto: 'f"Boas-vindas, nome!"'
+        porque: >-
+          Sem as chaves, `nome` é só uma palavra dentro do texto. As chaves avisam: aqui
+          entra o valor da variável.
+    dica: >-
+      Você precisa do f antes das aspas e da variável entre chaves.
+    explicacao: >-
+      Numa f-string, o que está entre chaves é trocado pelo valor: `{nome}` vira Ana. É o
+      jeito mais claro de montar frases com variáveis.
+
+  - tipo: montar
+    titulo: Idade em número
+    contexto: >-
+      Agora pergunte a idade. Como vamos fazer conta com ela, a resposta precisa virar
+      número inteiro antes de ser guardada.
+    linha: 'idade = `int(``input(`"Quantos anos você tem? "))'
+    extras:
+      - texto: 'str('
+        porque: >-
+          `str()` transforma em texto, e o `input` já devolve texto. Para fazer conta, a
+          resposta precisa virar número com `int()`.
+      - texto: 'float('
+        tipo: funciona_mas
+        porque: >-
+          Funciona, mas `float` cria um número decimal: a idade 12 viraria 12.0, e a conta
+          daqui a pouco mostraria 22.0 anos. Para idade, `int` é a escolha natural.
+    dica: >-
+      Primeiro o `input` pergunta; depois uma conversão transforma a resposta em número
+      inteiro. A conversão abraça o `input`.
+    explicacao: >-
+      O Python resolve de dentro para fora: o `input` devolve o texto "12", e o `int`
+      transforma esse texto no número 12.
+
+  - tipo: montar
+    titulo: Daqui a dez anos
+    contexto: >-
+      Mostre quantos anos a pessoa terá daqui a **10** anos.
+    linha: 'print("Daqui a 10 anos você terá", `idade` `+` `10`)'
+    extras:
+      - texto: '"10"'
+        porque: >-
+          Número mais texto não existe: o Python daria TypeError. O 10 vai sem aspas.
+      - texto: '"idade"'
+        porque: >-
+          Com aspas, `"idade"` é a palavra idade, e não o número guardado. Somar texto com
+          número dá TypeError.
+    dica: >-
+      A variável sem aspas, o sinal de mais e o número.
+    explicacao: >-
+      Como `idade` virou número no tijolo anterior, a soma funciona: 12 + 10 dá 22. Se ela
+      tivesse ficado como texto, o Python daria erro aqui.
+
+  - tipo: digitar
+    titulo: Até logo
+    contexto: >-
+      Despeça-se com uma f-string que mostre **Até logo, Ana!** quando o nome for Ana.
+    codigo: 'print(f"Até logo, {nome}!")'
+    dica: >-
+      `f` antes das aspas, e a variável entre chaves dentro do texto.
+    explicacao: >-
+      Mais uma f-string, escrita por você. Com o Beto, a mesma linha mostraria
+      `Até logo, Beto!`: o programa se adapta a quem usa.

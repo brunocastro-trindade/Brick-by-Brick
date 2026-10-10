@@ -1,0 +1,36 @@
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espaco-2);
+  min-height: var(--espaco-7);
+  padding: var(--espaco-1) var(--espaco-4);
+  border: var(--borda-fina) solid var(--cor-contorno);
+  border-radius: var(--raio-grande);
+  background: var(--cor-superficie);
+  font-size: var(--tipo-legenda-tamanho);
+  font-weight: var(--peso-forte);
+  white-space: nowrap;
+}
+
+.pronto {
+  background: var(--cor-sucesso-fundo);
+}
+
+.falhou {
+  background: var(--cor-aviso-fundo);
+}
+
+.giro {
+  width: 0.9em;
+  height: 0.9em;
+  border: var(--borda-fina) solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: girar 800ms linear infinite;
+}
+
+@keyframes girar {
+  to {
+    transform: rotate(1turn);
+  }
+}

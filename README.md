@@ -44,8 +44,8 @@ Este projeto quer devolver um pouco disso.
 
 ## Livre para construir junto
 
-O Brick by Brick é de código aberto e pode ser modificado por quem quiser: criar aulas novas, desenhar outros prédios, melhorar uma explicação ou levar o jogo para outro caminho. Se você também aprendeu com o que outras pessoas compartilharam, venha assentar alguns tijolos com a gente.
+O Brick by Brick é de código aberto e pode ser modificado por quem quiser: criar aulas novas, desenhar outros prédios, melhorar uma explicação ou levar o jogo para outro caminho. Se você também aprendeu com o que outras pessoas compartilharam, venha assentar alguns tijolos com a gente. O caminho para quem quer mexer está no [guia de contribuição](CONTRIBUTING.md).
 
 ## Licença
 
-O código é livre sob a [AGPL-3.0](LICENSE), e as aulas, sob a [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/deed.pt-br). Você pode usar, estudar, modificar e compartilhar, desde que o que nascer daqui continue aberto para todo mundo.
+O código é livre sob a [AGPL-3.0](LICENSE), e as aulas, sob a [CC BY-SA 4.0](conteudo/LICENSE). Você pode usar, estudar, modificar e compartilhar, desde que o que nascer daqui continue aberto para todo mundo.

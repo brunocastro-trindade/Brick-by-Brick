@@ -1,0 +1,172 @@
+id: construtora
+ordem: 10
+nome: Construtora
+conceito: Classes e objetos
+nivel: avancado
+modelo: torre
+aula:
+  titulo: A planta e as casas
+  texto: |
+    Uma **classe** é a planta de uma construção: descreve o que toda casa daquele tipo tem e sabe fazer. Com uma planta, você constrói quantas casas quiser, e cada casa é um **objeto**.
+
+    O método `__init__` roda na hora de construir: ele recebe os dados e guarda no próprio objeto, usando `self`.
+
+    `self` quer dizer "esta casa aqui". É por ele que cada objeto guarda os próprios valores e que os métodos enxergam esses valores.
+  exemplo: |
+    class Cachorro:
+        def __init__(self, nome):
+            self.nome = nome
+
+    rex = Cachorro("Rex")
+    print(rex.nome)
+  saida: |
+    Rex
+desafios:
+  - tipo: montar
+    titulo: A planta
+    contexto: >-
+      A Construtora vai desenhar uma planta de casa. Comece a classe `Casa`.
+    linha: '`class` `Casa``:`'
+    extras:
+      - texto: 'def'
+        porque: >-
+          `def` cria uma função. Para criar uma planta de objetos, a palavra é `class`.
+      - texto: 'casa'
+        tipo: funciona_mas
+        porque: >-
+          Funciona, mas a convenção do Python é nome de classe com inicial maiúscula:
+          `Casa`. Assim dá para diferenciar a planta das casas construídas com ela.
+    dica: >-
+      Palavra-chave, nome com inicial maiúscula e dois-pontos.
+    explicacao: >-
+      `class Casa:` abre a planta. Tudo o que vier recuado embaixo faz parte dela.
+
+  - tipo: montar
+    titulo: O momento da construção
+    contexto: >-
+      Dentro da planta, crie o método que roda quando uma casa é construída. Ele recebe a
+      própria casa (`self`), o dono e o número de andares.
+    recuo: 1
+    linha: 'def `__init__`(`self`, dono, andares):'
+    extras:
+      - texto: '_init_'
+        porque: >-
+          São dois sublinhados de cada lado: `__init__`. Com um só, o Python não reconhece o
+          método de construção, e ele nunca roda sozinho.
+      - texto: 'casa'
+        tipo: funciona_mas
+        porque: >-
+          Funcionaria, mas por convenção o primeiro parâmetro de todo método se chama
+          `self`. Qualquer pessoa que ler o código espera esse nome.
+    dica: >-
+      O nome do método especial tem dois sublinhados antes e dois depois.
+    explicacao: >-
+      `__init__` é chamado automaticamente quando você constrói um objeto com `Casa(...)`.
+      O `self` é a casa que está sendo construída.
+
+  - tipo: empilhar
+    titulo: Guardando os dados na casa
+    contexto: >-
+      Dentro do `__init__`, guarde o dono e os andares **no objeto**, para que cada casa
+      lembre os seus.
+    recuo: 2
+    codigo: |
+      self.dono = dono
+      self.andares = andares
+    extras:
+      - texto: 'dono = dono'
+        porque: >-
+          Sem `self.`, o valor fica numa variável temporária que some quando o `__init__`
+          termina. `self.dono` guarda o dono dentro da casa.
+    verificar: |
+      teste = Casa("Teste", 1)
+      print(teste.dono, teste.andares)
+    dica: >-
+      As duas linhas ficam dentro do `__init__`: dois níveis de recuo.
+    explicacao: >-
+      `self.dono` é um **atributo**: um valor que pertence ao objeto. Cada casa construída
+      terá o próprio dono e os próprios andares.
+
+  - tipo: empilhar
+    titulo: A casa se apresenta
+    contexto: >-
+      Crie o método `descrever`, que devolve um texto como **Casa de Ana com 2 andares**.
+    recuo: 1
+    codigo:
+      - 'def descrever(self):'
+      - '    return f"Casa de {self.dono} com {self.andares} andares"'
+    extras:
+      - texto: 'def descrever():'
+        porque: >-
+          Todo método recebe `self` como primeiro parâmetro: é por ele que o método enxerga
+          os dados do objeto. Sem `self`, a chamada dá TypeError.
+    verificar: |
+      print(Casa("Teste", 1).descrever())
+    dica: >-
+      O método fica no mesmo nível do `__init__`; o `return` fica dentro dele.
+    explicacao: >-
+      Métodos são funções que moram dentro da classe. Com `self.dono` e `self.andares`, o
+      método usa os dados da própria casa.
+
+  - tipo: montar
+    titulo: Primeira casa
+    contexto: >-
+      Construa a casa da **Ana**, com **2** andares, e guarde em `casa1`.
+    linha: 'casa1 = `Casa("Ana", 2)`'
+    extras:
+      - texto: 'new Casa("Ana", 2)'
+        porque: >-
+          `new` é de Java e JavaScript. Em Python, para construir um objeto basta chamar a
+          classe como se fosse uma função.
+      - texto: 'Casa.__init__("Ana", 2)'
+        porque: >-
+          O `__init__` é chamado sozinho quando você usa `Casa(...)`. Chamado direto, ele
+          fica sem a casa para preencher, e o Python reclama de argumento faltando.
+    dica: >-
+      Chame a planta com os dados entre parênteses.
+    explicacao: >-
+      `Casa("Ana", 2)` constrói um objeto novo, roda o `__init__` com `dono = "Ana"` e
+      `andares = 2` e entrega a casa pronta.
+
+  - tipo: digitar
+    titulo: Segunda casa
+    contexto: >-
+      Com a mesma planta, construa a casa do **Beto**, com **3** andares, em `casa2`.
+    codigo: 'casa2 = Casa("Beto", 3)'
+    dica: >-
+      Igual à casa da Ana; só mudam os dados.
+    explicacao: >-
+      Uma planta, duas casas, cada uma com os próprios dados. Isso é programação orientada
+      a objetos.
+
+  - tipo: montar
+    titulo: Apresente a casa da Ana
+    contexto: >-
+      Mostre a descrição da casa da Ana chamando o método `descrever`.
+    linha: 'print(`casa1``.descrever()`)'
+    extras:
+      - texto: 'Casa'
+        porque: >-
+          `Casa` é a planta, não uma casa de verdade. Quem tem dono e andares é o objeto
+          `casa1`.
+      - texto: '.descrever'
+        porque: >-
+          Sem parênteses o método não é chamado: o `print` mostraria algo como
+          `<bound method ...>`, e não a descrição.
+    dica: >-
+      O objeto, um ponto e o método com parênteses.
+    explicacao: >-
+      `casa1.descrever()` chama o método com `self` sendo a `casa1`. Saiu: Casa de Ana com
+      2 andares.
+
+  - tipo: digitar
+    titulo: Quantos andares tem a do Beto?
+    contexto: >-
+      Para fechar a obra, mostre só o número de andares da casa do Beto, lendo o atributo
+      direto.
+    codigo: 'print(casa2.andares)'
+    dica: >-
+      Objeto, ponto e o nome do atributo, sem parênteses.
+    explicacao: >-
+      Atributo se lê com ponto e sem parênteses, porque não é uma ação: é um dado guardado
+      no objeto. Obra concluída: você desenhou uma planta e construiu duas casas!

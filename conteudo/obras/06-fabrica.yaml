@@ -1,0 +1,109 @@
+id: fabrica
+ordem: 6
+nome: Fábrica
+conceito: for e while
+nivel: intermediario
+modelo: fabrica
+aula:
+  titulo: Repetir sem copiar e colar
+  texto: |
+    Um **laço** repete um bloco de código. O `for` repete uma vez para cada item de uma sequência, e o `range` fabrica sequências de números.
+
+    `range(5)` gera 0, 1, 2, 3 e 4: cinco números, começando do zero. `range(1, 4)` gera 1, 2 e 3: o número final **fica de fora**.
+
+    O `while` repete **enquanto** uma condição for verdadeira. Cuidado: se a condição nunca ficar falsa, o laço não termina.
+  exemplo: |
+    for vez in range(3):
+        print("Bate o martelo!")
+  saida: |
+    Bate o martelo!
+    Bate o martelo!
+    Bate o martelo!
+desafios:
+  - tipo: montar
+    titulo: Linha de produção
+    contexto: >-
+      A Fábrica produz tijolos numerados de **1 a 3**. Monte o laço que passa pelos
+      números 1, 2 e 3.
+    linha: '`for` numero `in` range(1, `4`):'
+    extras:
+      - texto: '3'
+        porque: >-
+          O fim do `range` fica de fora: `range(1, 3)` gera só 1 e 2. Para chegar no 3, o
+          limite é 4.
+      - texto: 'of'
+        porque: >-
+          `for ... of` é de JavaScript. Em Python, o laço é `for ... in`.
+    dica: >-
+      O segundo número do `range` é o primeiro que NÃO entra.
+    explicacao: >-
+      A cada volta, `numero` recebe o próximo valor do `range`: 1, depois 2, depois 3. O
+      bloco recuado logo abaixo roda uma vez por volta.
+
+  - tipo: montar
+    titulo: Carimbo em cada tijolo
+    contexto: >-
+      Dentro do laço, mostre **Tijolo**, o número da volta e **pronto**. É uma linha só,
+      e ela vai rodar três vezes.
+    recuo: 1
+    linha: 'print("Tijolo", `numero`, "pronto")'
+    extras:
+      - texto: '"numero"'
+        porque: >-
+          Com aspas, sairia a palavra numero nas três voltas. Sem aspas, aparece o valor da
+          volta: 1, 2 e 3.
+      - texto: 'range'
+        porque: >-
+          `range` é a fábrica de números, não o número da volta. Quem guarda o valor atual
+          é a variável do `for`: `numero`.
+    dica: >-
+      Use a variável que o `for` atualiza a cada volta.
+    explicacao: >-
+      Uma linha, três tijolos na tela: o laço repete o bloco, e `numero` muda a cada
+      volta. Isso é programar sem copiar e colar.
+
+  - tipo: empilhar
+    titulo: Total do dia
+    contexto: >-
+      Cada lote rende **10** tijolos, e hoje saíram **5** lotes. Some tudo com um
+      acumulador: comece em zero e some 10 a cada volta. No fim, mostre o total.
+    codigo: |
+      total = 0
+      for lote in range(5):
+          total = total + 10
+      print("Total produzido:", total)
+    extras:
+      - texto: 'total = 10'
+        porque: >-
+          `total = 10` joga fora o que já tinha e guarda 10 de novo, em todas as voltas.
+          Para acumular, some ao valor atual: `total = total + 10`.
+    dica: >-
+      Só a soma fica dentro do laço. O total começa antes do `for` e é mostrado depois que
+      o laço termina.
+    explicacao: >-
+      Esse é o padrão acumulador: uma variável começa vazia antes do laço e cresce a cada
+      volta. O `print` fora do laço roda uma vez só, no fim: 50.
+
+  - tipo: empilhar
+    titulo: Esfriando o forno
+    contexto: >-
+      O forno está no nível **3** e precisa esfriar até zero. Enquanto o nível for maior
+      que zero, mostre **Esfriando...** com o nível e baixe um. No fim, avise
+      **Forno frio!**
+    codigo: |
+      forno = 3
+      while forno > 0:
+          print("Esfriando...", forno)
+          forno = forno - 1
+      print("Forno frio!")
+    extras:
+      - texto: 'forno = forno + 1'
+        porque: >-
+          Subindo o nível, o forno nunca chega a zero e o laço não para nunca: um laço
+          infinito. Para a condição ficar falsa um dia, o nível precisa baixar.
+    dica: >-
+      As duas linhas que se repetem ficam recuadas dentro do `while`. O aviso final só
+      aparece quando o laço acaba.
+    explicacao: >-
+      O `while` testa a condição antes de cada volta: 3, 2, 1... e com 0 ela fica falsa,
+      então o laço termina. Sem o `forno = forno - 1`, ele rodaria para sempre.

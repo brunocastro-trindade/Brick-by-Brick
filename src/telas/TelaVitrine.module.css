@@ -1,0 +1,67 @@
+.vitrine {
+  display: grid;
+  gap: var(--espaco-7);
+  max-width: 90rem;
+  margin: 0 auto;
+  padding: var(--espaco-7) var(--espaco-6) var(--espaco-9);
+}
+
+.secao {
+  display: grid;
+  gap: var(--espaco-4);
+}
+
+.titulo {
+  font-size: var(--tipo-titulo-pequeno-tamanho);
+}
+
+.grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+  gap: var(--espaco-4);
+}
+
+.coluna {
+  display: grid;
+  gap: var(--espaco-5);
+  max-width: 48rem;
+}
+
+.amostra {
+  display: grid;
+  gap: var(--espaco-3);
+  margin: 0;
+  padding: var(--espaco-4);
+  border: var(--borda-fina) solid var(--cor-contorno-suave);
+  border-radius: var(--raio-medio);
+  background: var(--cor-superficie);
+}
+
+.amostra figcaption {
+  color: var(--cor-texto-suave);
+  font-family: var(--fonte-codigo);
+  font-size: var(--tipo-legenda-tamanho);
+}
+
+.palco {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: var(--espaco-9);
+  padding: var(--espaco-3);
+}
+
+.escura .palco {
+  border-radius: var(--raio-pequeno);
+  background: var(--cor-editor-fundo);
+}
+
+.pinguim {
+  width: 6rem;
+  height: 7.5rem;
+}
+
+.predio {
+  width: 100%;
+  height: 10rem;
+}

@@ -1,0 +1,153 @@
+{
+  "$comentario": "Papéis. Nomeie pelo papel, nunca pela aparência (HARNESS §2.1). Referências {grupo.nome} apontam para tokens/base.json.",
+  "cor": {
+    "fundo": "{cor.creme}",
+    "fundo-alternativo": "{cor.creme-escuro}",
+    "superficie": "{cor.creme-claro}",
+    "superficie-destaque": "{cor.branco}",
+    "texto": "{cor.marrom-escuro}",
+    "texto-suave": "{cor.marrom-suave}",
+    "texto-sobre-acento": "{cor.marrom-escuro}",
+    "texto-sobre-escuro": "{cor.creme}",
+    "texto-sobre-escuro-suave": "{cor.marrom-claro}",
+    "contorno": "{cor.marrom-escuro}",
+    "contorno-suave": "{cor.areia-escura}",
+    "acento": "{cor.laranja-tijolo}",
+    "acento-hover": "{cor.laranja-tijolo-claro}",
+    "acento-forte": "{cor.laranja-tijolo-escuro}",
+    "sucesso": "{cor.verde-petroleo}",
+    "sucesso-fundo": "{cor.verde-petroleo-claro}",
+    "aviso": "{cor.amarelo}",
+    "aviso-fundo": "{cor.amarelo-claro}",
+    "problema": "{cor.laranja-tijolo}",
+    "problema-fundo": "{cor.laranja-tijolo-palido}",
+    "foco": "{cor.verde-petroleo-escuro}",
+    "foco-sobre-escuro": "{cor.amarelo}",
+    "veu": "{cor.marrom-escuro-veu}",
+    "brilho": "{cor.branco-translucido}",
+    "sombra-difusa": "{cor.marrom-escuro-sombra}",
+
+    "editor-fundo": "{cor.marrom-escuro}",
+    "editor-faixa": "{cor.marrom-medio}",
+    "editor-texto": "{cor.creme}",
+    "editor-texto-suave": "{cor.marrom-claro}",
+    "codigo-padrao": "{cor.creme}",
+    "codigo-palavra-chave": "{cor.laranja-tijolo-claro}",
+    "codigo-funcao": "{cor.laranja-tijolo-palido}",
+    "codigo-texto": "{cor.amarelo}",
+    "codigo-numero": "{cor.verde-petroleo-claro}",
+    "codigo-comentario": "{cor.marrom-claro}",
+    "codigo-simbolo": "{cor.creme-escuro}",
+    "codigo-entrada": "{cor.verde-petroleo-claro}",
+
+    "tijolo-nome": "{cor.laranja-tijolo}",
+    "tijolo-funcao": "{cor.laranja-tijolo-claro}",
+    "tijolo-palavra-chave": "{cor.laranja-tijolo-escuro}",
+    "tijolo-texto": "{cor.areia}",
+    "tijolo-numero": "{cor.laranja-tijolo-palido}",
+    "tijolo-simbolo": "{cor.marrom-suave}",
+    "tijolo-simbolo-borda": "{cor.marrom-claro}",
+    "tijolo-recuo": "{cor.areia-escura}",
+    "tijolo-rotulo-escuro": "{cor.marrom-escuro}",
+    "tijolo-rotulo-claro": "{cor.creme-claro}",
+    "argamassa": "{cor.creme-escuro}",
+
+    "ilustra-contorno": "{cor.marrom-escuro}",
+    "ilustra-ceu-topo": "{cor.creme-claro}",
+    "ilustra-ceu-horizonte": "{cor.creme}",
+    "ilustra-sol": "{cor.amarelo}",
+    "ilustra-nuvem": "{cor.branco}",
+    "ilustra-colina-longe": "{cor.verde-petroleo-claro}",
+    "ilustra-colina-perto": "{cor.verde-petroleo}",
+    "ilustra-chao": "{cor.creme-escuro}",
+    "ilustra-chao-sombra": "{cor.areia}",
+    "ilustra-estrada": "{cor.areia}",
+    "ilustra-estrada-borda": "{cor.areia-escura}",
+    "ilustra-faixa": "{cor.creme-claro}",
+    "ilustra-agua": "{cor.verde-petroleo}",
+    "ilustra-agua-brilho": "{cor.verde-petroleo-claro}",
+    "ilustra-arvore": "{cor.verde-petroleo}",
+    "ilustra-arvore-sombra": "{cor.verde-petroleo-escuro}",
+    "ilustra-tronco": "{cor.marrom-suave}",
+    "ilustra-telhado": "{cor.marrom-medio}",
+    "ilustra-telhado-alternativo": "{cor.verde-petroleo-escuro}",
+    "ilustra-janela": "{cor.amarelo-claro}",
+    "ilustra-vidro": "{cor.verde-petroleo-claro}",
+    "ilustra-porta": "{cor.marrom-medio}",
+    "ilustra-placa": "{cor.creme-claro}",
+    "ilustra-andaime": "{cor.amarelo-escuro}",
+    "ilustra-tapume": "{cor.areia}",
+    "ilustra-fantasma": "{cor.marrom-claro}",
+    "ilustra-destaque": "{cor.amarelo}",
+
+    "pinguim-corpo": "{cor.laranja-tijolo}",
+    "pinguim-corpo-sombra": "{cor.laranja-tijolo-escuro}",
+    "pinguim-barriga": "{cor.creme-claro}",
+    "pinguim-bico": "{cor.amarelo}",
+    "pinguim-bico-sombra": "{cor.amarelo-escuro}",
+    "pinguim-olho": "{cor.marrom-escuro}",
+    "pinguim-brilho": "{cor.branco}",
+    "pinguim-boca": "{cor.laranja-tijolo-profundo}",
+    "pinguim-capacete": "{cor.amarelo}"
+  },
+  "espaco": {
+    "1": "{espaco.1}",
+    "2": "{espaco.2}",
+    "3": "{espaco.3}",
+    "4": "{espaco.4}",
+    "5": "{espaco.5}",
+    "6": "{espaco.6}",
+    "7": "{espaco.7}",
+    "8": "{espaco.8}",
+    "9": "{espaco.9}"
+  },
+  "fonte": {
+    "titulo": "{fonte.titulo}",
+    "texto": "{fonte.texto}",
+    "codigo": "{fonte.codigo}"
+  },
+  "tipo": {
+    "legenda": "{tipo.legenda}",
+    "corpo-pequeno": "{tipo.corpo-pequeno}",
+    "corpo": "{tipo.corpo}",
+    "destaque": "{tipo.destaque}",
+    "titulo-pequeno": "{tipo.titulo-pequeno}",
+    "titulo": "{tipo.titulo}",
+    "titulo-grande": "{tipo.titulo-grande}"
+  },
+  "peso": {
+    "normal": "{peso.normal}",
+    "medio": "{peso.medio}",
+    "forte": "{peso.forte}",
+    "titulo": "{peso.titulo}"
+  },
+  "raio": {
+    "pequeno": "{raio.pequeno}",
+    "medio": "{raio.medio}",
+    "grande": "{raio.grande}"
+  },
+  "borda": {
+    "fina": "{borda.fina}",
+    "grossa": "{borda.grossa}"
+  },
+  "sombra": {
+    "baixa": "{sombra.baixa}",
+    "media": "{sombra.media}",
+    "alta": "{sombra.alta}"
+  },
+  "duracao": {
+    "rapida": "{duracao.rapida}",
+    "media": "{duracao.media}",
+    "lenta": "{duracao.lenta}"
+  },
+  "curva": {
+    "saida": "{curva.saida}",
+    "mola": "{curva.mola}"
+  },
+  "camada": {
+    "hud": "{camada.hud}",
+    "flutuante": "{camada.flutuante}",
+    "modal": "{camada.modal}",
+    "transicao": "{camada.transicao}"
+  }
+}

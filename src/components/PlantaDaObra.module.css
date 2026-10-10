@@ -1,0 +1,282 @@
+.planta {
+  overflow: hidden;
+  border: var(--borda-grossa) solid var(--cor-contorno);
+  border-radius: var(--raio-grande);
+  background: var(--cor-editor-fundo);
+  color: var(--cor-editor-texto);
+  box-shadow: var(--sombra-media);
+}
+
+.aba {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--espaco-4);
+  padding: var(--espaco-3) var(--espaco-5);
+  background: var(--cor-editor-faixa);
+  font-size: var(--tipo-legenda-tamanho);
+}
+
+.arquivo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espaco-2);
+  font-family: var(--fonte-codigo);
+  font-weight: var(--peso-forte);
+}
+
+.progresso {
+  color: var(--cor-editor-texto);
+  font-weight: var(--peso-medio);
+}
+
+.codigo {
+  padding: var(--espaco-4) 0;
+  font-family: var(--fonte-codigo);
+  font-size: var(--tipo-corpo-pequeno-tamanho);
+  line-height: var(--tipo-corpo-altura);
+  overflow-x: auto;
+}
+
+.linha {
+  display: grid;
+  grid-template-columns: 3.5ch 1fr;
+  gap: var(--espaco-4);
+  align-items: center;
+  min-height: 1.9em;
+  padding: 0 var(--espaco-5) 0 var(--espaco-3);
+}
+
+.numero {
+  text-align: right;
+  color: var(--cor-editor-texto-suave);
+  font-size: var(--tipo-legenda-tamanho);
+  user-select: none;
+}
+
+.conteudo {
+  position: relative;
+  min-width: 0;
+  padding-left: calc(var(--recuo, 0) * 4ch);
+  background-image: repeating-linear-gradient(
+    to right,
+    var(--cor-editor-faixa) 0 1px, /* fora-da-escala: guia de recuo fina */
+    transparent 1px 4ch /* fora-da-escala: guia de recuo fina */
+  );
+  background-size: calc(var(--recuo, 0) * 4ch) 100%;
+  background-repeat: no-repeat;
+}
+
+.pronta .conteudo {
+  white-space: pre;
+}
+
+.nova {
+  animation: cimentar var(--duracao-lenta) var(--curva-saida);
+}
+
+.atual {
+  padding-top: var(--espaco-3);
+  padding-bottom: var(--espaco-3);
+  background: var(--cor-editor-faixa);
+}
+
+.atual .numero {
+  color: var(--cor-codigo-palavra-chave);
+  font-weight: var(--peso-forte);
+}
+
+.realce {
+  box-shadow: inset var(--espaco-2) 0 0 var(--cor-aviso);
+}
+
+.futura {
+  opacity: 0.45;
+}
+
+.resumoFuturas {
+  padding: var(--espaco-2) var(--espaco-5) 0 calc(3.5ch + var(--espaco-4) + var(--espaco-3));
+  color: var(--cor-editor-texto-suave);
+  font-family: var(--fonte-texto);
+  font-size: var(--tipo-legenda-tamanho);
+  font-style: italic;
+}
+
+.reticencias {
+  display: block;
+  width: 60%;
+  height: var(--espaco-2);
+  border-radius: var(--raio-pequeno);
+  background: repeating-linear-gradient(to right, var(--cor-editor-texto-suave) 0 0.6ch, transparent 0.6ch 1.6ch);
+  opacity: 0.6;
+}
+
+/* montar */
+.montagem {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espaco-2);
+}
+
+.fixo {
+  white-space: pre;
+}
+
+.vaga {
+  display: inline-flex;
+  border-radius: var(--raio-pequeno);
+}
+
+.vagaVazia {
+  min-width: 5ch;
+  min-height: var(--espaco-8);
+  border: var(--borda-fina) dashed var(--cor-editor-texto-suave);
+  border-radius: var(--raio-pequeno);
+  background: transparent;
+}
+
+.vagaVazia:hover:not(:disabled) {
+  border-color: var(--cor-editor-texto);
+}
+
+.vagaAtiva .vagaVazia {
+  border: var(--borda-grossa) dashed var(--cor-codigo-palavra-chave);
+  animation: pulsar 1.2s ease-in-out infinite;
+}
+
+.vagaRealce {
+  outline: var(--borda-grossa) solid var(--cor-aviso);
+  outline-offset: var(--espaco-1);
+}
+
+.vagaSobre .vagaVazia,
+.vagaSobre {
+  outline: var(--borda-grossa) solid var(--cor-foco-sobre-escuro);
+  outline-offset: var(--espaco-1);
+}
+
+/* empilhar: cada fileira é um poço de Tetris com colunas de recuo */
+.fileira {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-3);
+  min-height: var(--espaco-8);
+  border-radius: var(--raio-pequeno);
+}
+
+.regua {
+  position: absolute;
+  width: 4ch;
+  visibility: hidden;
+}
+
+.guias {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: calc(var(--niveis) * 4ch);
+  background-image: repeating-linear-gradient(
+    to right,
+    var(--cor-editor-texto-suave) 0 1px, /* fora-da-escala: coluna de recuo fina */
+    transparent 1px 4ch /* fora-da-escala: coluna de recuo fina */
+  );
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.peca {
+  position: relative;
+  max-width: 100%;
+  margin-left: calc(var(--recuo-da-peca) * 4ch);
+  transition: margin-left var(--duracao-media) var(--curva-mola);
+}
+
+.fileiraVazia {
+  flex: 1;
+  min-height: var(--espaco-8);
+  border: var(--borda-fina) dashed var(--cor-editor-texto-suave);
+  border-radius: var(--raio-pequeno);
+  background: transparent;
+}
+
+.fileiraVaziaAtiva {
+  border: var(--borda-grossa) dashed var(--cor-codigo-palavra-chave);
+  animation: pulsar 1.2s ease-in-out infinite;
+}
+
+.fileiraAtiva .peca :global(button) {
+  outline: var(--borda-grossa) solid var(--cor-foco-sobre-escuro);
+  outline-offset: var(--espaco-1);
+}
+
+.fileiraSobre {
+  outline: var(--borda-grossa) solid var(--cor-foco-sobre-escuro);
+  outline-offset: var(--espaco-1);
+}
+
+.controles {
+  display: inline-flex;
+  gap: var(--espaco-2);
+  margin-left: auto;
+}
+
+.controle {
+  display: grid;
+  place-items: center;
+  width: var(--espaco-8);
+  height: var(--espaco-8);
+  border: var(--borda-fina) solid var(--cor-editor-texto-suave);
+  border-radius: var(--raio-pequeno);
+  background: var(--cor-editor-fundo);
+  color: var(--cor-editor-texto);
+}
+
+.controle:hover:not(:disabled) {
+  border-color: var(--cor-editor-texto);
+}
+
+.controle:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* digitar */
+.molde {
+  width: 100%;
+  min-height: var(--espaco-8);
+  padding: 0 var(--espaco-4);
+  border: var(--borda-grossa) dashed var(--cor-codigo-palavra-chave);
+  border-radius: var(--raio-pequeno);
+  background: var(--cor-editor-fundo);
+  color: var(--cor-editor-texto);
+  font-family: var(--fonte-codigo);
+  font-size: var(--tipo-corpo-tamanho);
+  caret-color: var(--cor-codigo-palavra-chave);
+}
+
+.molde::placeholder {
+  color: var(--cor-editor-texto-suave);
+  font-style: italic;
+}
+
+.molde:focus-visible {
+  outline: var(--borda-grossa) solid var(--cor-foco-sobre-escuro);
+  border-style: solid;
+}
+
+@keyframes pulsar {
+  50% {
+    border-color: var(--cor-editor-texto-suave);
+  }
+}
+
+@keyframes cimentar {
+  0% {
+    background: var(--cor-acento);
+    color: var(--cor-texto);
+  }
+  100% {
+    background: transparent;
+  }
+}
