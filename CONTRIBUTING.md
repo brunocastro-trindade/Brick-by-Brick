@@ -25,7 +25,7 @@ ordem: 1
 nome: Correio
 conceito: print() e textos
 nivel: basico          # basico | intermediario | avancado
-modelo: casa           # desenho do prédio no mapa
+modelo: casa           # tipo de prédio da obra
 aula:
   titulo: O Python fala com print()
   texto: |
