@@ -7,8 +7,8 @@ import type { Obra } from '../jogo/tipos';
 import { Botao } from './Botao';
 import { BlocoDeCodigo } from './CodigoColorido';
 import { Estrelas } from './Estrelas';
+import { GugloPixelado } from './GugloPixelado';
 import { Modal } from './Modal';
-import { Pinguim } from './Pinguim';
 import styles from './PainelDeConclusao.module.css';
 
 export interface PainelDeConclusaoProps {
@@ -68,7 +68,7 @@ export function PainelDeConclusao({ obra, codigo, resultados, estrelas, novoReco
       <div className={styles.painel}>
         <div className={styles.comemoracao}>
           <div className={styles.pinguim}>
-            <Pinguim pose="comemorando" capacete rotulo="Guglo comemora a obra pronta" />
+            <GugloPixelado acao="comemorando" rotulo="Guglo comemora a obra pronta" />
           </div>
           <div className={styles.placar}>
             <Estrelas quantidade={estrelas} tamanho="grande" animar />

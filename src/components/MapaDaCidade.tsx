@@ -4,7 +4,7 @@ import { useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent } from
 import { prefereMenosMovimento } from '../estado/usePython';
 import type { Obra } from '../jogo/tipos';
 import arteDoMapa from '../assets/mapa-da-cidade.webp';
-import folhaDoGuglo from '../assets/guglo-pixelado.webp';
+import { CADENCIA_DO_GUGLO_MS, COMEMORACAO_COMPLETA, GugloPixeladoNoMapa, QUADROS_DO_GUGLO } from './GugloPixelado';
 import type { SituacaoDoPredio } from './PredioDaCidade';
 import styles from './MapaDaCidade.module.css';
 
@@ -24,15 +24,17 @@ const ESTRADA =
 const VELOCIDADE = 620;
 const DURACAO_MAXIMA = 2.4;
 
-/** Folha de sprites do Guglo (refs/Guglo-pixelado): 6 quadros lado a lado, nesta ordem. */
-const SPRITE = { largura: 139, altura: 169, quadros: 6, peX: 70, peY: 161 } as const;
-const QUADRO_PARADO = 0;
-const QUADRO_ACENANDO = 5;
-/** Pé direito à frente (quadros 1, 2 e 3) alternando com o esquerdo (quadro 4). */
-const CICLO_DE_PASSOS = [1, 4, 2, 4, 3, 4];
-const CADENCIA_MS = 110;
-const ACENO_MS = 1100;
 const ESCALA_DO_GUGLO = 0.46;
+const { parado: PARADO, passos: PASSOS } = QUADROS_DO_GUGLO;
+
+/** O que o Guglo faz ao chegar: acena numa obra a fazer e comemora numa obra pronta. Depois, fica parado. */
+const CHEGADAS = {
+  acenando: { quadros: [QUADROS_DO_GUGLO.acenando], cadenciaMs: 1100 },
+  comemorando: {
+    quadros: [...COMEMORACAO_COMPLETA, ...Array<number>(4).fill(QUADROS_DO_GUGLO.bracosParaCima)],
+    cadenciaMs: CADENCIA_DO_GUGLO_MS.comemoracao,
+  },
+};
 
 interface Lugar {
   /** Terreno na arte: canto superior esquerdo e tamanho. Também é a área de toque. */
@@ -79,20 +81,6 @@ interface Posicao {
   y: number;
   olhandoPara: 'direita' | 'esquerda';
   quadro: number;
-}
-
-function GugloPixelado({ x, y, olhandoPara, quadro }: Posicao) {
-  const { largura, altura, quadros, peX, peY } = SPRITE;
-  const virado = olhandoPara === 'esquerda' ? ' scale(-1 1)' : '';
-  return (
-    <g transform={`translate(${x} ${y})${virado} scale(${ESCALA_DO_GUGLO})`} aria-hidden="true">
-      <g className={quadro === QUADRO_PARADO ? styles.gugloParado : undefined}>
-        <svg x={-peX} y={-peY} width={largura} height={altura} viewBox={`${quadro * largura} 0 ${largura} ${altura}`}>
-          <image href={folhaDoGuglo} width={largura * quadros} height={altura} />
-        </svg>
-      </g>
-    </g>
-  );
 }
 
 function Selo({ item, lugar }: { item: ObraNoMapa; lugar: Lugar }) {
@@ -143,7 +131,7 @@ export function MapaDaCidade({ obras, selecionada, proximaAConstruir, aoSelecion
   const paradas = useRef<number[]>([]);
   const atual = useRef(0);
   const direcao = useRef<'direita' | 'esquerda'>('direita');
-  const [posicao, setPosicao] = useState<Posicao>({ x: 150, y: 752, olhandoPara: 'direita', quadro: QUADRO_PARADO });
+  const [posicao, setPosicao] = useState<Posicao>({ x: 150, y: 752, olhandoPara: 'direita', quadro: PARADO });
   const indiceSelecionado = obras.findIndex((item) => item.obra.id === selecionada);
 
   // Onde cada terreno encosta na estrada (comprimento ao longo do caminho).
@@ -166,7 +154,9 @@ export function MapaDaCidade({ obras, selecionada, proximaAConstruir, aoSelecion
     });
   }, []);
 
-  // Caminhada até a obra selecionada; na chegada, o Guglo acena.
+  const destinoConcluido = obras[indiceSelecionado]?.situacao === 'concluido';
+
+  // Caminhada até a obra selecionada; na chegada, o Guglo acena, ou comemora se a obra está pronta.
   useEffect(() => {
     const caminho = estrada.current;
     const destino = indiceSelecionado >= 0 ? paradas.current[indiceSelecionado] : undefined;
@@ -177,17 +167,15 @@ export function MapaDaCidade({ obras, selecionada, proximaAConstruir, aoSelecion
     if (distancia < 1 || prefereMenosMovimento()) {
       atual.current = destino;
       const final = ponto(destino);
-      const quadro = requestAnimationFrame(() =>
-        setPosicao((anterior) => ({ ...anterior, x: final.x, y: final.y, quadro: QUADRO_PARADO })),
-      );
-      return () => cancelAnimationFrame(quadro);
+      const pedido = requestAnimationFrame(() => setPosicao((anterior) => ({ ...anterior, x: final.x, y: final.y, quadro: PARADO })));
+      return () => cancelAnimationFrame(pedido);
     }
     const duracao = Math.min(DURACAO_MAXIMA, distancia / VELOCIDADE) * 1000;
+    const chegada = destinoConcluido ? CHEGADAS.comemorando : CHEGADAS.acenando;
     const total = caminho.getTotalLength();
     const sentido = Math.sign(destino - inicio);
     const comeco = performance.now();
-    let quadro = 0;
-    let aceno = 0;
+    let pedido = 0;
     const passo = (agora: number) => {
       // O carimbo do requestAnimationFrame pode vir um pouco antes de `comeco`.
       const decorrido = Math.max(0, agora - comeco);
@@ -199,17 +187,16 @@ export function MapaDaCidade({ obras, selecionada, proximaAConstruir, aoSelecion
       if (adiante.x < aqui.x - 0.1) direcao.current = 'esquerda';
       else if (adiante.x > aqui.x + 0.1) direcao.current = 'direita';
       atual.current = s;
-      const passoDoCiclo = CICLO_DE_PASSOS[Math.floor(decorrido / CADENCIA_MS) % CICLO_DE_PASSOS.length] ?? QUADRO_PARADO;
-      setPosicao({ x: aqui.x, y: aqui.y, olhandoPara: direcao.current, quadro: t < 1 ? passoDoCiclo : QUADRO_ACENANDO });
-      if (t < 1) quadro = requestAnimationFrame(passo);
-      else aceno = window.setTimeout(() => setPosicao((anterior) => ({ ...anterior, quadro: QUADRO_PARADO })), ACENO_MS);
+      const quadro =
+        t < 1
+          ? (PASSOS[Math.floor(decorrido / CADENCIA_DO_GUGLO_MS.passos) % PASSOS.length] ?? PARADO)
+          : (chegada.quadros[Math.floor((decorrido - duracao) / chegada.cadenciaMs)] ?? PARADO);
+      setPosicao({ x: aqui.x, y: aqui.y, olhandoPara: direcao.current, quadro });
+      if (quadro !== PARADO) pedido = requestAnimationFrame(passo);
     };
-    quadro = requestAnimationFrame(passo);
-    return () => {
-      cancelAnimationFrame(quadro);
-      window.clearTimeout(aceno);
-    };
-  }, [indiceSelecionado]);
+    pedido = requestAnimationFrame(passo);
+    return () => cancelAnimationFrame(pedido);
+  }, [indiceSelecionado, destinoConcluido]);
 
   const aoTeclar = (evento: KeyboardEvent<SVGGElement>, item: ObraNoMapa) => {
     if (evento.key !== 'Enter' && evento.key !== ' ') return;
@@ -305,7 +292,7 @@ export function MapaDaCidade({ obras, selecionada, proximaAConstruir, aoSelecion
         </g>
       ) : null}
 
-      <GugloPixelado {...posicao} />
+      <GugloPixeladoNoMapa {...posicao} escala={ESCALA_DO_GUGLO} />
     </svg>
   );
 }

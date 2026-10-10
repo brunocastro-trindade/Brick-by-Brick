@@ -135,19 +135,8 @@
   fill: var(--cor-texto);
 }
 
-/* Guglo parado: respira em dois tempos, como sprite de jogo antigo. */
-.gugloParado {
-  animation: respirar 1.4s steps(1) infinite;
-}
-
 @keyframes quicar {
   to {
     transform: translateY(-14px); /* fora-da-escala: unidade do SVG do mapa */
-  }
-}
-
-@keyframes respirar {
-  50% {
-    transform: translateY(4px); /* fora-da-escala: unidade do SVG do sprite */
   }
 }

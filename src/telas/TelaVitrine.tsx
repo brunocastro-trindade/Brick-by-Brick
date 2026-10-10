@@ -8,6 +8,7 @@ import { ChipDoPython } from '../components/ChipDoPython';
 import { BlocoDeCodigo } from '../components/CodigoColorido';
 import { ConsoleDaObra } from '../components/ConsoleDaObra';
 import { Estrelas } from '../components/Estrelas';
+import { GugloPixelado, type AcaoDoGuglo } from '../components/GugloPixelado';
 import { Pinguim, type PoseDoPinguim } from '../components/Pinguim';
 import { MEDIDAS, PredioDaCidade, type SituacaoDoPredio } from '../components/PredioDaCidade';
 import { TijoloDeCodigo, type EstadoDoTijolo } from '../components/TijoloDeCodigo';
@@ -54,6 +55,7 @@ const FALAS: Fala[] = [
 ];
 
 const POSES: PoseDoPinguim[] = ['parado', 'andando', 'carregando', 'comemorando', 'pensando', 'ops'];
+const ACOES_DO_GUGLO_PIXELADO: AcaoDoGuglo[] = ['parado', 'andando', 'acenando', 'comemorando'];
 const ESTADOS_DO_TIJOLO: EstadoDoTijolo[] = ['solto', 'encaixado', 'problema', 'fantasma'];
 const SITUACOES: SituacaoDoPredio[] = ['bloqueado', 'disponivel', 'em-obra', 'concluido'];
 
@@ -128,6 +130,16 @@ export default function TelaVitrine() {
           <Amostra key={pose} rotulo={pose}>
             <div className={styles.pinguim}>
               <Pinguim pose={pose} capacete={pose !== 'parado'} />
+            </div>
+          </Amostra>
+        ))}
+      </Secao>
+
+      <Secao titulo="Guglo pixelado (mapa e obra pronta)">
+        {ACOES_DO_GUGLO_PIXELADO.map((acao) => (
+          <Amostra key={acao} rotulo={acao}>
+            <div className={styles.pinguim}>
+              <GugloPixelado acao={acao} />
             </div>
           </Amostra>
         ))}
