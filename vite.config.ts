@@ -8,6 +8,7 @@ import path from 'node:path';
 import react from '@vitejs/plugin-react';
 import { defineConfig, type Plugin, type Rolldown } from 'vite';
 import { parse } from 'yaml';
+import { arquivoDeCabecalhos, CABECALHOS_DE_SEGURANCA, POLITICA_NA_META } from './src/publicacao/cabecalhos';
 import { etiquetas, publicacao, robots, sitemap } from './src/publicacao/metadados';
 
 const require = createRequire(import.meta.url);
@@ -19,7 +20,7 @@ const ROTA_PYODIDE = `pyodide/${VERSAO_DO_PYODIDE}`;
 /** Versão que vai no retorno do beta (ADR-0012): a do package.json mais o commit, quando houver git. */
 function versaoDoJogo(): string {
   const versao: string = require('./package.json').version;
-  let commit = process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ?? '';
+  let commit = process.env.CF_PAGES_COMMIT_SHA?.slice(0, 7) ?? '';
   if (!commit) {
     try {
       commit = execFileSync('git', ['rev-parse', '--short', 'HEAD'], { encoding: 'utf8' }).trim();
@@ -39,37 +40,27 @@ const TIPOS_MIME: Record<string, string> = {
   '.json': 'application/json',
 };
 
-// Política de segurança de conteúdo (ADR-0009): o navegador barra script, estilo, imagem, fonte e conexão
-// de outro domínio em qualquer tela (INV-09), e não só no caminho que a fumaça percorre.
-// 'unsafe-eval' é do Pyodide (o Emscripten usa eval), para o navegador que aplica a política da página ao
-// worker; a página em si não chama eval.
-const POLITICA_DE_CONTEUDO = [
-  "default-src 'self'",
-  "script-src 'self' 'unsafe-eval'",
-  "style-src 'self'",
-  "img-src 'self' data:",
-  "font-src 'self' data:",
-  "connect-src 'self'",
-  "worker-src 'self'",
-  "object-src 'none'",
-  "base-uri 'none'",
-  "form-action 'none'",
-].join('; ');
-
-/** Põe a política no topo do index.html do build. No dev fica de fora: o Vite injeta script inline. */
+/**
+ * Política de segurança de conteúdo (ADR-0009) no topo do index.html, que vale em qualquer host, e o _headers do
+ * Cloudflare Pages (ADR-0013), com a mesma política em cabeçalho e o cache. Só no build: o dev do Vite injeta
+ * script inline.
+ */
 function politicaDeConteudo(): Plugin {
   return {
     name: 'brick:politica-de-conteudo',
     apply: 'build',
     transformIndexHtml: () => [
-      { tag: 'meta', attrs: { 'http-equiv': 'Content-Security-Policy', content: POLITICA_DE_CONTEUDO }, injectTo: 'head-prepend' },
+      { tag: 'meta', attrs: { 'http-equiv': 'Content-Security-Policy', content: POLITICA_NA_META }, injectTo: 'head-prepend' },
     ],
+    generateBundle() {
+      this.emitFile({ type: 'asset', fileName: '_headers', source: arquivoDeCabecalhos() });
+    },
   };
 }
 
 /**
  * Etiquetas de compartilhamento, robots.txt e sitemap.xml (ADR-0013), conforme URL_DO_SITE e AMBIENTE_DO_SITE
- * (ou as variáveis da Vercel). Prévia e teste saem com noindex.
+ * (ou a branch do Cloudflare Pages). Prévia e teste saem com noindex.
  */
 function metadadosDePublicacao(): Plugin {
   const site = publicacao(process.env);
@@ -121,8 +112,8 @@ function pyodideLocal(): Plugin {
 }
 
 // A página entra como "/"; robots, sitemap e a imagem de compartilhar são para buscadores e redes, não para
-// jogar sem internet.
-const FORA_DO_CACHE = /^index\.html$|\.(map|txt|xml)$|^compartilhar\.png$/;
+// jogar sem internet. O _headers nem é servido pelo Pages: se entrasse na lista, o cache inteiro falharia.
+const FORA_DO_CACHE = /^index\.html$|\.(map|txt|xml)$|^compartilhar\.png$|^_headers$/;
 
 /** Conteúdo de um arquivo do bundle, para a versão do cache mudar quando qualquer arquivo mudar. */
 function conteudoDoArquivo(arquivo: Rolldown.OutputBundle[string]): string | Uint8Array {
@@ -167,6 +158,9 @@ export default defineConfig({
   plugins: [react(), conteudoYaml(), pyodideLocal(), politicaDeConteudo(), metadadosDePublicacao(), servicoOffline()],
   define: { __VERSAO_DO_PYODIDE__: JSON.stringify(VERSAO_DO_PYODIDE), __VERSAO_DO_JOGO__: JSON.stringify(versaoDoJogo()) },
   optimizeDeps: { exclude: ['pyodide'] },
+  // O vite preview (fumaça) usa os mesmos cabeçalhos de segurança do Pages: o Python tem de carregar com a
+  // política em cabeçalho, que vale também para o worker.
+  preview: { headers: CABECALHOS_DE_SEGURANCA },
   worker: { format: 'es' },
   test: {
     include: ['src/**/*.test.ts'],
