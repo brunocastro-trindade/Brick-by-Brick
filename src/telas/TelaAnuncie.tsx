@@ -23,7 +23,7 @@ import { Botao } from '../components/Botao';
 import { prefereMenosMovimento } from '../estado/usePython';
 import styles from './TelaAnuncie.module.css';
 
-export const CONTATO_DE_ANUNCIOS = 'castrotrindade2929@gmail.com';
+export const CONTATO_DE_ANUNCIOS = 'amaatShin@proton.me';
 const MAILTO = `mailto:${CONTATO_DE_ANUNCIOS}?subject=${encodeURIComponent('Quero anunciar no Brick by Brick')}`;
 
 interface Item {

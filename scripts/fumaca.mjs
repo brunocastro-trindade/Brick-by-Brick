@@ -113,7 +113,7 @@ await passo('Anuncie aqui abre com o e-mail de contato', async () => {
   await pagina.goto(`${URL_DO_JOGO}/#/anuncie`);
   await pagina.getByRole('heading', { name: /Sua marca na cidade/ }).waitFor({ timeout: 10_000 });
   const endereco = await pagina.getByRole('link', { name: 'Enviar e-mail' }).first().getAttribute('href');
-  if (!endereco?.startsWith('mailto:castrotrindade2929@gmail.com')) throw new Error(`link de contato inesperado: ${endereco}`);
+  if (!endereco?.startsWith('mailto:amaatShin@proton.me')) throw new Error(`link de contato inesperado: ${endereco}`);
 });
 await passo('nenhuma requisição a outro domínio (INV-09)', async () => {
   if (deFora.size > 0) throw new Error(`o jogo pediu algo a: ${[...deFora].join(', ')}`);
