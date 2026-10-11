@@ -79,7 +79,6 @@
   border-radius: var(--raio-pequeno);
   font-size: var(--tipo-legenda-tamanho);
   font-weight: var(--peso-medio);
-  opacity: 0.75;
 }
 
 .giro {

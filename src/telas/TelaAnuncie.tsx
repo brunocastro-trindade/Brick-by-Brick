@@ -17,7 +17,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { useRef } from 'react';
-import logo from '../assets/logo.webp';
+import logo from '../assets/logo-pequeno.webp';
 import gugloComPlaca from '../assets/guglo-anuncie.webp';
 import { Botao } from '../components/Botao';
 import { CONTATO } from '../estado/contato';

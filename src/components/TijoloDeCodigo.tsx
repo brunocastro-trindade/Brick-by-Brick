@@ -54,7 +54,7 @@ export function TijoloDeCodigo({
       className={classes}
       data-flip={idFlip}
       disabled={desabilitado}
-      aria-label={rotulo ?? `Tijolo ${NOMES_DE_CATEGORIA[categoria]}: ${texto}`}
+      aria-label={rotulo}
       onClick={aoClicar}
       onPointerDown={aoPressionar}
     >
@@ -63,6 +63,8 @@ export function TijoloDeCodigo({
           {numero}
         </span>
       ) : null}
+      {/* Sem rótulo próprio, o nome vem do conteúdo: assim ele sempre contém o texto visível do tijolo. */}
+      {rotulo ? null : <span className="somente-leitor">Tijolo {NOMES_DE_CATEGORIA[categoria]}: </span>}
       <span className={styles.texto}>{texto}</span>
       {estado === 'problema' ? (
         <span className={styles.alerta} aria-hidden="true">

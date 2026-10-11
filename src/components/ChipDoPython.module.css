@@ -7,6 +7,7 @@
   border: var(--borda-fina) solid var(--cor-contorno);
   border-radius: var(--raio-grande);
   background: var(--cor-superficie);
+  color: var(--cor-texto); /* não herda o texto suave do rodapé: no verde do "pronto" ficaria abaixo de AA */
   font-size: var(--tipo-legenda-tamanho);
   font-weight: var(--peso-forte);
   white-space: nowrap;

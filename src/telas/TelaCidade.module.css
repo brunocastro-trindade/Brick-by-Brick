@@ -175,8 +175,13 @@
   background: var(--cor-aviso-fundo);
 }
 
+/* Obra bloqueada: borda tracejada de terreno e número em texto suave (5,4:1, AA), sem opacidade. */
 .bloqueado {
-  opacity: 0.7;
+  border-style: dashed;
+}
+
+.bloqueado .itemNumero {
+  color: var(--cor-texto-suave);
 }
 
 .itemNumero {

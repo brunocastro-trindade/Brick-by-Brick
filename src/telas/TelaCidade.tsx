@@ -7,7 +7,7 @@ import { ModalComoJogar } from '../components/ModalComoJogar';
 import { ModalDeAjustes } from '../components/ModalDeAjustes';
 import { PlacaDaObra } from '../components/PlacaDaObra';
 import type { SituacaoDoPredio } from '../components/PredioDaCidade';
-import logo from '../assets/logo.webp';
+import logo from '../assets/logo-pequeno.webp';
 import { linhasAntesDoPasso } from '../jogo/programa';
 import { obraLiberada, progressoDaObra, progressoNovo, totalDeEstrelas, type Progresso } from '../jogo/progresso';
 import type { Obra } from '../jogo/tipos';
