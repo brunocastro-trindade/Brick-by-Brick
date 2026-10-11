@@ -237,17 +237,20 @@ export function TelaGugloWars({ obras, progresso, atualizarProgresso, aoVoltar, 
             </div>
           </dl>
 
+          {/* Entulho, peça e "+pontos" são irmãos: cada grupo tem prefixo na chave. Sem ele, um Enter errado
+              (que conta evento sem trocar de peça) fazia o "+pontos" e a peça nova colidirem, e o React
+              deixava peças velhas no poço. */}
           <div className={styles.poco} style={{ '--fileiras': FILEIRAS } as CSSProperties} onClick={() => entrada.current?.focus()} aria-hidden="true">
             {estado.entulho.map((linha, indice) => (
-              <div key={indice} className={styles.fileira} style={naFileira(FILEIRAS - 1 - indice)}>
+              <div key={`entulho-${indice}`} className={styles.fileira} style={naFileira(FILEIRAS - 1 - indice)} data-peca="entulho">
                 <PecaDeEntulho texto={linha.texto} />
               </div>
             ))}
-            <div key={peca.id} className={`${styles.fileira} ${styles.pecaDaVez}`} style={naFileira(peca.fileira)}>
+            <div key={`peca-${peca.id}`} className={`${styles.fileira} ${styles.pecaDaVez}`} style={naFileira(peca.fileira)} data-peca="da-vez">
               <PecaQueCai peca={peca} digitado={estado.digitado} />
             </div>
             {evento?.tipo === 'acertou' ? (
-              <div key={evento.seq} className={styles.pontosGanhos} style={naFileira(evento.fileira)}>
+              <div key={`pontos-${evento.seq}`} className={styles.pontosGanhos} style={naFileira(evento.fileira)}>
                 +{evento.pontos}
               </div>
             ) : null}

@@ -105,6 +105,39 @@
   stroke-linejoin: round;
 }
 
+/* Outdoor: pixels duros como o resto da Vila; realce no passar e no foco do teclado. */
+.outdoor {
+  cursor: pointer;
+  outline: none;
+}
+
+.outdoor image {
+  image-rendering: pixelated;
+}
+
+.realceDoOutdoor {
+  fill: var(--cor-ilustra-destaque);
+  fill-opacity: 0;
+  stroke: var(--cor-ilustra-contorno);
+  stroke-width: 0;
+  stroke-dasharray: 12 8;
+  transition:
+    fill-opacity var(--duracao-media),
+    stroke-width var(--duracao-media);
+}
+
+.outdoor:hover .realceDoOutdoor {
+  fill-opacity: 0.3;
+  stroke-width: 4;
+}
+
+.outdoor:focus-visible .realceDoOutdoor {
+  fill-opacity: 0.3;
+  stroke: var(--cor-foco);
+  stroke-width: 6;
+  stroke-dasharray: none;
+}
+
 .emBreve rect {
   fill: var(--cor-ilustra-placa);
   stroke: var(--cor-ilustra-contorno);

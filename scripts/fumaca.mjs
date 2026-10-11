@@ -88,6 +88,17 @@ await passo('Guglo Wars: digitar a peça antes de ela cair pontua (modo livre)',
   await pagina.locator('#digitar-peca').fill(anuncio.replace(/^.*?Copie: /s, ''));
   await pagina.getByText(/Acertou! Mais \d+ pontos/).waitFor({ timeout: 5_000 });
 });
+await passo('Guglo Wars: Enter errado não deixa peça fantasma no poço', async () => {
+  const entrada = pagina.locator('#digitar-peca');
+  await entrada.fill('x');
+  await entrada.press('Enter');
+  await entrada.fill('');
+  const anuncio = await pagina.locator('[aria-live="polite"]').innerText();
+  await entrada.fill(anuncio.replace(/^.*?(Copie: |Complete a lacuna: )/s, ''));
+  await pagina.getByText(/Acertou! Mais \d+ pontos/).waitFor({ timeout: 5_000 });
+  const pecas = await pagina.locator('[data-peca="da-vez"]').count();
+  if (pecas !== 1) throw new Error(`${pecas} peças da vez no poço`);
+});
 
 await passo('Anuncie aqui abre com o e-mail de contato', async () => {
   await pagina.goto(`${URL_DO_JOGO}/#/anuncie`);
