@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // Teste de fumaça (HARNESS §5.5): abre o jogo num Chromium de verdade, espera o Python carregar
 // no navegador e joga o primeiro mini desafio do Correio — errando uma vez e acertando depois —
-// acerta uma peça do Guglo Wars, abre o Anuncie aqui e garante que nada veio de outro domínio (INV-09).
+// acerta uma peça do Guglo Wars, abre o Anuncie aqui e garante que nada veio de outro domínio (INV-09)
+// e que a política de segurança de conteúdo está no ar sem barrar o próprio jogo (ADR-0009).
 //
 // Uso:  npm run build && npx vite preview --port 4173   (em outro terminal)
 //       npm run fumaca
@@ -31,6 +32,14 @@ const deFora = new Set();
 pagina.on('request', (requisicao) => {
   const endereco = new URL(requisicao.url());
   if (['http:', 'https:', 'ws:', 'wss:'].includes(endereco.protocol) && endereco.origin !== origemDoJogo) deFora.add(endereco.origin);
+});
+// ADR-0009: o que a política barrar, em qualquer navegação, fica anotado para o último passo.
+const violacoes = [];
+await pagina.exposeFunction('anotarViolacaoDaPolitica', (descricao) => violacoes.push(descricao));
+await pagina.addInitScript(() => {
+  globalThis.document.addEventListener('securitypolicyviolation', (evento) =>
+    globalThis.anotarViolacaoDaPolitica(`${evento.effectiveDirective} ${evento.blockedURI}`),
+  );
 });
 
 const passo = async (descricao, acao) => {
@@ -104,10 +113,15 @@ await passo('Anuncie aqui abre com o e-mail de contato', async () => {
   await pagina.goto(`${URL_DO_JOGO}/#/anuncie`);
   await pagina.getByRole('heading', { name: /Sua marca na cidade/ }).waitFor({ timeout: 10_000 });
   const endereco = await pagina.getByRole('link', { name: 'Enviar e-mail' }).first().getAttribute('href');
-  if (!endereco?.startsWith('mailto:castrotrindade2929@gmail.com')) throw new Error(`link de contato inesperado: ${endereco}`);
+  if (!endereco?.startsWith('mailto:amaatShin@proton.me')) throw new Error(`link de contato inesperado: ${endereco}`);
 });
 await passo('nenhuma requisição a outro domínio (INV-09)', async () => {
   if (deFora.size > 0) throw new Error(`o jogo pediu algo a: ${[...deFora].join(', ')}`);
+});
+await passo('política de segurança de conteúdo no ar, sem barrar o jogo (ADR-0009)', async () => {
+  const politica = await pagina.locator('meta[http-equiv="Content-Security-Policy"]').getAttribute('content');
+  if (!politica?.includes("default-src 'self'")) throw new Error(`política ausente ou sem default-src 'self': ${politica}`);
+  if (violacoes.length > 0) throw new Error(`a política barrou: ${violacoes.join(', ')}`);
 });
 
 await pagina.screenshot({ path: `${PASTA}/fumaca.png`, fullPage: true });

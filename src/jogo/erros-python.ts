@@ -66,9 +66,10 @@ const EXPLICACOES: Record<string, ExplicacaoDeErro> = {
   },
 };
 
+/** `tipo` vem do programa do jogador: só vale chave própria da lista, nunca `constructor` ou `__proto__`. */
 export function explicarErro(tipo: string): ExplicacaoDeErro {
   return (
-    EXPLICACOES[tipo] ?? {
+    (Object.hasOwn(EXPLICACOES, tipo) ? EXPLICACOES[tipo] : undefined) ?? {
       nome: 'Erro ao rodar',
       explicacao: 'O Python encontrou um problema ao rodar o programa. A mensagem dele costuma dizer o que houve e em qual linha.',
     }

@@ -19,6 +19,34 @@ const TIPOS_MIME: Record<string, string> = {
   '.json': 'application/json',
 };
 
+// Política de segurança de conteúdo (ADR-0009): o navegador barra script, estilo, imagem, fonte e conexão
+// de outro domínio em qualquer tela (INV-09), e não só no caminho que a fumaça percorre.
+// 'unsafe-eval' é do Pyodide (o Emscripten usa eval), para o navegador que aplica a política da página ao
+// worker; a página em si não chama eval.
+const POLITICA_DE_CONTEUDO = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-eval'",
+  "style-src 'self'",
+  "img-src 'self' data:",
+  "font-src 'self' data:",
+  "connect-src 'self'",
+  "worker-src 'self'",
+  "object-src 'none'",
+  "base-uri 'none'",
+  "form-action 'none'",
+].join('; ');
+
+/** Põe a política no topo do index.html do build. No dev fica de fora: o Vite injeta script inline. */
+function politicaDeConteudo(): Plugin {
+  return {
+    name: 'brick:politica-de-conteudo',
+    apply: 'build',
+    transformIndexHtml: () => [
+      { tag: 'meta', attrs: { 'http-equiv': 'Content-Security-Policy', content: POLITICA_DE_CONTEUDO }, injectTo: 'head-prepend' },
+    ],
+  };
+}
+
 /** Transforma cada obra em YAML num módulo JS com os dados já parseados (ADR-0003). */
 function conteudoYaml(): Plugin {
   return {
@@ -55,7 +83,7 @@ function pyodideLocal(): Plugin {
 }
 
 export default defineConfig({
-  plugins: [react(), conteudoYaml(), pyodideLocal()],
+  plugins: [react(), conteudoYaml(), pyodideLocal(), politicaDeConteudo()],
   optimizeDeps: { exclude: ['pyodide'] },
   worker: { format: 'es' },
   test: {

@@ -52,7 +52,7 @@ O Brick by Brick é de código aberto e pode ser modificado por quem quiser: cri
 <img src="docs/anuncie.png" alt="Guglo, o pinguim pedreiro, segurando uma placa escrita “anuncie aqui”" width="200">
 </p>
 
-O Brick by Brick é gratuito, tem código aberto e vai continuar crescendo com o tempo. Para ajudar a financiar o futuro da educação digital no Brasil, vamos abrir espaços para marcas, SaaS e web apps anunciarem dentro do jogo: um outdoor na cidade, o patrocínio de uma obra, a tela de carregamento do Python e o Guglo Wars. Sem rastrear quem estuda, nunca no meio de um exercício e sempre identificado como patrocinado. Para conversar, escreva para [castrotrindade2929@gmail.com](mailto:castrotrindade2929@gmail.com?subject=Quero%20anunciar%20no%20Brick%20by%20Brick).
+O Brick by Brick é gratuito, tem código aberto e vai continuar crescendo com o tempo. Para ajudar a financiar o futuro da educação digital no Brasil, vamos abrir espaços para marcas, SaaS e web apps anunciarem dentro do jogo: um outdoor na cidade, o patrocínio de uma obra, a tela de carregamento do Python e o Guglo Wars. Sem rastrear quem estuda, nunca no meio de um exercício e sempre identificado como patrocinado. Para conversar, escreva para [amaatShin@proton.me](mailto:amaatShin@proton.me?subject=Quero%20anunciar%20no%20Brick%20by%20Brick).
 
 ## Licença
 
