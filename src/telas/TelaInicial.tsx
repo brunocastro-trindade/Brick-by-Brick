@@ -34,7 +34,7 @@ export function TelaInicial({ temProgresso, aoComecar }: { temProgresso: boolean
           </div>
         </div>
         <div className={styles.mascote}>
-          <img src={mascote} alt="Guglo, o pinguim pedreiro, assentando um tijolo num muro" width={560} height={560} />
+          <img src={mascote} alt="Guglo, o pinguim pedreiro de capacete, assentando tijolos diante de uma cidade em obras" width={800} height={800} />
         </div>
       </main>
       <footer className={styles.rodape}>
