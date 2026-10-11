@@ -1,5 +1,5 @@
 // Tela de abertura: logo, mascote e o convite para construir.
-import { BookOpen, Hammer } from 'lucide-react';
+import { BookOpen, Hammer, Megaphone } from 'lucide-react';
 import { useState } from 'react';
 import { Botao } from '../components/Botao';
 import { ChipDoPython } from '../components/ChipDoPython';
@@ -40,6 +40,10 @@ export function TelaInicial({ temProgresso, aoComecar }: { temProgresso: boolean
       <footer className={styles.rodape}>
         <ChipDoPython />
         <span>Do básico às classes · Código aberto (AGPL-3.0)</span>
+        <a className={styles.anuncie} href="#/anuncie">
+          <Megaphone size={16} aria-hidden="true" />
+          Anuncie aqui
+        </a>
       </footer>
       <div className={styles.muro} aria-hidden="true" />
       {comoJogar ? <ModalComoJogar aoFechar={() => setComoJogar(false)} /> : null}

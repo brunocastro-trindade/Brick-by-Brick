@@ -1,0 +1,242 @@
+.tela {
+  min-height: 100dvh;
+  background: var(--cor-fundo);
+}
+
+.barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espaco-4);
+  padding: var(--espaco-2) var(--espaco-6);
+  border-bottom: var(--borda-grossa) solid var(--cor-contorno);
+  background: var(--cor-superficie);
+}
+
+.logo {
+  display: inline-flex;
+  padding: var(--espaco-1);
+  border: none;
+  border-radius: var(--raio-medio);
+  background: transparent;
+}
+
+.logo img {
+  display: block;
+  width: auto;
+  height: var(--espaco-8);
+}
+
+.acoesDaBarra {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-3);
+  margin-left: auto;
+}
+
+.conteudo {
+  display: grid;
+  gap: var(--espaco-9);
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: var(--espaco-8) var(--espaco-6) var(--espaco-9);
+}
+
+/* Abertura: texto e o Guglo com a placa */
+.abertura {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 26rem);
+  gap: var(--espaco-7);
+  align-items: center;
+}
+
+.aberturaTexto {
+  display: grid;
+  gap: var(--espaco-5);
+  justify-items: start;
+}
+
+.sobretitulo {
+  padding: var(--espaco-1) var(--espaco-4);
+  border: var(--borda-fina) solid var(--cor-contorno);
+  border-radius: var(--raio-grande);
+  background: var(--cor-aviso);
+  font-family: var(--fonte-titulo);
+  font-weight: var(--peso-titulo);
+  font-size: var(--tipo-corpo-pequeno-tamanho);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.titulo {
+  font-size: var(--tipo-titulo-grande-tamanho);
+  line-height: 1.05;
+}
+
+.chamada {
+  max-width: 38rem;
+  font-size: var(--tipo-destaque-tamanho);
+  line-height: 1.5;
+}
+
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-4);
+}
+
+.contato {
+  font-size: var(--tipo-corpo-pequeno-tamanho);
+  color: var(--cor-texto-suave);
+}
+
+.contato a,
+.passos {
+  color: var(--cor-texto);
+}
+
+.contato a {
+  font-weight: var(--peso-forte);
+  text-decoration-thickness: var(--borda-fina);
+  text-underline-offset: var(--espaco-1);
+}
+
+.guglo img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Seções */
+.secao {
+  display: grid;
+  gap: var(--espaco-5);
+}
+
+.secaoTitulo {
+  font-size: var(--tipo-titulo-tamanho);
+}
+
+.secaoTexto {
+  max-width: 44rem;
+  font-size: var(--tipo-destaque-tamanho);
+  line-height: 1.5;
+  color: var(--cor-texto-suave);
+}
+
+.cartoes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: var(--espaco-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cartao {
+  display: grid;
+  align-content: start;
+  gap: var(--espaco-3);
+  padding: var(--espaco-6);
+  border: var(--borda-grossa) solid var(--cor-contorno);
+  border-radius: var(--raio-grande);
+  background: var(--cor-superficie);
+  box-shadow: var(--sombra-baixa);
+  line-height: 1.5;
+}
+
+.cartaoTopo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espaco-3);
+}
+
+.icone {
+  display: grid;
+  place-items: center;
+  width: var(--espaco-8);
+  height: var(--espaco-8);
+  border: var(--borda-fina) solid var(--cor-contorno);
+  border-radius: var(--raio-medio);
+  background: var(--cor-acento);
+  color: var(--cor-texto-sobre-acento);
+}
+
+.emBreve {
+  padding: 0 var(--espaco-3);
+  border: var(--borda-fina) dashed var(--cor-contorno-suave);
+  border-radius: var(--raio-grande);
+  background: var(--cor-fundo-alternativo);
+  font-size: var(--tipo-legenda-tamanho);
+  font-weight: var(--peso-forte);
+  color: var(--cor-texto-suave);
+}
+
+.cartaoTitulo {
+  font-size: var(--tipo-destaque-tamanho);
+}
+
+.passos {
+  display: grid;
+  gap: var(--espaco-4);
+  max-width: 44rem;
+  margin: 0;
+  padding-left: var(--espaco-7);
+  font-size: var(--tipo-destaque-tamanho);
+  line-height: 1.5;
+}
+
+.passos li::marker {
+  font-family: var(--fonte-titulo);
+  font-weight: var(--peso-titulo);
+  color: var(--cor-acento-forte);
+}
+
+/* Fechamento: o convite, num cartão escuro como o editor */
+.convite {
+  display: grid;
+  justify-items: center;
+  gap: var(--espaco-5);
+  padding: var(--espaco-8) var(--espaco-6);
+  border: var(--borda-grossa) solid var(--cor-contorno);
+  border-radius: var(--raio-grande);
+  background: var(--cor-editor-fundo);
+  color: var(--cor-texto-sobre-escuro);
+  box-shadow: var(--sombra-media);
+  text-align: center;
+}
+
+.conviteTitulo {
+  font-size: var(--tipo-titulo-tamanho);
+  color: var(--cor-texto-sobre-escuro);
+}
+
+@media (max-width: 860px) /* fora-da-escala: breakpoint */ {
+  .barra {
+    padding: var(--espaco-2) var(--espaco-4);
+  }
+
+  .voltar {
+    display: none;
+  }
+
+  .conteudo {
+    gap: var(--espaco-8);
+    padding: var(--espaco-6) var(--espaco-4) var(--espaco-8);
+  }
+
+  .abertura {
+    grid-template-columns: 1fr;
+  }
+
+  .guglo {
+    order: -1;
+    justify-self: center;
+    width: min(18rem, 80%);
+  }
+
+  .titulo {
+    font-size: var(--tipo-titulo-tamanho);
+  }
+}

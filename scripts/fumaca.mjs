@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Teste de fumaça (HARNESS §5.5): abre o jogo num Chromium de verdade, espera o Python carregar
 // no navegador e joga o primeiro mini desafio do Correio — errando uma vez e acertando depois —
-// e acerta uma peça do Guglo Wars.
+// acerta uma peça do Guglo Wars, abre o Anuncie aqui e garante que nada veio de outro domínio (INV-09).
 //
 // Uso:  npm run build && npx vite preview --port 4173   (em outro terminal)
 //       npm run fumaca
@@ -25,6 +25,13 @@ const pagina = await navegador.newPage({ viewport: { width: 1280, height: 860 } 
 const erros = [];
 pagina.on('console', (mensagem) => mensagem.type() === 'error' && erros.push(mensagem.text()));
 pagina.on('pageerror', (erro) => erros.push(erro.message));
+// INV-09 (ADR-0008): nada de outro domínio no navegador de quem estuda — nem script, nem fonte, nem anúncio.
+const origemDoJogo = new URL(URL_DO_JOGO).origin;
+const deFora = new Set();
+pagina.on('request', (requisicao) => {
+  const endereco = new URL(requisicao.url());
+  if (['http:', 'https:', 'ws:', 'wss:'].includes(endereco.protocol) && endereco.origin !== origemDoJogo) deFora.add(endereco.origin);
+});
 
 const passo = async (descricao, acao) => {
   try {
@@ -80,6 +87,16 @@ await passo('Guglo Wars: digitar a peça antes de ela cair pontua (modo livre)',
   const anuncio = await pagina.locator('[aria-live="polite"]').innerText();
   await pagina.locator('#digitar-peca').fill(anuncio.replace(/^.*?Copie: /s, ''));
   await pagina.getByText(/Acertou! Mais \d+ pontos/).waitFor({ timeout: 5_000 });
+});
+
+await passo('Anuncie aqui abre com o e-mail de contato', async () => {
+  await pagina.goto(`${URL_DO_JOGO}/#/anuncie`);
+  await pagina.getByRole('heading', { name: /Sua marca na cidade/ }).waitFor({ timeout: 10_000 });
+  const endereco = await pagina.getByRole('link', { name: 'Enviar e-mail' }).first().getAttribute('href');
+  if (!endereco?.startsWith('mailto:castrotrindade2929@gmail.com')) throw new Error(`link de contato inesperado: ${endereco}`);
+});
+await passo('nenhuma requisição a outro domínio (INV-09)', async () => {
+  if (deFora.size > 0) throw new Error(`o jogo pediu algo a: ${[...deFora].join(', ')}`);
 });
 
 await pagina.screenshot({ path: `${PASTA}/fumaca.png`, fullPage: true });

@@ -1,6 +1,6 @@
 // Vitrine do design system (HARNESS §2.5): cada componente em todos os estados da matriz.
 // Rota #/design-system, só no modo de desenvolvimento. É também o alvo das capturas de tela.
-import { Hammer } from 'lucide-react';
+import { Hammer, Mail } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { BalaoDoPinguim, SeloDeClassificacao } from '../components/BalaoDoPinguim';
 import { Botao } from '../components/Botao';
@@ -99,6 +99,11 @@ export default function TelaVitrine() {
         </Amostra>
         <Amostra rotulo="carregando">
           <Botao carregando>Assentar linha</Botao>
+        </Amostra>
+        <Amostra rotulo="link (href)">
+          <Botao href="mailto:exemplo@exemplo.com" icone={<Mail size={18} aria-hidden="true" />}>
+            Enviar e-mail
+          </Botao>
         </Amostra>
       </Secao>
 
