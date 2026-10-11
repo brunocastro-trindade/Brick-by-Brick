@@ -4,8 +4,10 @@
 export interface AmbienteDeBuild {
   URL_DO_SITE?: string;
   AMBIENTE_DO_SITE?: string;
-  VERCEL_ENV?: string;
-  VERCEL_PROJECT_PRODUCTION_URL?: string;
+  /** Postas pelo Cloudflare Pages no build: '1', a branch e o endereço desta implantação. */
+  CF_PAGES?: string;
+  CF_PAGES_BRANCH?: string;
+  CF_PAGES_URL?: string;
 }
 
 export interface Publicacao {
@@ -26,15 +28,19 @@ const DESCRICAO =
 const IMAGEM = 'compartilhar.png';
 const IMAGEM_ALT = 'Logo do Brick by Brick ao lado do Guglo, o pinguim pedreiro de capacete, assentando tijolos.';
 
+/** Branch que o Cloudflare Pages publica como produção (ADR-0013); as outras viram prévia. */
+const BRANCH_DE_PRODUCAO = 'main';
+
 export function publicacao(ambiente: AmbienteDeBuild): Publicacao {
-  const vercel = ambiente.VERCEL_PROJECT_PRODUCTION_URL ? `https://${ambiente.VERCEL_PROJECT_PRODUCTION_URL}` : '';
-  const bruta = ambiente.URL_DO_SITE ?? vercel;
-  if (bruta && !/^https:\/\/[^/\s]+\/?$/.test(bruta)) {
-    throw new Error(`URL_DO_SITE precisa ser só https://dominio, sem caminho; veio "${bruta}"`);
-  }
-  const nome = ambiente.AMBIENTE_DO_SITE ?? (ambiente.VERCEL_ENV && ambiente.VERCEL_ENV !== 'production' ? 'teste' : 'producao');
+  const noPages = ambiente.CF_PAGES === '1';
+  const nome = ambiente.AMBIENTE_DO_SITE ?? (noPages && ambiente.CF_PAGES_BRANCH !== BRANCH_DE_PRODUCAO ? 'teste' : 'producao');
   if (nome !== 'producao' && nome !== 'teste') {
     throw new Error(`AMBIENTE_DO_SITE precisa ser "producao" ou "teste"; veio "${nome}"`);
+  }
+  // Em produção, só URL_DO_SITE: o endereço da implantação (abc123.projeto.pages.dev) não serve de canonical.
+  const bruta = ambiente.URL_DO_SITE ?? (noPages && nome === 'teste' ? (ambiente.CF_PAGES_URL ?? '') : '');
+  if (bruta && !/^https:\/\/[^/\s]+\/?$/.test(bruta)) {
+    throw new Error(`URL_DO_SITE precisa ser só https://dominio, sem caminho; veio "${bruta}"`);
   }
   return { url: bruta ? bruta.replace(/\/$/, '') : null, indexavel: nome === 'producao' };
 }

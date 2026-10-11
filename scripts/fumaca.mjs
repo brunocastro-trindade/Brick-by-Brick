@@ -55,9 +55,9 @@ const passo = async (descricao, acao) => {
   }
 };
 
-await passo('a home tem o link de retorno, com diagnóstico (ADR-0012)', async () => {
+await passo('a home tem o link "Mande seu feedback", com diagnóstico (ADR-0012)', async () => {
   await pagina.goto(`${URL_DO_JOGO}/#/`);
-  const endereco = (await pagina.getByRole('link', { name: 'Dar retorno' }).getAttribute('href')) ?? '';
+  const endereco = (await pagina.getByRole('link', { name: 'Mande seu feedback' }).getAttribute('href')) ?? '';
   const corpo = decodeURIComponent(endereco.split('body=')[1] ?? '');
   if (!endereco.startsWith('mailto:amaatShin@proton.me?subject=') || !corpo.includes('Versão: ')) {
     throw new Error(`link de retorno inesperado: ${endereco.slice(0, 120)}`);
@@ -158,9 +158,12 @@ await passo('sem internet, o jogo abre do aparelho e o Python carrega (ADR-0010)
 await passo('nenhuma requisição a outro domínio (INV-09)', async () => {
   if (deFora.size > 0) throw new Error(`o jogo pediu algo a: ${[...deFora].join(', ')}`);
 });
-await passo('política de segurança de conteúdo no ar, sem barrar o jogo (ADR-0009)', async () => {
+await passo('política de segurança de conteúdo na meta e no cabeçalho, sem barrar o jogo (ADR-0009, ADR-0013)', async () => {
   const politica = await pagina.locator('meta[http-equiv="Content-Security-Policy"]').getAttribute('content');
   if (!politica?.includes("default-src 'self'")) throw new Error(`política ausente ou sem default-src 'self': ${politica}`);
+  // Em cabeçalho (ADR-0013), como no Cloudflare Pages: vale também para o worker do Python e proíbe iframe.
+  const emCabecalho = (await pagina.request.get(`${URL_DO_JOGO}/`)).headers()['content-security-policy'] ?? '';
+  if (!emCabecalho.includes("frame-ancestors 'none'")) throw new Error(`política em cabeçalho ausente: ${emCabecalho}`);
   if (violacoes.length > 0) throw new Error(`a política barrou: ${violacoes.join(', ')}`);
 });
 

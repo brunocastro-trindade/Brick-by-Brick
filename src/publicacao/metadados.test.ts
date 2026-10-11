@@ -27,19 +27,22 @@ describe('metadados de publicação (ADR-0013)', () => {
     expect(sitemap(site)).toContain('<loc>https://brick.exemplo.org/</loc>');
   });
 
-  it('prévia da Vercel fica fora dos buscadores', () => {
-    const site = publicacao({ VERCEL_ENV: 'preview', VERCEL_PROJECT_PRODUCTION_URL: 'brick.vercel.app' });
-    expect(site).toEqual({ url: 'https://brick.vercel.app', indexavel: false });
+  it('prévia no Cloudflare Pages (branch que não é main) fica fora dos buscadores', () => {
+    const site = publicacao({ CF_PAGES: '1', CF_PAGES_BRANCH: 'feat/fe-x', CF_PAGES_URL: 'https://abc123.brick-by-brick.pages.dev' });
+    expect(site).toEqual({ url: 'https://abc123.brick-by-brick.pages.dev', indexavel: false });
     expect(conteudo(etiquetas(site), 'robots')?.attrs.content).toBe('noindex, nofollow');
     expect(robots(site)).toBe('User-agent: *\nDisallow: /\n');
     expect(sitemap(site)).toBeNull();
   });
 
-  it('produção na Vercel usa o domínio de produção do projeto', () => {
-    expect(publicacao({ VERCEL_ENV: 'production', VERCEL_PROJECT_PRODUCTION_URL: 'brickbybrick.com.br' })).toEqual({
-      url: 'https://brickbybrick.com.br',
-      indexavel: true,
-    });
+  it('produção no Cloudflare Pages usa URL_DO_SITE, não o endereço da implantação', () => {
+    const base = { CF_PAGES: '1', CF_PAGES_BRANCH: 'main', CF_PAGES_URL: 'https://def456.brick-by-brick.pages.dev' };
+    expect(publicacao({ ...base, URL_DO_SITE: 'https://brickbybrick.com.br' })).toEqual({ url: 'https://brickbybrick.com.br', indexavel: true });
+    expect(publicacao(base)).toEqual({ url: null, indexavel: true });
+  });
+
+  it('AMBIENTE_DO_SITE manda mais que a branch', () => {
+    expect(publicacao({ CF_PAGES: '1', CF_PAGES_BRANCH: 'main', AMBIENTE_DO_SITE: 'teste' }).indexavel).toBe(false);
   });
 
   it('variável mal configurada derruba o build em vez de publicar endereço errado', () => {

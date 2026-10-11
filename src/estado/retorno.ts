@@ -1,4 +1,4 @@
-// "Dar retorno" (ADR-0012): o e-mail é montado na hora, com a tela, o Python e os erros daquele momento.
+// "Mande seu feedback" (ADR-0012): o e-mail é montado na hora, com a tela, o Python e os erros daquele momento.
 import type { MouseEvent } from 'react';
 import { enderecoDeRetorno } from '../jogo/retorno';
 import { pythonDoJogo } from '../python/executor';
