@@ -80,6 +80,47 @@ export interface ObraNoMapa {
   progresso: number;
 }
 
+/** A estrada e os terrenos são fixos: as paradas se calculam uma vez por sessão. */
+let paradasDaSessao: number[] | null = null;
+const PASSO_DA_BUSCA = 8;
+
+/**
+ * Comprimento, ao longo da estrada, do ponto mais perto de cada terreno. `getPointAtLength` é caro
+ * (dezenas de microssegundos a cada chamada): uma passada só, para todos os terrenos, de 8 em 8, e um refino
+ * de 1 em 1 em volta de cada achado. Antes eram 10 passadas de 4 em 4, uns 1,3 s travando a tela a cada visita.
+ */
+function paradasNaEstrada(caminho: SVGPathElement): number[] {
+  if (paradasDaSessao) return paradasDaSessao;
+  const total = caminho.getTotalLength();
+  const distancia = (s: number, [x, y]: [number, number]) => {
+    const ponto = caminho.getPointAtLength(s);
+    return Math.hypot(ponto.x - x, ponto.y - y);
+  };
+  const achados = LUGARES.map(() => ({ s: 0, distancia: Infinity }));
+  for (let s = 0; s <= total; s += PASSO_DA_BUSCA) {
+    const ponto = caminho.getPointAtLength(s);
+    LUGARES.forEach(({ parada: [x, y] }, indice) => {
+      const d = Math.hypot(ponto.x - x, ponto.y - y);
+      const achado = achados[indice];
+      if (achado && d < achado.distancia) achados[indice] = { s, distancia: d };
+    });
+  }
+  paradasDaSessao = achados.map(({ s: perto }, indice) => {
+    const parada = LUGARES[indice]?.parada ?? [0, 0];
+    let melhor = perto;
+    let menor = Infinity;
+    for (let s = Math.max(0, perto - PASSO_DA_BUSCA); s <= Math.min(total, perto + PASSO_DA_BUSCA); s += 1) {
+      const d = distancia(s, parada);
+      if (d < menor) {
+        menor = d;
+        melhor = s;
+      }
+    }
+    return melhor;
+  });
+  return paradasDaSessao;
+}
+
 interface Posicao {
   x: number;
   y: number;
@@ -141,21 +182,7 @@ export function MapaDaCidade({ obras, selecionada, proximaAConstruir, aoSelecion
   // Onde cada terreno encosta na estrada (comprimento ao longo do caminho).
   useLayoutEffect(() => {
     const caminho = estrada.current;
-    if (!caminho) return;
-    const total = caminho.getTotalLength();
-    paradas.current = LUGARES.map(({ parada: [x, y] }) => {
-      let melhor = 0;
-      let menorDistancia = Infinity;
-      for (let s = 0; s <= total; s += 4) {
-        const ponto = caminho.getPointAtLength(s);
-        const distancia = Math.hypot(ponto.x - x, ponto.y - y);
-        if (distancia < menorDistancia) {
-          menorDistancia = distancia;
-          melhor = s;
-        }
-      }
-      return melhor;
-    });
+    if (caminho) paradas.current = paradasNaEstrada(caminho);
   }, []);
 
   const destinoConcluido = obras[indiceSelecionado]?.situacao === 'concluido';
