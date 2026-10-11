@@ -4,6 +4,7 @@ import { useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent } from
 import { prefereMenosMovimento } from '../estado/usePython';
 import type { Obra } from '../jogo/tipos';
 import arteDoMapa from '../assets/mapa-da-cidade.webp';
+import outdoorAnuncie from '../assets/outdoor-anuncie.png';
 import { CADENCIA_DO_GUGLO_MS, COMEMORACAO_COMPLETA, GugloPixeladoNoMapa, QUADROS_DO_GUGLO } from './GugloPixelado';
 import type { SituacaoDoPredio } from './PredioDaCidade';
 import styles from './MapaDaCidade.module.css';
@@ -67,6 +68,9 @@ export const LUGARES: Lugar[] = [
 
 /** A casa no fim do Alto da Colina guarda o lugar das próximas obras. */
 const EM_BREVE: [number, number] = [1365, 330];
+
+/** Outdoor da própria Vila (ADR-0008): o Guglo com a placa, na beira da estrada do Alto da Colina; pés em (x, y). */
+const OUTDOOR = { x: 1205, y: 330, lado: 116 };
 
 const RAIO_DO_SELO = 21;
 
@@ -280,6 +284,19 @@ export function MapaDaCidade({ obras, selecionada, proximaAConstruir, aoSelecion
           </g>
         );
       })}
+
+      {/* Depois das obras: no Tab, quem usa teclado chega primeiro nelas. */}
+      <a href="#/anuncie" className={styles.outdoor} aria-label="Anuncie aqui: espaços para marcas no Brick by Brick">
+        <rect
+          className={styles.realceDoOutdoor}
+          x={OUTDOOR.x - OUTDOOR.lado / 2 - 6}
+          y={OUTDOOR.y - OUTDOOR.lado - 6}
+          width={OUTDOOR.lado + 12}
+          height={OUTDOOR.lado + 12}
+          rx={14}
+        />
+        <image href={outdoorAnuncie} x={OUTDOOR.x - OUTDOOR.lado / 2} y={OUTDOOR.y - OUTDOOR.lado} width={OUTDOOR.lado} height={OUTDOOR.lado} />
+      </a>
 
       {lugarDaProxima ? (
         <g transform={`translate(${lugarDaProxima.x + lugarDaProxima.largura / 2} ${lugarDaProxima.y - 6})`} aria-hidden="true">
