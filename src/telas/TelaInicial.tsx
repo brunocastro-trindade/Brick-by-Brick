@@ -1,9 +1,10 @@
 // Tela de abertura: logo, mascote e o convite para construir.
-import { BookOpen, Hammer, Megaphone } from 'lucide-react';
+import { BookOpen, Hammer, Megaphone, MessageSquareText } from 'lucide-react';
 import { useState } from 'react';
 import { Botao } from '../components/Botao';
 import { ChipDoPython } from '../components/ChipDoPython';
 import { ModalComoJogar } from '../components/ModalComoJogar';
+import { linkDeRetorno } from '../estado/retorno';
 import logo from '../assets/logo.webp';
 import mascote from '../assets/mascote.webp';
 import styles from './TelaInicial.module.css';
@@ -43,6 +44,10 @@ export function TelaInicial({ temProgresso, aoComecar }: { temProgresso: boolean
         <a className={styles.anuncie} href="#/anuncie">
           <Megaphone size={16} aria-hidden="true" />
           Anuncie aqui
+        </a>
+        <a className={styles.retorno} {...linkDeRetorno()}>
+          <MessageSquareText size={16} aria-hidden="true" />
+          Dar retorno
         </a>
       </footer>
       <div className={styles.muro} aria-hidden="true" />

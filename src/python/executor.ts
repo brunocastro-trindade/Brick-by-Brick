@@ -1,5 +1,6 @@
 // Lado da interface: conversa com o Web Worker do Pyodide, com tempo limite explícito e
 // caminho de falha definido (HARNESS S8). Se um programa trava, o worker é recriado.
+import { anotarErro } from '../estado/registroDeErros';
 import type { MensagemDoWorker, MensagemParaWorker } from './executor.worker';
 import type { Executor, PedidoExecucao, ResultadoExecucao } from './tipos';
 
@@ -25,7 +26,10 @@ export class PythonNoNavegador implements Executor {
     this.mudarEstado('carregando');
     const worker = new Worker(new URL('./executor.worker.ts', import.meta.url), { type: 'module' });
     worker.onmessage = (evento: MessageEvent<MensagemDoWorker>) => this.receber(evento.data);
-    worker.onerror = () => this.mudarEstado('falhou');
+    worker.onerror = (evento) => {
+      anotarErro(`Worker do Python falhou: ${evento.message}`);
+      this.mudarEstado('falhou');
+    };
     this.worker = worker;
   }
 
@@ -82,7 +86,10 @@ export class PythonNoNavegador implements Executor {
 
   private receber(mensagem: MensagemDoWorker): void {
     if (mensagem.tipo === 'pronto') return this.mudarEstado('pronto');
-    if (mensagem.tipo === 'falhou') return this.mudarEstado('falhou');
+    if (mensagem.tipo === 'falhou') {
+      anotarErro(`O Python não carregou: ${mensagem.mensagem}`);
+      return this.mudarEstado('falhou');
+    }
     const pendente = this.pendentes.get(mensagem.id);
     if (!pendente) return;
     clearTimeout(pendente.temporizador);

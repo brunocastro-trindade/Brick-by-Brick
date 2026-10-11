@@ -55,6 +55,14 @@ const passo = async (descricao, acao) => {
   }
 };
 
+await passo('a home tem o link de retorno, com diagnóstico (ADR-0012)', async () => {
+  await pagina.goto(`${URL_DO_JOGO}/#/`);
+  const endereco = (await pagina.getByRole('link', { name: 'Dar retorno' }).getAttribute('href')) ?? '';
+  const corpo = decodeURIComponent(endereco.split('body=')[1] ?? '');
+  if (!endereco.startsWith('mailto:amaatShin@proton.me?subject=') || !corpo.includes('Versão: ')) {
+    throw new Error(`link de retorno inesperado: ${endereco.slice(0, 120)}`);
+  }
+});
 await passo('abre a tela inicial', async () => {
   await pagina.goto(`${URL_DO_JOGO}/#/`);
   await pagina.getByRole('button', { name: /Começar a construir/ }).click();

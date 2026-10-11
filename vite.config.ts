@@ -1,4 +1,5 @@
 /// <reference types="vitest/config" />
+import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { createReadStream } from 'node:fs';
 import { readdir, readFile } from 'node:fs/promises';
@@ -13,6 +14,20 @@ const PASTA_PYODIDE = path.dirname(require.resolve('pyodide/package.json'));
 // A versão vai no caminho (ADR-0010): arquivo de Pyodide novo nunca tem o nome de um velho guardado em cache.
 const VERSAO_DO_PYODIDE: string = require('pyodide/package.json').version;
 const ROTA_PYODIDE = `pyodide/${VERSAO_DO_PYODIDE}`;
+
+/** Versão que vai no retorno do beta (ADR-0012): a do package.json mais o commit, quando houver git. */
+function versaoDoJogo(): string {
+  const versao: string = require('./package.json').version;
+  let commit = process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ?? '';
+  if (!commit) {
+    try {
+      commit = execFileSync('git', ['rev-parse', '--short', 'HEAD'], { encoding: 'utf8' }).trim();
+    } catch {
+      // Sem git (pacote baixado como zip): a versão do package.json basta.
+    }
+  }
+  return commit ? `${versao}+${commit}` : versao;
+}
 
 // Arquivos que o loadPyodide busca em tempo de execução (ADR-0002).
 const ARQUIVOS_PYODIDE = ['pyodide.asm.mjs', 'pyodide.asm.wasm', 'python_stdlib.zip', 'pyodide-lock.json'];
@@ -127,7 +142,7 @@ function servicoOffline(): Plugin {
 
 export default defineConfig({
   plugins: [react(), conteudoYaml(), pyodideLocal(), politicaDeConteudo(), servicoOffline()],
-  define: { __VERSAO_DO_PYODIDE__: JSON.stringify(VERSAO_DO_PYODIDE) },
+  define: { __VERSAO_DO_PYODIDE__: JSON.stringify(VERSAO_DO_PYODIDE), __VERSAO_DO_JOGO__: JSON.stringify(versaoDoJogo()) },
   optimizeDeps: { exclude: ['pyodide'] },
   worker: { format: 'es' },
   test: {

@@ -4,8 +4,13 @@ import './styles/global.css';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App';
+import { LimiteDeErro } from './components/LimiteDeErro';
+import { ouvirErrosDoNavegador } from './estado/registroDeErros';
 import { guardarJogoNoAparelho } from './offline/registrar';
 import { pythonDoJogo } from './python/executor';
+
+// Erros que escapam ficam anotados para o retorno do beta (ADR-0012).
+ouvirErrosDoNavegador();
 
 // O Pyodide começa a carregar já na tela inicial: quando a pessoa chegar à primeira obra, ele está pronto.
 pythonDoJogo.iniciar();
@@ -17,6 +22,8 @@ if (!raiz) throw new Error('Elemento #raiz não encontrado em index.html');
 
 createRoot(raiz).render(
   <StrictMode>
-    <App />
+    <LimiteDeErro>
+      <App />
+    </LimiteDeErro>
   </StrictMode>,
 );

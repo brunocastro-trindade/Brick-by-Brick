@@ -1,5 +1,5 @@
 // A cidade: o mapa das obras, a placa da obra escolhida e a lista de todas elas.
-import { CircleCheck, CircleHelp, Construction, Lock, Settings, Star, Swords, Volume2, VolumeX } from 'lucide-react';
+import { CircleCheck, CircleHelp, Construction, Lock, MessageSquareText, Settings, Star, Swords, Volume2, VolumeX } from 'lucide-react';
 import { useState } from 'react';
 import { ChipDoPython } from '../components/ChipDoPython';
 import { MapaDaCidade, type ObraNoMapa } from '../components/MapaDaCidade';
@@ -11,6 +11,7 @@ import logo from '../assets/logo.webp';
 import { linhasAntesDoPasso } from '../jogo/programa';
 import { obraLiberada, progressoDaObra, progressoNovo, totalDeEstrelas, type Progresso } from '../jogo/progresso';
 import type { Obra } from '../jogo/tipos';
+import { linkDeRetorno } from '../estado/retorno';
 import styles from './TelaCidade.module.css';
 
 export function situacaoDaObra(obras: Obra[], progresso: Progresso, indice: number): ObraNoMapa | null {
@@ -103,6 +104,9 @@ export function TelaCidade({
           <button type="button" className={styles.icone} onClick={() => setModal('ajustes')} aria-label="Ajustes">
             <Settings size={20} aria-hidden="true" />
           </button>
+          <a className={styles.icone} {...linkDeRetorno()} aria-label="Dar retorno: achou um erro ou tem uma ideia?">
+            <MessageSquareText size={20} aria-hidden="true" />
+          </a>
           <ChipDoPython />
         </div>
       </header>

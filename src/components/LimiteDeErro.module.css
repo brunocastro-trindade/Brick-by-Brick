@@ -1,0 +1,35 @@
+.tela {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: var(--espaco-5);
+  min-height: 100vh;
+  padding: var(--espaco-7) var(--espaco-5);
+  background: var(--cor-fundo);
+  color: var(--cor-texto);
+  text-align: center;
+}
+
+.retrato {
+  width: calc(var(--espaco-9) * 2);
+  height: auto;
+  border: var(--borda-grossa) solid var(--cor-contorno);
+  border-radius: 50%;
+}
+
+.titulo {
+  margin: 0;
+}
+
+.texto {
+  max-width: 32rem;
+  margin: 0;
+  color: var(--cor-texto-suave);
+}
+
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--espaco-4);
+}

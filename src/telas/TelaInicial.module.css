@@ -83,7 +83,8 @@
   font-size: var(--tipo-corpo-pequeno-tamanho);
 }
 
-.anuncie {
+.anuncie,
+.retorno {
   display: inline-flex;
   align-items: center;
   gap: var(--espaco-2);
@@ -97,7 +98,8 @@
   text-decoration: none;
 }
 
-.anuncie:hover {
+.anuncie:hover,
+.retorno:hover {
   background: var(--cor-aviso-fundo);
 }
 
