@@ -47,7 +47,7 @@ export function TelaInicial({ temProgresso, aoComecar }: { temProgresso: boolean
         </a>
         <a className={styles.retorno} {...linkDeRetorno()}>
           <MessageSquareText size={16} aria-hidden="true" />
-          Dar retorno
+          Mande seu feedback
         </a>
       </footer>
       <div className={styles.muro} aria-hidden="true" />

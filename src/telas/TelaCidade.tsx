@@ -104,7 +104,7 @@ export function TelaCidade({
           <button type="button" className={styles.icone} onClick={() => setModal('ajustes')} aria-label="Ajustes">
             <Settings size={20} aria-hidden="true" />
           </button>
-          <a className={styles.icone} {...linkDeRetorno()} aria-label="Dar retorno: achou um erro ou tem uma ideia?">
+          <a className={styles.icone} {...linkDeRetorno()} aria-label="Mande seu feedback: achou um erro ou tem uma ideia?">
             <MessageSquareText size={20} aria-hidden="true" />
           </a>
           <ChipDoPython />
