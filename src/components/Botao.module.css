@@ -90,6 +90,20 @@
   animation: girar 700ms linear infinite;
 }
 
+/* Tela estreita: menos margem dos lados, para o texto não quebrar em duas linhas. */
+@media (max-width: 480px) /* fora-da-escala: breakpoint */ {
+  .botao {
+    padding-inline: var(--espaco-5);
+  }
+}
+
+/* Tela de toque não tem tecla de atalho para mostrar. */
+@media (hover: none) {
+  .atalho {
+    display: none;
+  }
+}
+
 @keyframes girar {
   to {
     transform: rotate(1turn);

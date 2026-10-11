@@ -378,6 +378,20 @@
     display: none;
   }
 
+  /* Ao lado do título se couber; senão, numa linha só abaixo dele, à direita. */
+  .acoes {
+    flex: 1 1 auto;
+    justify-content: flex-end;
+  }
+
+  .inicio {
+    padding: var(--espaco-5) var(--espaco-4);
+  }
+
+  .convite {
+    padding: var(--espaco-5);
+  }
+
   .jogo {
     grid-template-columns: minmax(0, 1fr);
     padding: var(--espaco-4);

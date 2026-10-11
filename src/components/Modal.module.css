@@ -12,7 +12,10 @@
 .caixa {
   display: grid;
   grid-template-rows: auto 1fr auto;
+  /* minmax(0, …): conteúdo largo (uma linha de código) rola dentro, não alarga a caixa para fora da tela */
+  grid-template-columns: minmax(0, 1fr);
   width: 100%;
+  min-width: 0;
   max-height: calc(100dvh - var(--espaco-7));
   border: var(--borda-grossa) solid var(--cor-contorno);
   border-radius: var(--raio-grande);
@@ -36,6 +39,20 @@
   gap: var(--espaco-4);
   padding: var(--espaco-5) var(--espaco-6);
   border-bottom: var(--borda-fina) solid var(--cor-contorno-suave);
+}
+
+/* Com selo (aula): selo e fechar na primeira linha, título na segunda, com a largura toda */
+.comSelo {
+  flex-wrap: wrap;
+}
+
+.comSelo .titulo {
+  order: 2;
+  flex-basis: 100%;
+}
+
+.comSelo .fechar {
+  margin-left: auto;
 }
 
 .titulo {
@@ -70,6 +87,21 @@
   gap: var(--espaco-4);
   padding: var(--espaco-5) var(--espaco-6);
   border-top: var(--borda-fina) solid var(--cor-contorno-suave);
+}
+
+@media (max-width: 480px) /* fora-da-escala: breakpoint */ {
+  .veu {
+    padding: var(--espaco-3);
+  }
+
+  .cabecalho,
+  .rodape {
+    padding: var(--espaco-4) var(--espaco-5);
+  }
+
+  .corpo {
+    padding: var(--espaco-5);
+  }
 }
 
 @keyframes surgir {

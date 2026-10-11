@@ -4,6 +4,7 @@
 // acerta uma peça do Guglo Wars, abre o Anuncie aqui e garante que nada veio de outro domínio (INV-09)
 // e que a política de segurança de conteúdo está no ar sem barrar o próprio jogo (ADR-0009). Por fim, tira
 // a rede e confere que o jogo abre do aparelho, com o Python saindo do service worker (ADR-0010).
+// Num celular de 360 px, confere que nenhuma tela rola para o lado e que o modal da aula cabe na tela.
 //
 // Uso:  npm run build && npx vite preview --port 4173   (em outro terminal)
 //       npm run fumaca
@@ -154,6 +155,23 @@ await passo('sem internet, o jogo abre do aparelho e o Python carrega (ADR-0010)
     pagina.off('response', anotar);
   }
   if (!wasmDoServico.includes(true)) throw new Error(`o .wasm não veio do service worker: ${JSON.stringify(wasmDoServico)}`);
+});
+await passo('no celular (360 px), nada passa da largura da tela, nem o modal da aula', async () => {
+  const celular = await navegador.newPage({ viewport: { width: 360, height: 756 }, isMobile: true, hasTouch: true });
+  try {
+    for (const hash of ['#/', '#/cidade', '#/obra/correio', '#/guglo-wars', '#/anuncie']) {
+      await celular.goto(`${URL_DO_JOGO}/${hash}`);
+      await celular.waitForTimeout(800);
+      const sobra = await celular.evaluate(() => {
+        const largura = globalThis.innerWidth;
+        const caixa = globalThis.document.querySelector('[role="dialog"]')?.getBoundingClientRect();
+        return { rolagem: globalThis.document.documentElement.scrollWidth - largura, modal: caixa ? Math.round(caixa.right - largura) : 0 };
+      });
+      if (sobra.rolagem > 0 || sobra.modal > 0) throw new Error(`${hash}: rola ${sobra.rolagem}px para o lado, modal passa ${sobra.modal}px`);
+    }
+  } finally {
+    await celular.close();
+  }
 });
 await passo('nenhuma requisição a outro domínio (INV-09)', async () => {
   if (deFora.size > 0) throw new Error(`o jogo pediu algo a: ${[...deFora].join(', ')}`);

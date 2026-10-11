@@ -59,7 +59,7 @@ export function Modal({ titulo, children, aoFechar, largura = 'media', rodape, c
         aria-labelledby={idDoTitulo}
         tabIndex={-1}
       >
-        <header className={styles.cabecalho}>
+        <header className={cabecalho ? `${styles.cabecalho} ${styles.comSelo}` : styles.cabecalho}>
           {cabecalho}
           <h2 id={idDoTitulo} className={styles.titulo}>
             {titulo}
