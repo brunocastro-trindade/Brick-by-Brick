@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { arquivoDeCabecalhos, CABECALHOS_DE_SEGURANCA, POLITICA_NA_META } from './cabecalhos';
 
-/** Lê o _headers no formato do Cloudflare Pages: caminho na coluna 0, cabeçalhos recuados abaixo. */
+/** Lê o _headers no formato do Cloudflare: caminho na coluna 0, cabeçalhos recuados abaixo. */
 function regras(texto: string): Map<string, Record<string, string>> {
   const mapa = new Map<string, Record<string, string>>();
   let atual: Record<string, string> = {};
@@ -15,7 +15,7 @@ function regras(texto: string): Map<string, Record<string, string>> {
   return mapa;
 }
 
-describe('cabeçalhos do host (ADR-0013)', () => {
+describe('cabeçalhos do host (ADR-0014)', () => {
   it('a política em cabeçalho é a da meta mais frame-ancestors, que a meta não aceita', () => {
     expect(POLITICA_NA_META).toContain("default-src 'self'");
     expect(POLITICA_NA_META).not.toContain('frame-ancestors');
@@ -26,7 +26,7 @@ describe('cabeçalhos do host (ADR-0013)', () => {
     const lidas = regras(arquivoDeCabecalhos());
     expect([...lidas.keys()]).toEqual(['/*', '/assets/*', '/pyodide/*']);
     expect(lidas.get('/*')).toEqual(CABECALHOS_DE_SEGURANCA);
-    // Sem Cache-Control em /*: o padrão do Pages (revalidar sempre) é o certo para /, sw.js e manifest,
+    // Sem Cache-Control em /*: o padrão do Cloudflare (revalidar sempre) é o certo para /, sw.js e manifest,
     // e um segundo Cache-Control seria juntado com vírgula ao das regras abaixo.
     expect(lidas.get('/*')).not.toHaveProperty('Cache-Control');
     for (const caminho of ['/assets/*', '/pyodide/*']) {
@@ -34,7 +34,7 @@ describe('cabeçalhos do host (ADR-0013)', () => {
     }
   });
 
-  it('respeita os limites do Pages: até 100 regras e 2.000 caracteres por linha', () => {
+  it('respeita os limites do _headers: até 100 regras e 2.000 caracteres por linha', () => {
     const texto = arquivoDeCabecalhos();
     expect(regras(texto).size).toBeLessThanOrEqual(100);
     for (const linha of texto.split('\n')) expect(linha.length).toBeLessThanOrEqual(2000);

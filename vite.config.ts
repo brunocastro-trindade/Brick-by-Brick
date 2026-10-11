@@ -20,7 +20,7 @@ const ROTA_PYODIDE = `pyodide/${VERSAO_DO_PYODIDE}`;
 /** Versão que vai no retorno do beta (ADR-0012): a do package.json mais o commit, quando houver git. */
 function versaoDoJogo(): string {
   const versao: string = require('./package.json').version;
-  let commit = process.env.CF_PAGES_COMMIT_SHA?.slice(0, 7) ?? '';
+  let commit = process.env.WORKERS_CI_COMMIT_SHA?.slice(0, 7) ?? '';
   if (!commit) {
     try {
       commit = execFileSync('git', ['rev-parse', '--short', 'HEAD'], { encoding: 'utf8' }).trim();
@@ -42,7 +42,7 @@ const TIPOS_MIME: Record<string, string> = {
 
 /**
  * Política de segurança de conteúdo (ADR-0009) no topo do index.html, que vale em qualquer host, e o _headers do
- * Cloudflare Pages (ADR-0013), com a mesma política em cabeçalho e o cache. Só no build: o dev do Vite injeta
+ * Cloudflare (ADR-0014), com a mesma política em cabeçalho e o cache. Só no build: o dev do Vite injeta
  * script inline.
  */
 function politicaDeConteudo(): Plugin {
@@ -60,7 +60,7 @@ function politicaDeConteudo(): Plugin {
 
 /**
  * Etiquetas de compartilhamento, robots.txt e sitemap.xml (ADR-0013), conforme URL_DO_SITE e AMBIENTE_DO_SITE
- * (ou a branch do Cloudflare Pages). Prévia e teste saem com noindex.
+ * (ou a branch do Workers Builds, ADR-0014). Prévia e teste saem com noindex.
  */
 function metadadosDePublicacao(): Plugin {
   const site = publicacao(process.env);
@@ -112,8 +112,9 @@ function pyodideLocal(): Plugin {
 }
 
 // A página entra como "/"; robots, sitemap e a imagem de compartilhar são para buscadores e redes, não para
-// jogar sem internet. O _headers nem é servido pelo Pages: se entrasse na lista, o cache inteiro falharia.
-const FORA_DO_CACHE = /^index\.html$|\.(map|txt|xml)$|^compartilhar\.png$|^_headers$/;
+// jogar sem internet. O _headers e os arquivos com ponto no começo (.assetsignore) nem são servidos pelo
+// Cloudflare: se entrassem na lista, o cache inteiro falharia (ou guardaria a página no lugar deles).
+const FORA_DO_CACHE = /^index\.html$|\.(map|txt|xml)$|^compartilhar\.png$|^_headers$|(^|\/)\./;
 
 /** Conteúdo de um arquivo do bundle, para a versão do cache mudar quando qualquer arquivo mudar. */
 function conteudoDoArquivo(arquivo: Rolldown.OutputBundle[string]): string | Uint8Array {
@@ -158,7 +159,7 @@ export default defineConfig({
   plugins: [react(), conteudoYaml(), pyodideLocal(), politicaDeConteudo(), metadadosDePublicacao(), servicoOffline()],
   define: { __VERSAO_DO_PYODIDE__: JSON.stringify(VERSAO_DO_PYODIDE), __VERSAO_DO_JOGO__: JSON.stringify(versaoDoJogo()) },
   optimizeDeps: { exclude: ['pyodide'] },
-  // O vite preview (fumaça) usa os mesmos cabeçalhos de segurança do Pages: o Python tem de carregar com a
+  // O vite preview (fumaça) usa os mesmos cabeçalhos de segurança do Cloudflare: o Python tem de carregar com a
   // política em cabeçalho, que vale também para o worker.
   preview: { headers: CABECALHOS_DE_SEGURANCA },
   worker: { format: 'es' },
