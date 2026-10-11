@@ -4,6 +4,7 @@
 }
 
 .opcao,
+.bloco,
 .perigo {
   display: flex;
   flex-wrap: wrap;
@@ -75,4 +76,21 @@
   flex-wrap: wrap;
   gap: var(--espaco-3);
   justify-content: flex-end;
+}
+
+.aviso {
+  width: 100%;
+  margin: 0;
+  padding: var(--espaco-3) var(--espaco-4);
+  border: var(--borda-fina) solid var(--cor-contorno-suave);
+  border-radius: var(--raio-pequeno);
+  font-size: var(--tipo-corpo-pequeno-tamanho);
+}
+
+.erro {
+  background: var(--cor-problema-fundo);
+}
+
+.feito {
+  background: var(--cor-sucesso-fundo);
 }

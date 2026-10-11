@@ -169,11 +169,13 @@ export function TelaCidade({
       {modal === 'como-jogar' ? <ModalComoJogar aoFechar={() => setModal(null)} /> : null}
       {modal === 'ajustes' ? (
         <ModalDeAjustes
+          progresso={progresso}
           som={progresso.som}
           modoLivre={progresso.modoLivre}
           aoAlternarSom={() => atualizarProgresso((atual) => ({ ...atual, som: !atual.som }))}
           aoAlternarModoLivre={() => atualizarProgresso((atual) => ({ ...atual, modoLivre: !atual.modoLivre }))}
           aoApagarProgresso={() => atualizarProgresso((atual) => ({ ...progressoNovo(), som: atual.som }))}
+          aoCarregarProgresso={(novo) => atualizarProgresso((atual) => ({ ...novo, som: atual.som }))}
           aoFechar={() => setModal(null)}
         />
       ) : null}

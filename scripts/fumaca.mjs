@@ -9,7 +9,7 @@
 //       npm run fumaca
 // Variáveis: URL_DO_JOGO (padrão http://localhost:4173) e CHROMIUM (caminho do navegador).
 import { existsSync } from 'node:fs';
-import { mkdir } from 'node:fs/promises';
+import { mkdir, readFile } from 'node:fs/promises';
 import { chromium } from 'playwright-core';
 
 const URL_DO_JOGO = process.env.URL_DO_JOGO ?? 'http://localhost:4173';
@@ -110,6 +110,19 @@ await passo('Guglo Wars: Enter errado não deixa peça fantasma no poço', async
   if (pecas !== 1) throw new Error(`${pecas} peças da vez no poço`);
 });
 
+await passo('progresso vai para um arquivo e volta pelos Ajustes (ADR-0011)', async () => {
+  await pagina.goto(`${URL_DO_JOGO}/#/cidade`);
+  await pagina.getByRole('button', { name: 'Ajustes' }).click();
+  const [baixado] = await Promise.all([pagina.waitForEvent('download'), pagina.getByRole('button', { name: 'Baixar progresso' }).click()]);
+  const caminho = await baixado.path();
+  const conteudo = JSON.parse(await readFile(caminho, 'utf8'));
+  if (conteudo.formato !== 'brick-by-brick/progresso') throw new Error(`arquivo inesperado: ${JSON.stringify(conteudo).slice(0, 80)}`);
+  await pagina.locator('input[type="file"]').setInputFiles(caminho);
+  await pagina.getByText('O arquivo tem').waitFor({ timeout: 5_000 });
+  await pagina.getByRole('button', { name: 'Trocar pelo do arquivo' }).click();
+  await pagina.getByRole('status').getByText('Progresso carregado.').waitFor({ timeout: 5_000 });
+  await pagina.getByRole('button', { name: 'Fechar ajustes' }).click();
+});
 await passo('Anuncie aqui abre com o e-mail de contato', async () => {
   await pagina.goto(`${URL_DO_JOGO}/#/anuncie`);
   await pagina.getByRole('heading', { name: /Sua marca na cidade/ }).waitFor({ timeout: 10_000 });
