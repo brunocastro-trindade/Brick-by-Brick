@@ -13,7 +13,7 @@ import { PecaDeEntulho, PecaQueCai, SilhuetaDaPeca } from '../components/PecaQue
 import { Pinguim, type PoseDoPinguim } from '../components/Pinguim';
 import { MEDIDAS, PredioDaCidade, type SituacaoDoPredio } from '../components/PredioDaCidade';
 import { TijoloDeCodigo, type EstadoDoTijolo } from '../components/TijoloDeCodigo';
-import { criarPeca } from '../jogo/codeWars';
+import { criarPeca } from '../jogo/gugloWars';
 import type { Fala } from '../jogo/falas';
 import { MODELOS_DE_PREDIO } from '../jogo/tipos';
 import styles from './TelaVitrine.module.css';
@@ -161,7 +161,7 @@ export default function TelaVitrine() {
         ))}
       </Secao>
 
-      <Secao titulo="Peças do Code Wars">
+      <Secao titulo="Peças do Guglo Wars">
         {PECAS.map(({ rotulo, conteudo }) => (
           <Amostra key={rotulo} rotulo={rotulo}>
             <div className={styles.peca}>{conteudo}</div>

@@ -1,5 +1,5 @@
-// Code Wars (ADR-0007): linhas das obras concluídas caem no poço; digite antes de chegarem ao fundo.
-// As regras moram em src/jogo/codeWars.ts; aqui ficam o relógio, o teclado, o som e o recorde.
+// Guglo Wars (ADR-0007): linhas das obras concluídas caem no poço; digite antes de chegarem ao fundo.
+// As regras moram em src/jogo/gugloWars.ts; aqui ficam o relógio, o teclado, o som e o recorde.
 import { ArrowLeft, Keyboard, Pause, Play, RotateCcw, Swords } from 'lucide-react';
 import { useEffect, useMemo, useReducer, useRef, useState, type CSSProperties, type KeyboardEvent } from 'react';
 import logo from '../assets/logo.webp';
@@ -12,27 +12,27 @@ import {
   conferir,
   FILEIRAS,
   intervaloDaFileiraMs,
-  linhasDoCodeWars,
+  linhasDoGugloWars,
   NIVEL_DA_LACUNA,
   novaPartida,
-  passoDoCodeWars,
-  type AcaoDoCodeWars,
-  type EstadoDoCodeWars,
-  type EventoDoCodeWars,
-  type LinhaDoCodeWars,
+  passoDoGugloWars,
+  type AcaoDoGugloWars,
+  type EstadoDoGugloWars,
+  type EventoDoGugloWars,
+  type LinhaDoGugloWars,
   type Peca,
-} from '../jogo/codeWars';
-import { progressoDaObra, registrarPartidaDoCodeWars, type Progresso } from '../jogo/progresso';
+} from '../jogo/gugloWars';
+import { progressoDaObra, registrarPartidaDoGugloWars, type Progresso } from '../jogo/progresso';
 import type { Obra } from '../jogo/tipos';
 import { definirSom, sons } from '../som/sons';
-import styles from './TelaCodeWars.module.css';
+import styles from './TelaGugloWars.module.css';
 
-type Acao = AcaoDoCodeWars | { tipo: 'comecar'; linhas: readonly LinhaDoCodeWars[]; semente: number } | { tipo: 'sair' };
+type Acao = AcaoDoGugloWars | { tipo: 'comecar'; linhas: readonly LinhaDoGugloWars[]; semente: number } | { tipo: 'sair' };
 
-function reduzir(estado: EstadoDoCodeWars | null, acao: Acao): EstadoDoCodeWars | null {
+function reduzir(estado: EstadoDoGugloWars | null, acao: Acao): EstadoDoGugloWars | null {
   if (acao.tipo === 'comecar') return novaPartida(acao.linhas, acao.semente);
   if (acao.tipo === 'sair') return null;
-  return estado ? passoDoCodeWars(estado, acao) : null;
+  return estado ? passoDoGugloWars(estado, acao) : null;
 }
 
 /** Posição de uma fileira no poço, lida pelo CSS. */
@@ -42,7 +42,7 @@ function pedidoDaPeca(peca: Peca): string {
   return peca.modo === 'copiar' ? `Copie: ${peca.resposta}` : `Complete a lacuna: ${peca.antes} (lacuna) ${peca.depois}`;
 }
 
-function mensagemDoEvento(evento: EventoDoCodeWars | null, nivel: number): string {
+function mensagemDoEvento(evento: EventoDoGugloWars | null, nivel: number): string {
   if (evento?.tipo === 'acertou') {
     return [
       `Acertou! Mais ${evento.pontos} pontos.`,
@@ -55,7 +55,7 @@ function mensagemDoEvento(evento: EventoDoCodeWars | null, nivel: number): strin
   return '';
 }
 
-export interface TelaCodeWarsProps {
+export interface TelaGugloWarsProps {
   obras: Obra[];
   progresso: Progresso;
   atualizarProgresso: (mudar: (atual: Progresso) => Progresso) => void;
@@ -63,13 +63,13 @@ export interface TelaCodeWarsProps {
   aoIrParaInicio: () => void;
 }
 
-export function TelaCodeWars({ obras, progresso, atualizarProgresso, aoVoltar, aoIrParaInicio }: TelaCodeWarsProps) {
-  const linhas = useMemo(() => linhasDoCodeWars(obras, progresso), [obras, progresso]);
+export function TelaGugloWars({ obras, progresso, atualizarProgresso, aoVoltar, aoIrParaInicio }: TelaGugloWarsProps) {
+  const linhas = useMemo(() => linhasDoGugloWars(obras, progresso), [obras, progresso]);
   const obrasComLinhas = obras.filter((obra) => progresso.modoLivre || progressoDaObra(progresso, obra.id).concluida).length;
   const [estado, despachar] = useReducer(reduzir, null);
-  const [recordeAnterior, setRecordeAnterior] = useState(progresso.codeWars.recorde);
+  const [recordeAnterior, setRecordeAnterior] = useState(progresso.gugloWars.recorde);
   const entrada = useRef<HTMLInputElement>(null);
-  const registrada = useRef<EstadoDoCodeWars | null>(null);
+  const registrada = useRef<EstadoDoGugloWars | null>(null);
 
   const fase = estado?.fase;
   const peca = estado?.peca;
@@ -108,12 +108,12 @@ export function TelaCodeWars({ obras, progresso, atualizarProgresso, aoVoltar, a
     if (!estado || estado.fase !== 'fim' || registrada.current === estado) return;
     registrada.current = estado;
     const pontos = estado.pontos;
-    atualizarProgresso((atual) => registrarPartidaDoCodeWars(atual, pontos));
+    atualizarProgresso((atual) => registrarPartidaDoGugloWars(atual, pontos));
     (pontos > recordeAnterior ? sons.obra : sons.erro)();
   }, [estado, atualizarProgresso, recordeAnterior]);
 
   const comecar = () => {
-    setRecordeAnterior(progresso.codeWars.recorde);
+    setRecordeAnterior(progresso.gugloWars.recorde);
     despachar({ tipo: 'comecar', linhas, semente: Date.now() });
   };
 
@@ -134,7 +134,7 @@ export function TelaCodeWars({ obras, progresso, atualizarProgresso, aoVoltar, a
       </button>
       <h1 className={styles.titulo}>
         <Swords size={26} aria-hidden="true" />
-        Code Wars
+        Guglo Wars
       </h1>
       <div className={styles.acoes}>
         {fase === 'jogando' ? (
@@ -159,7 +159,7 @@ export function TelaCodeWars({ obras, progresso, atualizarProgresso, aoVoltar, a
               <GugloPixelado acao="parado" />
             </div>
             <div className={styles.conviteTexto}>
-              <h2 className={styles.conviteTitulo}>O Code Wars usa as linhas que você já construiu</h2>
+              <h2 className={styles.conviteTitulo}>O Guglo Wars usa as linhas que você já construiu</h2>
               <p>Conclua a primeira obra da cidade ({obras[0]?.nome}) e as linhas do programa dela viram peças para digitar.</p>
               <Botao tamanho="grande" aoClicar={aoVoltar}>
                 Ir para a cidade
@@ -192,7 +192,7 @@ export function TelaCodeWars({ obras, progresso, atualizarProgresso, aoVoltar, a
               </ul>
               <p className={styles.fonte}>
                 {linhas.length} linhas de {obrasComLinhas} {obrasComLinhas === 1 ? 'obra' : 'obras'}
-                {progresso.modoLivre ? ' (modo livre)' : ' concluídas'} · Recorde: {progresso.codeWars.recorde.toLocaleString('pt-BR')}
+                {progresso.modoLivre ? ' (modo livre)' : ' concluídas'} · Recorde: {progresso.gugloWars.recorde.toLocaleString('pt-BR')}
               </p>
               <p className={styles.avisoToque}>Funciona melhor com teclado físico.</p>
               <Botao tamanho="grande" icone={<Swords size={20} aria-hidden="true" />} aoClicar={comecar}>
@@ -215,7 +215,7 @@ export function TelaCodeWars({ obras, progresso, atualizarProgresso, aoVoltar, a
     <div className={styles.tela}>
       {cabecalho}
       <main className={styles.jogo}>
-        <section className={styles.campo} aria-label="Partida do Code Wars">
+        <section className={styles.campo} aria-label="Partida do Guglo Wars">
           <dl className={styles.placar}>
             <div>
               <dt>Pontos</dt>
@@ -271,9 +271,9 @@ export function TelaCodeWars({ obras, progresso, atualizarProgresso, aoVoltar, a
             spellCheck={false}
             enterKeyHint="send"
             aria-invalid={conferencia === 'desvio'}
-            aria-describedby="atalhos-do-code-wars"
+            aria-describedby="atalhos-do-guglo-wars"
           />
-          <p id="atalhos-do-code-wars" className={styles.atalhos}>
+          <p id="atalhos-do-guglo-wars" className={styles.atalhos}>
             <Keyboard size={16} aria-hidden="true" />
             Enter confere · Esc pausa · espaços e estilo de aspas não contam
           </p>

@@ -1,7 +1,7 @@
-// Peças do Code Wars (ADR-0007): uma barra de tijolo com a linha de código colorida, com o espaçamento exato
+// Peças do Guglo Wars (ADR-0007): uma barra de tijolo com a linha de código colorida, com o espaçamento exato
 // (o que se vê é o que se digita). Copiando, o trecho já digitado fica assentado; na lacuna, o que a pessoa
 // digita aparece dentro da vaga.
-import { caracteresCertos, conferir, type Peca } from '../jogo/codeWars';
+import { caracteresCertos, conferir, type Peca } from '../jogo/gugloWars';
 import { tokenizar, type CategoriaToken } from '../jogo/tokenizador';
 import styles from './PecaQueCai.module.css';
 

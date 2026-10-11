@@ -1,4 +1,4 @@
-// Code Wars (ADR-0007): linhas das obras concluídas caem num poço, como peças de Tetris, e a pessoa digita
+// Guglo Wars (ADR-0007): linhas das obras concluídas caem num poço, como peças de Tetris, e a pessoa digita
 // o código antes de a peça chegar ao fundo. Nos primeiros níveis copia a linha; depois, completa a lacuna.
 // Regras puras: o tempo de verdade fica na tela, que só manda "tique".
 import { criarSorteio, embaralhar } from './embaralhar';
@@ -15,16 +15,16 @@ export const COMBO_PARA_LIMPAR = 5;
 /** A partir deste nível, a peça esconde um pedaço de sintaxe em vez de pedir a linha inteira. */
 export const NIVEL_DA_LACUNA = 3;
 
-export interface LinhaDoCodeWars {
+export interface LinhaDoGugloWars {
   texto: string;
   /** Nome da obra de onde a linha veio, para a peça dizer "do Correio". */
   obra: string;
 }
 
 /** Linhas dos programas das obras concluídas (todas, no modo livre), sem comentário e sem repetir. */
-export function linhasDoCodeWars(obras: readonly Obra[], progresso: Progresso): LinhaDoCodeWars[] {
+export function linhasDoGugloWars(obras: readonly Obra[], progresso: Progresso): LinhaDoGugloWars[] {
   const vistas = new Set<string>();
-  const linhas: LinhaDoCodeWars[] = [];
+  const linhas: LinhaDoGugloWars[] = [];
   for (const obra of obras) {
     if (!progresso.modoLivre && !progressoDaObra(progresso, obra.id).concluida) continue;
     for (const { texto } of linhasDaObraCompleta(obra)) {
@@ -41,7 +41,7 @@ export type ModoDaPeca = 'copiar' | 'lacuna';
 
 export interface Peca {
   id: number;
-  linha: LinhaDoCodeWars;
+  linha: LinhaDoGugloWars;
   modo: ModoDaPeca;
   /** A linha é `antes + resposta + depois`. Copiando, a resposta é a linha inteira. */
   antes: string;
@@ -84,7 +84,7 @@ export function trechosParaLacuna(texto: string): Trecho[] {
   return trechos;
 }
 
-export function criarPeca(id: number, linha: LinhaDoCodeWars, nivel: number): Peca {
+export function criarPeca(id: number, linha: LinhaDoGugloWars, nivel: number): Peca {
   const copiar: Peca = { id, linha, modo: 'copiar', antes: '', resposta: linha.texto, depois: '', fileira: 0 };
   if (nivel < NIVEL_DA_LACUNA) return copiar;
   const trechos = trechosParaLacuna(linha.texto);
@@ -123,11 +123,17 @@ export function nivelPorAcertos(acertos: number): number {
   return 1 + Math.floor(acertos / ACERTOS_POR_NIVEL);
 }
 
-/** Tempo para a peça atravessar o poço vazio: ler, pensar (na lacuna) e digitar, e cada nível tira 10%. */
+/** Nenhuma peça atravessa o poço vazio em menos que isto, nem no nível mais alto. */
+export const DURACAO_MINIMA_MS = 6000;
+
+/**
+ * Tempo para a peça atravessar o poço vazio: ler, pensar (na lacuna) e digitar, com folga para quem está
+ * aprendendo (0,9 s por caractere). Cada nível tira 6%. Uma linha de 20 caracteres leva uns 21 s no nível 1.
+ */
 export function duracaoDaPecaMs(peca: Peca, nivel: number): number {
-  const digitar = peca.resposta.length * 600;
-  const base = peca.modo === 'copiar' ? 2000 + digitar : 3500 + peca.linha.texto.length * 110 + digitar;
-  return Math.max(4000, Math.round(base * 0.9 ** (nivel - 1)));
+  const digitar = peca.resposta.length * 900;
+  const base = peca.modo === 'copiar' ? 3000 + digitar : 5000 + peca.linha.texto.length * 160 + digitar;
+  return Math.max(DURACAO_MINIMA_MS, Math.round(base * 0.94 ** (nivel - 1)));
 }
 
 export function intervaloDaFileiraMs(peca: Peca, nivel: number): number {
@@ -145,34 +151,34 @@ export function pontosDoAcerto(peca: Peca, nivel: number, fileirasDeSobra: numbe
   return (base + fileirasDeSobra * 5) * nivel + combo * 10;
 }
 
-export type EventoDoCodeWars =
+export type EventoDoGugloWars =
   | { tipo: 'acertou'; seq: number; pontos: number; fileira: number; limpouEntulho: boolean; subiuDeNivel: boolean }
   | { tipo: 'caiu'; seq: number }
   | { tipo: 'errou'; seq: number }
   | { tipo: 'fim'; seq: number };
 
-export interface EstadoDoCodeWars {
+export interface EstadoDoGugloWars {
   fase: 'jogando' | 'pausado' | 'fim';
-  linhas: readonly LinhaDoCodeWars[];
+  linhas: readonly LinhaDoGugloWars[];
   semente: number;
   rodada: number;
-  fila: LinhaDoCodeWars[];
+  fila: LinhaDoGugloWars[];
   proximoId: number;
   peca: Peca;
   /** Linha da próxima peça; o modo dela se decide quando ela entra, pelo nível da hora. */
-  proxima: LinhaDoCodeWars;
+  proxima: LinhaDoGugloWars;
   /** Entulho de baixo para cima: o índice 0 é a fileira do fundo. */
-  entulho: LinhaDoCodeWars[];
+  entulho: LinhaDoGugloWars[];
   digitado: string;
   pontos: number;
   acertos: number;
   combo: number;
   maiorCombo: number;
   nivel: number;
-  evento: EventoDoCodeWars | null;
+  evento: EventoDoGugloWars | null;
 }
 
-export type AcaoDoCodeWars =
+export type AcaoDoGugloWars =
   | { tipo: 'tique' }
   | { tipo: 'digitar'; texto: string }
   | { tipo: 'enviar' }
@@ -180,18 +186,18 @@ export type AcaoDoCodeWars =
   | { tipo: 'continuar' };
 
 /** Tira a próxima linha da fila; fila vazia é embaralhada de novo, numa rodada nova. */
-function tirarDaFila(estado: Pick<EstadoDoCodeWars, 'fila' | 'linhas' | 'semente' | 'rodada'>) {
+function tirarDaFila(estado: Pick<EstadoDoGugloWars, 'fila' | 'linhas' | 'semente' | 'rodada'>) {
   let { fila, rodada } = estado;
   if (fila.length === 0) {
     rodada += 1;
     fila = embaralhar(estado.linhas, criarSorteio(estado.semente + rodada));
   }
   const [linha, ...resto] = fila;
-  return { linha: linha as LinhaDoCodeWars, fila: resto, rodada };
+  return { linha: linha as LinhaDoGugloWars, fila: resto, rodada };
 }
 
-export function novaPartida(linhas: readonly LinhaDoCodeWars[], semente: number): EstadoDoCodeWars {
-  if (linhas.length === 0) throw new Error('O Code Wars precisa de ao menos uma linha de obra concluída.');
+export function novaPartida(linhas: readonly LinhaDoGugloWars[], semente: number): EstadoDoGugloWars {
+  if (linhas.length === 0) throw new Error('O Guglo Wars precisa de ao menos uma linha de obra concluída.');
   const base = { linhas, semente, rodada: 0, fila: embaralhar(linhas, criarSorteio(semente)) };
   const primeira = tirarDaFila(base);
   const segunda = tirarDaFila({ ...base, fila: primeira.fila, rodada: primeira.rodada });
@@ -215,7 +221,7 @@ export function novaPartida(linhas: readonly LinhaDoCodeWars[], semente: number)
 }
 
 /** A próxima entra no poço e outra linha sai da fila para o lugar dela. */
-function entrarProxima(estado: EstadoDoCodeWars): EstadoDoCodeWars {
+function entrarProxima(estado: EstadoDoGugloWars): EstadoDoGugloWars {
   const seguinte = tirarDaFila(estado);
   return {
     ...estado,
@@ -228,10 +234,10 @@ function entrarProxima(estado: EstadoDoCodeWars): EstadoDoCodeWars {
   };
 }
 
-const proximaSeq = (estado: EstadoDoCodeWars) => (estado.evento?.seq ?? 0) + 1;
+const proximaSeq = (estado: EstadoDoGugloWars) => (estado.evento?.seq ?? 0) + 1;
 
 /** A peça desce uma fileira; se já estava pousada, vira entulho. */
-function descer(estado: EstadoDoCodeWars): EstadoDoCodeWars {
+function descer(estado: EstadoDoGugloWars): EstadoDoGugloWars {
   if (estado.peca.fileira < fileiraDePouso(estado.entulho.length)) {
     return { ...estado, peca: { ...estado.peca, fileira: estado.peca.fileira + 1 } };
   }
@@ -242,7 +248,7 @@ function descer(estado: EstadoDoCodeWars): EstadoDoCodeWars {
   return entrarProxima({ ...estado, entulho, combo: 0, evento: { tipo: 'caiu', seq: proximaSeq(estado) } });
 }
 
-function acertar(estado: EstadoDoCodeWars): EstadoDoCodeWars {
+function acertar(estado: EstadoDoGugloWars): EstadoDoGugloWars {
   const { peca } = estado;
   const combo = estado.combo + 1;
   const acertos = estado.acertos + 1;
@@ -262,7 +268,7 @@ function acertar(estado: EstadoDoCodeWars): EstadoDoCodeWars {
   });
 }
 
-export function passoDoCodeWars(estado: EstadoDoCodeWars, acao: AcaoDoCodeWars): EstadoDoCodeWars {
+export function passoDoGugloWars(estado: EstadoDoGugloWars, acao: AcaoDoGugloWars): EstadoDoGugloWars {
   if (estado.fase === 'fim') return estado;
   if (acao.tipo === 'pausar') return estado.fase === 'jogando' ? { ...estado, fase: 'pausado' } : estado;
   if (acao.tipo === 'continuar') return estado.fase === 'pausado' ? { ...estado, fase: 'jogando' } : estado;

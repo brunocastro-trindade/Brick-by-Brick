@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Teste de fumaça (HARNESS §5.5): abre o jogo num Chromium de verdade, espera o Python carregar
 // no navegador e joga o primeiro mini desafio do Correio — errando uma vez e acertando depois —
-// e acerta uma peça do Code Wars.
+// e acerta uma peça do Guglo Wars.
 //
 // Uso:  npm run build && npx vite preview --port 4173   (em outro terminal)
 //       npm run fumaca
@@ -66,11 +66,11 @@ await passo('progresso sobrevive a recarregar a página', async () => {
   await pagina.getByText('Mini desafio 2 de 5').waitFor({ timeout: 10_000 });
 });
 
-await passo('Code Wars fica fechado sem obra concluída', async () => {
-  await pagina.goto(`${URL_DO_JOGO}/#/code-wars`);
-  await pagina.getByText('O Code Wars usa as linhas que você já construiu').waitFor({ timeout: 10_000 });
+await passo('Guglo Wars fica fechado sem obra concluída', async () => {
+  await pagina.goto(`${URL_DO_JOGO}/#/guglo-wars`);
+  await pagina.getByText('O Guglo Wars usa as linhas que você já construiu').waitFor({ timeout: 10_000 });
 });
-await passo('Code Wars: digitar a peça antes de ela cair pontua (modo livre)', async () => {
+await passo('Guglo Wars: digitar a peça antes de ela cair pontua (modo livre)', async () => {
   await pagina.evaluate(() => {
     const chave = 'brick-by-brick:progresso:v1';
     localStorage.setItem(chave, JSON.stringify({ ...JSON.parse(localStorage.getItem(chave) ?? '{}'), modoLivre: true }));

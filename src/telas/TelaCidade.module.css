@@ -73,7 +73,7 @@
   background: var(--cor-fundo-alternativo);
 }
 
-.codeWars {
+.gugloWars {
   display: inline-flex;
   white-space: nowrap;
   align-items: center;
@@ -89,11 +89,11 @@
   box-shadow: var(--sombra-baixa);
 }
 
-.codeWars svg {
+.gugloWars svg {
   color: var(--cor-codigo-palavra-chave);
 }
 
-.codeWars:hover {
+.gugloWars:hover {
   background: var(--cor-editor-faixa);
 }
 

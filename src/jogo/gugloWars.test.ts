@@ -4,17 +4,18 @@ import {
   COMBO_PARA_LIMPAR,
   conferir,
   criarPeca,
+  DURACAO_MINIMA_MS,
   duracaoDaPecaMs,
   FILEIRAS,
   fileiraDePouso,
-  linhasDoCodeWars,
+  linhasDoGugloWars,
   NIVEL_DA_LACUNA,
   novaPartida,
-  passoDoCodeWars,
+  passoDoGugloWars,
   trechosParaLacuna,
-  type EstadoDoCodeWars,
-  type LinhaDoCodeWars,
-} from './codeWars';
+  type EstadoDoGugloWars,
+  type LinhaDoGugloWars,
+} from './gugloWars';
 import { OBRAS } from './obras';
 import { progressoDeObraNovo, progressoNovo, type Progresso } from './progresso';
 import { tokensSignificativos } from './tokenizador';
@@ -24,32 +25,32 @@ const comConcluidas = (...ids: string[]): Progresso => ({
   obras: Object.fromEntries(ids.map((id) => [id, { ...progressoDeObraNovo(), concluida: true }])),
 });
 
-const LINHAS: LinhaDoCodeWars[] = [
+const LINHAS: LinhaDoGugloWars[] = [
   { texto: 'print("Olá")', obra: 'Correio' },
   { texto: 'for i in range(3):', obra: 'Fábrica' },
   { texto: 'total = preco * 2', obra: 'Mercado' },
 ];
 
 /** Joga a ação várias vezes. */
-function repetir(estado: EstadoDoCodeWars, vezes: number, acao: Parameters<typeof passoDoCodeWars>[1]) {
+function repetir(estado: EstadoDoGugloWars, vezes: number, acao: Parameters<typeof passoDoGugloWars>[1]) {
   let atual = estado;
-  for (let i = 0; i < vezes; i += 1) atual = passoDoCodeWars(atual, acao);
+  for (let i = 0; i < vezes; i += 1) atual = passoDoGugloWars(atual, acao);
   return atual;
 }
 
 /** Até a peça atual virar entulho. */
-const deixarCair = (estado: EstadoDoCodeWars) => repetir(estado, fileiraDePouso(estado.entulho.length) - estado.peca.fileira + 1, { tipo: 'tique' });
+const deixarCair = (estado: EstadoDoGugloWars) => repetir(estado, fileiraDePouso(estado.entulho.length) - estado.peca.fileira + 1, { tipo: 'tique' });
 
 /** Digita a resposta da peça atual. */
-const acertarPeca = (estado: EstadoDoCodeWars) => passoDoCodeWars(estado, { tipo: 'digitar', texto: estado.peca.resposta });
+const acertarPeca = (estado: EstadoDoGugloWars) => passoDoGugloWars(estado, { tipo: 'digitar', texto: estado.peca.resposta });
 
-describe('linhas do Code Wars', () => {
+describe('linhas do Guglo Wars', () => {
   it('fica vazio sem obra concluída', () => {
-    expect(linhasDoCodeWars(OBRAS, progressoNovo())).toEqual([]);
+    expect(linhasDoGugloWars(OBRAS, progressoNovo())).toEqual([]);
   });
 
   it('usa só as obras concluídas, sem comentário e sem repetir', () => {
-    const linhas = linhasDoCodeWars(OBRAS, comConcluidas('correio'));
+    const linhas = linhasDoGugloWars(OBRAS, comConcluidas('correio'));
     expect(linhas.length).toBeGreaterThan(0);
     expect(new Set(linhas.map((linha) => linha.obra))).toEqual(new Set(['Correio']));
     expect(linhas.some((linha) => linha.texto.startsWith('#'))).toBe(false);
@@ -57,14 +58,14 @@ describe('linhas do Code Wars', () => {
   });
 
   it('no modo livre, usa todas as obras', () => {
-    const linhas = linhasDoCodeWars(OBRAS, { ...progressoNovo(), modoLivre: true });
+    const linhas = linhasDoGugloWars(OBRAS, { ...progressoNovo(), modoLivre: true });
     expect(new Set(linhas.map((linha) => linha.obra)).size).toBe(OBRAS.length);
   });
 });
 
 describe('peças', () => {
   it('copia a linha inteira antes do nível da lacuna', () => {
-    const peca = criarPeca(1, LINHAS[1] as LinhaDoCodeWars, NIVEL_DA_LACUNA - 1);
+    const peca = criarPeca(1, LINHAS[1] as LinhaDoGugloWars, NIVEL_DA_LACUNA - 1);
     expect(peca).toMatchObject({ modo: 'copiar', antes: '', resposta: 'for i in range(3):', depois: '' });
   });
 
@@ -76,7 +77,7 @@ describe('peças', () => {
   });
 
   it('em todas as linhas de todas as obras, a lacuna remonta a linha e nunca esconde texto, número ou nome', () => {
-    const linhas = linhasDoCodeWars(OBRAS, { ...progressoNovo(), modoLivre: true });
+    const linhas = linhasDoGugloWars(OBRAS, { ...progressoNovo(), modoLivre: true });
     for (const [indice, linha] of linhas.entries()) {
       const peca = criarPeca(indice, linha, NIVEL_DA_LACUNA);
       expect(peca.antes + peca.resposta + peca.depois).toBe(linha.texto);
@@ -92,15 +93,19 @@ describe('peças', () => {
     expect(criarPeca(1, { texto: 'nome', obra: 'X' }, 5).modo).toBe('copiar');
   });
 
-  it('lacuna e níveis altos caem mais rápido, com piso de 4 segundos', () => {
-    const linha = LINHAS[1] as LinhaDoCodeWars;
+  it('copiar uma linha de 20 caracteres no nível 1 dá uns 21 segundos', () => {
+    expect(duracaoDaPecaMs(criarPeca(1, { texto: 'x'.repeat(20), obra: 'X' }, 1), 1)).toBe(21000);
+  });
+
+  it('níveis altos caem mais rápido, sem passar do piso', () => {
+    const linha = LINHAS[1] as LinhaDoGugloWars;
     expect(duracaoDaPecaMs(criarPeca(1, linha, 1), 1)).toBeGreaterThan(duracaoDaPecaMs(criarPeca(1, linha, 1), 4));
-    expect(duracaoDaPecaMs(criarPeca(1, linha, 30), 30)).toBe(4000);
+    expect(duracaoDaPecaMs(criarPeca(1, linha, 60), 60)).toBe(DURACAO_MINIMA_MS);
   });
 });
 
 describe('conferir o que foi digitado', () => {
-  const peca = criarPeca(1, LINHAS[0] as LinhaDoCodeWars, 1);
+  const peca = criarPeca(1, LINHAS[0] as LinhaDoGugloWars, 1);
 
   it('acompanha o caminho e aponta o desvio', () => {
     expect(conferir('', peca)).toBe('vazio');
@@ -127,7 +132,7 @@ describe('partida', () => {
   it('a peça desce a cada tique e, no fundo, vira entulho e zera o combo', () => {
     let estado = acertarPeca(novaPartida(LINHAS, 7));
     expect(estado.combo).toBe(1);
-    estado = passoDoCodeWars(estado, { tipo: 'tique' });
+    estado = passoDoGugloWars(estado, { tipo: 'tique' });
     expect(estado.peca.fileira).toBe(1);
     const caida = estado.peca.linha;
     estado = deixarCair(estado);
@@ -139,7 +144,7 @@ describe('partida', () => {
 
   it('acertar pontua, troca a peça e limpa o que foi digitado', () => {
     const inicio = novaPartida(LINHAS, 7);
-    const estado = acertarPeca(passoDoCodeWars(inicio, { tipo: 'digitar', texto: 'p' }));
+    const estado = acertarPeca(passoDoGugloWars(inicio, { tipo: 'digitar', texto: 'p' }));
     expect(estado.pontos).toBeGreaterThan(0);
     expect(estado.acertos).toBe(1);
     expect(estado.digitado).toBe('');
@@ -152,7 +157,7 @@ describe('partida', () => {
     for (let vez = 0; vez < FILEIRAS && estado.fase === 'jogando'; vez += 1) estado = deixarCair(estado);
     expect(estado.fase).toBe('fim');
     expect(estado.entulho).toHaveLength(FILEIRAS - 1);
-    expect(passoDoCodeWars(estado, { tipo: 'tique' })).toBe(estado);
+    expect(passoDoGugloWars(estado, { tipo: 'tique' })).toBe(estado);
   });
 
   it(`${COMBO_PARA_LIMPAR} acertos seguidos limpam uma fileira de entulho`, () => {
@@ -180,15 +185,15 @@ describe('partida', () => {
 
   it('enviar errado custa o combo e uma fileira', () => {
     let estado = acertarPeca(novaPartida(LINHAS, 7));
-    estado = passoDoCodeWars(passoDoCodeWars(estado, { tipo: 'digitar', texto: 'xyz' }), { tipo: 'enviar' });
+    estado = passoDoGugloWars(passoDoGugloWars(estado, { tipo: 'digitar', texto: 'xyz' }), { tipo: 'enviar' });
     expect(estado).toMatchObject({ combo: 0, evento: { tipo: 'errou' } });
     expect(estado.peca.fileira).toBe(1);
   });
 
   it('pausado, o tempo não passa e o teclado não conta', () => {
-    const pausado = passoDoCodeWars(novaPartida(LINHAS, 7), { tipo: 'pausar' });
-    expect(passoDoCodeWars(pausado, { tipo: 'tique' })).toBe(pausado);
-    expect(passoDoCodeWars(pausado, { tipo: 'digitar', texto: 'a' })).toBe(pausado);
-    expect(passoDoCodeWars(pausado, { tipo: 'continuar' }).fase).toBe('jogando');
+    const pausado = passoDoGugloWars(novaPartida(LINHAS, 7), { tipo: 'pausar' });
+    expect(passoDoGugloWars(pausado, { tipo: 'tique' })).toBe(pausado);
+    expect(passoDoGugloWars(pausado, { tipo: 'digitar', texto: 'a' })).toBe(pausado);
+    expect(passoDoGugloWars(pausado, { tipo: 'continuar' }).fase).toBe('jogando');
   });
 });

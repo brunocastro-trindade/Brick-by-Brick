@@ -40,7 +40,7 @@ export interface TelaCidadeProps {
   aoSelecionar: (obra: Obra) => void;
   aoEntrar: (obra: Obra) => void;
   aoIrParaInicio: () => void;
-  aoAbrirCodeWars: () => void;
+  aoAbrirGugloWars: () => void;
 }
 
 export function TelaCidade({
@@ -51,7 +51,7 @@ export function TelaCidade({
   aoSelecionar,
   aoEntrar,
   aoIrParaInicio,
-  aoAbrirCodeWars,
+  aoAbrirGugloWars,
 }: TelaCidadeProps) {
   const [modal, setModal] = useState<'ajustes' | 'como-jogar' | null>(null);
   const noMapa = obras.map((_, indice) => situacaoDaObra(obras, progresso, indice)).filter((item): item is ObraNoMapa => item !== null);
@@ -84,9 +84,9 @@ export function TelaCidade({
           </span>
         </div>
         <div className={styles.ferramentas}>
-          <button type="button" className={styles.codeWars} onClick={aoAbrirCodeWars}>
+          <button type="button" className={styles.gugloWars} onClick={aoAbrirGugloWars}>
             <Swords size={18} aria-hidden="true" />
-            Code Wars
+            Guglo Wars
           </button>
           <button type="button" className={styles.icone} onClick={() => setModal('como-jogar')} aria-label="Como jogar">
             <CircleHelp size={20} aria-hidden="true" />

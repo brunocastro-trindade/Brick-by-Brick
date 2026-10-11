@@ -23,10 +23,10 @@ export interface Progresso {
   modoLivre: boolean;
   ultimaObra: string | null;
   mecanicasVistas: TipoDesafio[];
-  codeWars: RecordeDoCodeWars;
+  gugloWars: RecordeDoGugloWars;
 }
 
-export interface RecordeDoCodeWars {
+export interface RecordeDoGugloWars {
   recorde: number;
   partidas: number;
 }
@@ -39,7 +39,7 @@ export interface Armazenamento {
 export const CHAVE_DO_PROGRESSO = 'brick-by-brick:progresso:v1';
 
 export function progressoNovo(): Progresso {
-  return { versao: 1, obras: {}, som: true, modoLivre: false, ultimaObra: null, mecanicasVistas: [], codeWars: { recorde: 0, partidas: 0 } };
+  return { versao: 1, obras: {}, som: true, modoLivre: false, ultimaObra: null, mecanicasVistas: [], gugloWars: { recorde: 0, partidas: 0 } };
 }
 
 export function progressoDeObraNovo(): ProgressoObra {
@@ -87,7 +87,7 @@ function sanearObra(bruto: unknown): ProgressoObra | null {
 }
 
 /** Campo que entrou depois (ADR-0007): ausente ou estranho vira recorde zero. */
-function sanearCodeWars(bruto: unknown): RecordeDoCodeWars {
+function sanearGugloWars(bruto: unknown): RecordeDoGugloWars {
   const c = (typeof bruto === 'object' && bruto !== null ? bruto : {}) as Record<string, unknown>;
   return { recorde: ehInteiro(c.recorde) ? c.recorde : 0, partidas: ehInteiro(c.partidas) ? c.partidas : 0 };
 }
@@ -114,7 +114,7 @@ export function carregarProgresso(armazenamento: Armazenamento | null): Progress
       mecanicasVistas: Array.isArray(dados.mecanicasVistas)
         ? tipos.filter((tipo) => (dados.mecanicasVistas as unknown[]).includes(tipo))
         : [],
-      codeWars: sanearCodeWars(dados.codeWars),
+      gugloWars: sanearGugloWars(dados.gugloWars),
     };
   } catch {
     return novo;
@@ -185,7 +185,7 @@ export function totalDeLinhasAssentadas(progresso: Progresso): number {
   );
 }
 
-export function registrarPartidaDoCodeWars(progresso: Progresso, pontos: number): Progresso {
-  const { recorde, partidas } = progresso.codeWars;
-  return { ...progresso, codeWars: { recorde: Math.max(recorde, pontos), partidas: partidas + 1 } };
+export function registrarPartidaDoGugloWars(progresso: Progresso, pontos: number): Progresso {
+  const { recorde, partidas } = progresso.gugloWars;
+  return { ...progresso, gugloWars: { recorde: Math.max(recorde, pontos), partidas: partidas + 1 } };
 }
