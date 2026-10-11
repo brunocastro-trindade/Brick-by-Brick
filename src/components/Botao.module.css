@@ -23,6 +23,7 @@
     background var(--duracao-rapida) var(--curva-saida);
   touch-action: manipulation;
   user-select: none;
+  text-decoration: none;
 }
 
 .botao:hover:not(:disabled) {

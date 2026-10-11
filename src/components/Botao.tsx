@@ -17,6 +17,8 @@ export interface BotaoProps {
   /** Recebe o foco quando um modal abre. */
   autofoco?: boolean;
   aoClicar?: () => void;
+  /** Com endereço, vira link (como um `mailto:`) com a mesma cara de botão. */
+  href?: string;
 }
 
 export function Botao({
@@ -32,8 +34,17 @@ export function Botao({
   rotulo,
   autofoco = false,
   aoClicar,
+  href,
 }: BotaoProps) {
   const classes = [styles.botao, styles[variante], styles[tamanho], larguraTotal ? styles.larguraTotal : ''].join(' ');
+  if (href) {
+    return (
+      <a className={classes} href={href} aria-label={rotulo} data-autofoco={autofoco || undefined} onClick={aoClicar}>
+        {icone}
+        <span>{children}</span>
+      </a>
+    );
+  }
   return (
     <button
       type={tipo}

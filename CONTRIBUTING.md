@@ -83,7 +83,10 @@ igual à resposta (senão a explicação estaria mentindo).
 | `npm run lint` | ESLint e a barreira do design system (nada de cor ou px literal nos componentes) |
 | `npm run typecheck` | TypeScript |
 | `npm run build` | Gera `dist/`, já com o Python em `dist/pyodide/` |
-| `npm run fumaca` | Joga o primeiro desafio e uma peça do Guglo Wars num Chromium de verdade, contra `npx vite preview --port 4173` |
+| `npm run fumaca` | Joga o primeiro desafio e uma peça do Guglo Wars num Chromium de verdade, abre o Anuncie aqui e falha se algo vier de outro domínio. Roda contra `npx vite preview --port 4173` |
+
+Nada de script, fonte, imagem ou iframe de outro domínio: o jogo não rastreia quem estuda, e anúncio é
+imagem e link servidos pelo próprio site (veja a página Anuncie aqui). O teste de fumaça barra.
 
 Cores, espaços e tipos vêm de `tokens/*.json`; depois de mudá-los, rode `npm run tokens`. A vitrine dos
 componentes fica em `http://localhost:5173/#/design-system` (só em desenvolvimento).

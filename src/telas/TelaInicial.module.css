@@ -83,6 +83,24 @@
   font-size: var(--tipo-corpo-pequeno-tamanho);
 }
 
+.anuncie {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espaco-2);
+  min-height: var(--espaco-8);
+  padding: 0 var(--espaco-4);
+  border: var(--borda-fina) solid var(--cor-contorno);
+  border-radius: var(--raio-grande);
+  background: var(--cor-superficie);
+  color: var(--cor-texto);
+  font-weight: var(--peso-forte);
+  text-decoration: none;
+}
+
+.anuncie:hover {
+  background: var(--cor-aviso-fundo);
+}
+
 /* uma fiada de tijolos no pé da tela */
 .muro {
   position: absolute;

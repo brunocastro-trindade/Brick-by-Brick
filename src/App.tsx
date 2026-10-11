@@ -8,6 +8,7 @@ import { prefereMenosMovimento } from './estado/usePython';
 import { OBRAS, obraPorId } from './jogo/obras';
 import { obraLiberada } from './jogo/progresso';
 import type { Obra } from './jogo/tipos';
+import { TelaAnuncie } from './telas/TelaAnuncie';
 import { TelaCidade } from './telas/TelaCidade';
 import { TelaGugloWars } from './telas/TelaGugloWars';
 import { TelaInicial } from './telas/TelaInicial';
@@ -88,6 +89,9 @@ export function App() {
           aoIrParaInicio={() => navegar({ tela: 'inicio' })}
         />
       );
+      break;
+    case 'anuncie':
+      tela = <TelaAnuncie aoIrParaInicio={() => navegar({ tela: 'inicio' })} aoIrParaCidade={() => navegar({ tela: 'cidade' })} />;
       break;
     case 'obra': {
       const obra = obraPorId(exibida.obraId);
