@@ -1,0 +1,14 @@
+// Hospedagem no Cloudflare Workers, só com arquivos estáticos (ADR-0014). O nome é o do Worker no painel.
+// Sem script: o _headers gerado pelo build (src/publicacao/cabecalhos.ts) vale para todas as respostas.
+{
+  "name": "brick-by-brick",
+  "compatibility_date": "2026-09-01",
+  "build": {
+    "command": "npm run build"
+  },
+  "assets": {
+    "directory": "./dist",
+    // Rotas por hash: endereço que não existe responde 404, não a página do jogo.
+    "not_found_handling": "404-page"
+  }
+}

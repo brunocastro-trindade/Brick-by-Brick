@@ -4,7 +4,7 @@ import { etiquetas, publicacao, robots, sitemap } from './metadados';
 const conteudo = (tags: ReturnType<typeof etiquetas>, chave: string) =>
   tags.find((tag) => tag.attrs.property === chave || tag.attrs.name === chave || tag.attrs.rel === chave);
 
-describe('metadados de publicação (ADR-0013)', () => {
+describe('metadados de publicação (ADR-0013, ADR-0014)', () => {
   it('build local, sem variáveis: indexável, sem endereço absoluto nem sitemap', () => {
     const site = publicacao({});
     expect(site).toEqual({ url: null, indexavel: true });
@@ -27,22 +27,24 @@ describe('metadados de publicação (ADR-0013)', () => {
     expect(sitemap(site)).toContain('<loc>https://brick.exemplo.org/</loc>');
   });
 
-  it('prévia no Cloudflare Pages (branch que não é main) fica fora dos buscadores', () => {
-    const site = publicacao({ CF_PAGES: '1', CF_PAGES_BRANCH: 'feat/fe-x', CF_PAGES_URL: 'https://abc123.brick-by-brick.pages.dev' });
-    expect(site).toEqual({ url: 'https://abc123.brick-by-brick.pages.dev', indexavel: false });
+  it('prévia no Workers Builds (branch que não é main) fica fora dos buscadores', () => {
+    const site = publicacao({ WORKERS_CI: '1', WORKERS_CI_BRANCH: 'feat/fe-x' });
+    expect(site).toEqual({ url: null, indexavel: false });
     expect(conteudo(etiquetas(site), 'robots')?.attrs.content).toBe('noindex, nofollow');
     expect(robots(site)).toBe('User-agent: *\nDisallow: /\n');
     expect(sitemap(site)).toBeNull();
   });
 
-  it('produção no Cloudflare Pages usa URL_DO_SITE, não o endereço da implantação', () => {
-    const base = { CF_PAGES: '1', CF_PAGES_BRANCH: 'main', CF_PAGES_URL: 'https://def456.brick-by-brick.pages.dev' };
-    expect(publicacao({ ...base, URL_DO_SITE: 'https://brickbybrick.com.br' })).toEqual({ url: 'https://brickbybrick.com.br', indexavel: true });
-    expect(publicacao(base)).toEqual({ url: null, indexavel: true });
+  it('produção no Workers Builds (main) entra nos buscadores e usa URL_DO_SITE', () => {
+    expect(publicacao({ WORKERS_CI: '1', WORKERS_CI_BRANCH: 'main' })).toEqual({ url: null, indexavel: true });
+    expect(publicacao({ WORKERS_CI: '1', WORKERS_CI_BRANCH: 'main', URL_DO_SITE: 'https://brickbybrick.com.br' })).toEqual({
+      url: 'https://brickbybrick.com.br',
+      indexavel: true,
+    });
   });
 
   it('AMBIENTE_DO_SITE manda mais que a branch', () => {
-    expect(publicacao({ CF_PAGES: '1', CF_PAGES_BRANCH: 'main', AMBIENTE_DO_SITE: 'teste' }).indexavel).toBe(false);
+    expect(publicacao({ WORKERS_CI: '1', WORKERS_CI_BRANCH: 'main', AMBIENTE_DO_SITE: 'teste' }).indexavel).toBe(false);
   });
 
   it('variável mal configurada derruba o build em vez de publicar endereço errado', () => {

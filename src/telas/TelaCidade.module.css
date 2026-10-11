@@ -71,6 +71,11 @@
   background: var(--cor-fundo);
 }
 
+/* Fora de .ferramentas só para trocar de linha no celular; no desktop, mesmo espaço dos outros botões. */
+.retorno {
+  margin-left: calc(var(--espaco-3) - var(--espaco-6));
+}
+
 .icone:hover {
   background: var(--cor-fundo-alternativo);
 }
@@ -238,11 +243,44 @@
 }
 
 @media (max-width: 640px) /* fora-da-escala: breakpoint */ {
+  /* No celular o cabeçalho rola junto (fixo, comeria um quarto da tela) e fica em duas linhas:
+     logo, placar e feedback; depois Guglo Wars ocupando o que sobra, ajuda, som e ajustes.
+     O chip do Python sai daqui: ele importa na obra, onde continua. */
   .barra {
+    position: static;
+    gap: var(--espaco-3);
     padding: var(--espaco-2) var(--espaco-4);
   }
 
+  .logo img {
+    height: var(--espaco-7);
+  }
+
+  .placar {
+    gap: var(--espaco-2);
+  }
+
+  .medida {
+    padding: var(--espaco-1) var(--espaco-3);
+  }
+
+  .retorno {
+    margin-left: auto;
+  }
+
   .ferramentas {
+    order: 1;
+    flex-basis: 100%;
+    gap: var(--espaco-2);
     margin-left: 0;
+  }
+
+  .gugloWars {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .estadoDoPython {
+    display: none;
   }
 }

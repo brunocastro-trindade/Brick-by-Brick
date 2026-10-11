@@ -1,5 +1,5 @@
-// Cabeçalhos de segurança e de cache (ADR-0009, ADR-0010, ADR-0013). Fonte única para a meta do index.html, o
-// _headers que o Cloudflare Pages lê e o vite preview da fumaça: nenhum cabeçalho é escrito à mão em outro lugar.
+// Cabeçalhos de segurança e de cache (ADR-0009, ADR-0010, ADR-0014). Fonte única para a meta do index.html, o
+// _headers que o Cloudflare lê e o vite preview da fumaça: nenhum cabeçalho é escrito à mão em outro lugar.
 
 /** Só o próprio site (INV-09). 'unsafe-eval' é do Pyodide no worker: o Emscripten usa eval. */
 const DIRETIVAS = [
@@ -39,8 +39,8 @@ function regra(caminho: string, cabecalhos: Record<string, string>): string {
 }
 
 /**
- * Arquivo _headers do Cloudflare Pages. Sem Cache-Control em /*: o padrão do Pages (revalidar sempre) é o certo
- * para /, sw.js e manifest, e o Pages junta com vírgula o mesmo cabeçalho vindo de duas regras.
+ * Arquivo _headers do Cloudflare. Sem Cache-Control em /*: o padrão do Cloudflare (revalidar sempre) é o certo
+ * para /, sw.js e manifest, e ele junta com vírgula o mesmo cabeçalho vindo de duas regras.
  */
 export function arquivoDeCabecalhos(): string {
   return `${[regra('/*', CABECALHOS_DE_SEGURANCA), ...CAMINHOS_IMUTAVEIS.map((caminho) => regra(caminho, { 'Cache-Control': CACHE_IMUTAVEL }))].join('\n\n')}\n`;

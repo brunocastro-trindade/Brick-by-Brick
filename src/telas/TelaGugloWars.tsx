@@ -142,8 +142,9 @@ export function TelaGugloWars({ obras, progresso, atualizarProgresso, aoVoltar, 
             Pausar
           </Botao>
         ) : null}
-        <Botao variante="fantasma" icone={<ArrowLeft size={18} aria-hidden="true" />} aoClicar={aoVoltar}>
-          Voltar à cidade
+        {/* "Cidade", como na barra da obra: curto, cabe ao lado do título e do Pausar no celular. */}
+        <Botao variante="fantasma" icone={<ArrowLeft size={18} aria-hidden="true" />} aoClicar={aoVoltar} rotulo="Voltar à cidade">
+          Cidade
         </Botao>
       </div>
     </header>

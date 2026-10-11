@@ -108,9 +108,10 @@
     display: contents;
   }
 
+  /* Prédio em até um terço da altura da tela (proporção 420 × 520): o desafio aparece sem rolar tanto */
   .cena {
     order: 1;
-    max-width: 16rem;
+    max-width: min(16rem, calc(32dvh * 420 / 520));
   }
 
   .colunaDoTrabalho {

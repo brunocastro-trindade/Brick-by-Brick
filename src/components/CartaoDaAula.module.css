@@ -29,6 +29,7 @@
   display: grid;
   gap: var(--espaco-2);
   align-content: start;
+  min-width: 0; /* o exemplo de código rola dentro do bloco */
 }
 
 .rotulo {

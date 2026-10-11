@@ -6,6 +6,8 @@ coverage/
 .env.*
 !.env.example
 .vite/
+# estado local do wrangler dev (Cloudflare Workers, ADR-0014)
+.wrangler/
 .DS_Store
 # capturas geradas pelo teste de fumaça
 artefatos/
