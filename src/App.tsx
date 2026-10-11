@@ -9,6 +9,7 @@ import { OBRAS, obraPorId } from './jogo/obras';
 import { obraLiberada } from './jogo/progresso';
 import type { Obra } from './jogo/tipos';
 import { TelaCidade } from './telas/TelaCidade';
+import { TelaGugloWars } from './telas/TelaGugloWars';
 import { TelaInicial } from './telas/TelaInicial';
 import { TelaObra } from './telas/TelaObra';
 import styles from './App.module.css';
@@ -72,6 +73,18 @@ export function App() {
           selecionada={exibida.obraId ?? null}
           aoSelecionar={(obra) => navegar({ tela: 'cidade', obraId: obra.id })}
           aoEntrar={entrar}
+          aoIrParaInicio={() => navegar({ tela: 'inicio' })}
+          aoAbrirGugloWars={() => navegar({ tela: 'guglo-wars' })}
+        />
+      );
+      break;
+    case 'guglo-wars':
+      tela = (
+        <TelaGugloWars
+          obras={OBRAS}
+          progresso={progresso}
+          atualizarProgresso={atualizarProgresso}
+          aoVoltar={() => navegar({ tela: 'cidade' })}
           aoIrParaInicio={() => navegar({ tela: 'inicio' })}
         />
       );

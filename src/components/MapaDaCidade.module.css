@@ -9,79 +9,123 @@
   user-select: none;
 }
 
-.nuvens {
-  animation: flutuar 30s ease-in-out infinite alternate;
-}
-
-.placaTitulo {
-  font-family: var(--fonte-titulo);
-  font-weight: var(--peso-titulo);
-  font-size: 18px; /* fora-da-escala: unidade do SVG do mapa */
-  fill: var(--cor-texto);
-}
-
-.placaSubtitulo {
-  font-family: var(--fonte-texto);
-  font-weight: var(--peso-medio);
-  font-size: 14px; /* fora-da-escala: unidade do SVG do mapa */
-  fill: var(--cor-texto-suave);
-}
-
 .lugar {
   cursor: pointer;
   outline: none;
 }
 
-.areaDeToque {
-  fill: transparent;
-}
-
-.desenho {
-  transition: transform var(--duracao-media) var(--curva-mola);
-}
-
-.lugar:hover .desenho,
-.lugar:focus-visible .desenho,
-.escolhido .desenho {
-  transform: translateY(-6px); /* fora-da-escala: unidade do SVG do mapa */
-}
-
-.anel {
+/* Terreno: área de toque e realce da obra escolhida. */
+.terreno {
   fill: var(--cor-ilustra-destaque);
   fill-opacity: 0;
   stroke: var(--cor-ilustra-contorno);
   stroke-width: 0;
-  stroke-dasharray: 10 7;
+  stroke-dasharray: 12 8;
   transition:
     fill-opacity var(--duracao-media),
     stroke-width var(--duracao-media);
 }
 
-.lugar:hover .anel {
+.lugar:hover .terreno {
+  fill-opacity: 0.25;
+}
+
+.escolhido .terreno {
+  fill-opacity: 0.3;
+  stroke-width: 4;
+}
+
+.lugar:focus-visible .terreno {
+  fill-opacity: 0.3;
+  stroke: var(--cor-foco);
+  stroke-width: 6;
+  stroke-dasharray: none;
+}
+
+.veu {
+  fill: var(--cor-fundo);
   fill-opacity: 0.35;
 }
 
-.escolhido .anel {
-  fill-opacity: 0.6;
-  stroke-width: 3;
+/* Selo com o número da obra. */
+.seloFundo {
+  fill: var(--cor-ilustra-placa);
+  stroke: var(--cor-ilustra-contorno);
+  stroke-width: 4;
 }
 
-.lugar:focus-visible .anel {
-  fill-opacity: 0.6;
-  stroke: var(--cor-foco);
-  stroke-width: 5;
-  stroke-dasharray: none;
+.selo-bloqueado .seloFundo {
+  fill: var(--cor-fundo-alternativo);
+}
+
+.selo-bloqueado .numero {
+  fill: var(--cor-texto-suave);
+}
+
+.selo-concluido .seloFundo {
+  fill: var(--cor-sucesso);
+}
+
+.seloProgresso {
+  fill: none;
+  stroke: var(--cor-acento);
+  stroke-width: 6;
 }
 
 .numero {
   font-family: var(--fonte-titulo);
   font-weight: var(--peso-titulo);
-  font-size: 17px; /* fora-da-escala: unidade do SVG do mapa */
+  font-size: 20px; /* fora-da-escala: unidade do SVG do mapa */
   fill: var(--cor-texto);
+}
+
+.cadeado circle {
+  fill: var(--cor-ilustra-contorno);
+}
+
+.cadeado path {
+  stroke: var(--cor-texto-sobre-escuro);
+  stroke-width: 2;
+}
+
+.cadeado rect {
+  fill: var(--cor-texto-sobre-escuro);
+}
+
+.concluida circle {
+  fill: var(--cor-superficie);
+  stroke: var(--cor-ilustra-contorno);
+  stroke-width: 2.5;
+}
+
+.concluida path {
+  stroke: var(--cor-sucesso);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.emBreve rect {
+  fill: var(--cor-ilustra-placa);
+  stroke: var(--cor-ilustra-contorno);
+  stroke-width: 3;
+}
+
+.emBreve text {
+  font-family: var(--fonte-titulo);
+  font-weight: var(--peso-titulo);
+  font-size: 16px; /* fora-da-escala: unidade do SVG do mapa */
+  fill: var(--cor-texto-suave);
 }
 
 .exclamacao {
   animation: quicar 900ms ease-in-out infinite alternate;
+}
+
+.exclamacao circle {
+  fill: var(--cor-ilustra-destaque);
+  stroke: var(--cor-ilustra-contorno);
+  stroke-width: 4;
 }
 
 .exclamacaoTexto {
@@ -91,26 +135,8 @@
   fill: var(--cor-texto);
 }
 
-.jato {
-  transform-box: fill-box;
-  transform-origin: 50% 100%;
-  animation: jorrar 1.6s ease-in-out infinite alternate;
-}
-
-@keyframes flutuar {
-  to {
-    transform: translateX(60px); /* fora-da-escala: unidade do SVG do mapa */
-  }
-}
-
 @keyframes quicar {
   to {
     transform: translateY(-14px); /* fora-da-escala: unidade do SVG do mapa */
-  }
-}
-
-@keyframes jorrar {
-  to {
-    transform: scaleY(1.25);
   }
 }

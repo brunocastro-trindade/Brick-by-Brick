@@ -1,5 +1,5 @@
 // A cidade: o mapa das obras, a placa da obra escolhida e a lista de todas elas.
-import { CircleCheck, CircleHelp, Construction, Lock, Settings, Star, Volume2, VolumeX } from 'lucide-react';
+import { CircleCheck, CircleHelp, Construction, Lock, Settings, Star, Swords, Volume2, VolumeX } from 'lucide-react';
 import { useState } from 'react';
 import { ChipDoPython } from '../components/ChipDoPython';
 import { MapaDaCidade, type ObraNoMapa } from '../components/MapaDaCidade';
@@ -40,9 +40,19 @@ export interface TelaCidadeProps {
   aoSelecionar: (obra: Obra) => void;
   aoEntrar: (obra: Obra) => void;
   aoIrParaInicio: () => void;
+  aoAbrirGugloWars: () => void;
 }
 
-export function TelaCidade({ obras, progresso, atualizarProgresso, selecionada, aoSelecionar, aoEntrar, aoIrParaInicio }: TelaCidadeProps) {
+export function TelaCidade({
+  obras,
+  progresso,
+  atualizarProgresso,
+  selecionada,
+  aoSelecionar,
+  aoEntrar,
+  aoIrParaInicio,
+  aoAbrirGugloWars,
+}: TelaCidadeProps) {
   const [modal, setModal] = useState<'ajustes' | 'como-jogar' | null>(null);
   const noMapa = obras.map((_, indice) => situacaoDaObra(obras, progresso, indice)).filter((item): item is ObraNoMapa => item !== null);
   const proxima = noMapa.find((item) => item.situacao === 'disponivel' || item.situacao === 'em-obra') ?? null;
@@ -74,6 +84,10 @@ export function TelaCidade({ obras, progresso, atualizarProgresso, selecionada, 
           </span>
         </div>
         <div className={styles.ferramentas}>
+          <button type="button" className={styles.gugloWars} onClick={aoAbrirGugloWars}>
+            <Swords size={18} aria-hidden="true" />
+            Guglo Wars
+          </button>
           <button type="button" className={styles.icone} onClick={() => setModal('como-jogar')} aria-label="Como jogar">
             <CircleHelp size={20} aria-hidden="true" />
           </button>

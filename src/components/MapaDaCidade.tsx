@@ -1,64 +1,74 @@
-// O mapa da cidade: uma estrada em zigue-zague liga os três bairros, do básico ao avançado.
-// O Guglo caminha pela estrada até a obra escolhida, como no Club Penguin.
+// O mapa da cidade: a arte em pixel da Vila (ADR-0006) com o estado de cada obra desenhado por cima.
+// O Guglo pixelado caminha pela estrada até a obra escolhida, como no Club Penguin.
 import { useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent } from 'react';
 import { prefereMenosMovimento } from '../estado/usePython';
 import type { Obra } from '../jogo/tipos';
-import { PinguimNoMapa } from './Pinguim';
-import { MEDIDAS, PredioDaCidade, type SituacaoDoPredio } from './PredioDaCidade';
+import arteDoMapa from '../assets/mapa-da-cidade.webp';
+import { CADENCIA_DO_GUGLO_MS, COMEMORACAO_COMPLETA, GugloPixeladoNoMapa, QUADROS_DO_GUGLO } from './GugloPixelado';
+import type { SituacaoDoPredio } from './PredioDaCidade';
 import styles from './MapaDaCidade.module.css';
 
-const C = 'var(--cor-ilustra-contorno)';
-const LARGURA = 1600;
-const ALTURA = 1000;
-const ESTRADA = 'M40 940 H1440 A130 130 0 0 0 1440 680 H160 A130 130 0 0 1 160 420 H1560';
+/** Tamanho da arte; o viewBox usa os pixels dela, então as coordenadas abaixo são medidas na própria imagem. */
+const LARGURA = 1619;
+const ALTURA = 971;
+
+/** Linha central da estrada, da placa da Vila do Alicerce até o fim do Alto da Colina. */
+const ESTRADA =
+  'M150 752 C164 758 205 780 235 788 C265 796 302 796 330 797 C358 798 388 797 400 797 H1370 ' +
+  'C1380 797 1410 799 1430 797 C1450 795 1471 795 1488 786 C1505 777 1523 760 1532 744 ' +
+  'C1541 728 1542 708 1540 690 C1538 672 1529 649 1519 634 C1509 619 1495 608 1480 598 ' +
+  'C1465 588 1448 580 1430 576 C1412 572 1380 574 1370 573 H400 ' +
+  'C388 572 352 572 330 570 C308 568 290 567 270 558 C250 549 226 533 208 517 ' +
+  'C190 501 174 480 165 460 C156 440 153 420 157 400 C161 380 174 355 190 343 ' +
+  'C206 331 227 328 250 328 C273 328 305 340 330 345 C355 350 388 357 400 359 H1520';
 const VELOCIDADE = 620;
 const DURACAO_MAXIMA = 2.4;
 
+const ESCALA_DO_GUGLO = 0.46;
+const { parado: PARADO, passos: PASSOS } = QUADROS_DO_GUGLO;
+
+/** O que o Guglo faz ao chegar: acena numa obra a fazer e comemora numa obra pronta. Depois, fica parado. */
+const CHEGADAS = {
+  acenando: { quadros: [QUADROS_DO_GUGLO.acenando], cadenciaMs: 1100 },
+  comemorando: {
+    quadros: [...COMEMORACAO_COMPLETA, ...Array<number>(4).fill(QUADROS_DO_GUGLO.bracosParaCima)],
+    cadenciaMs: CADENCIA_DO_GUGLO_MS.comemoracao,
+  },
+};
+
 interface Lugar {
+  /** Terreno na arte: canto superior esquerdo e tamanho. Também é a área de toque. */
   x: number;
-  /** Pé da porta; a estrada passa logo à frente. */
   y: number;
-  escala: number;
-  estrada: number;
+  largura: number;
+  altura: number;
+  /** Selo com o número, por cima do número impresso na arte. */
+  selo: [number, number];
+  /** Onde o Guglo para, na estrada em frente ao terreno. */
+  parada: [number, number];
 }
 
+/**
+ * Terrenos na ordem da estrada: Vila do Alicerce (1–4), Centro (5–7, da direita para a esquerda) e
+ * Alto da Colina (8–10). A arte não tem o 5: o terreno marcado "6" é a obra 5 e as lojas são a 6.
+ */
 export const LUGARES: Lugar[] = [
-  { x: 300, y: 906, escala: 1, estrada: 940 },
-  { x: 622, y: 906, escala: 1, estrada: 940 },
-  { x: 948, y: 906, escala: 1, estrada: 940 },
-  { x: 1270, y: 906, escala: 1, estrada: 940 },
-  { x: 1250, y: 646, escala: 0.86, estrada: 680 },
-  { x: 915, y: 646, escala: 0.86, estrada: 680 },
-  { x: 585, y: 646, escala: 0.86, estrada: 680 },
-  { x: 380, y: 388, escala: 0.74, estrada: 420 },
-  { x: 690, y: 388, escala: 0.74, estrada: 420 },
-  { x: 1000, y: 388, escala: 0.74, estrada: 420 },
+  { x: 560, y: 640, largura: 165, altura: 120, selo: [587, 746], parada: [642, 797] },
+  { x: 770, y: 605, largura: 185, altura: 155, selo: [790, 735], parada: [862, 797] },
+  { x: 1010, y: 620, largura: 195, altura: 140, selo: [1033, 741], parada: [1107, 797] },
+  { x: 1265, y: 600, largura: 200, altura: 155, selo: [1292, 743], parada: [1368, 797] },
+  { x: 1180, y: 390, largura: 150, altura: 140, selo: [1203, 515], parada: [1255, 573] },
+  { x: 845, y: 372, largura: 205, altura: 156, selo: [866, 512], parada: [948, 573] },
+  { x: 270, y: 395, largura: 185, altura: 135, selo: [299, 516], parada: [362, 572] },
+  { x: 340, y: 185, largura: 210, altura: 137, selo: [360, 308], parada: [445, 360] },
+  { x: 605, y: 195, largura: 210, altura: 135, selo: [627, 312], parada: [710, 359] },
+  { x: 910, y: 150, largura: 225, altura: 175, selo: [944, 314], parada: [1022, 359] },
 ];
 
-const TERRENOS_EM_BREVE = [
-  { x: 1290, y: 388, escala: 0.74, modelo: 'casa' as const },
-  { x: 1480, y: 388, escala: 0.74, modelo: 'armazem' as const },
-];
+/** A casa no fim do Alto da Colina guarda o lugar das próximas obras. */
+const EM_BREVE: [number, number] = [1365, 330];
 
-const ARVORES: Array<[number, number, number]> = [
-  [452, 880, 0.82],
-  [786, 884, 0.8],
-  [1110, 880, 0.82],
-  [1420, 870, 1],
-  [1080, 620, 0.8],
-  [752, 622, 0.75],
-  [420, 610, 0.8],
-  [230, 600, 0.9],
-  [540, 368, 0.7],
-  [850, 366, 0.7],
-  [1150, 368, 0.68],
-];
-
-const BAIRROS = [
-  { x: 92, y: 902, texto: 'Vila do Alicerce', subtitulo: 'básico' },
-  { x: 1478, y: 644, texto: 'Centro', subtitulo: 'intermediário' },
-  { x: 175, y: 384, texto: 'Alto da Colina', subtitulo: 'avançado' },
-];
+const RAIO_DO_SELO = 21;
 
 export interface ObraNoMapa {
   obra: Obra;
@@ -66,52 +76,46 @@ export interface ObraNoMapa {
   progresso: number;
 }
 
-function Arvore({ x, y, escala }: { x: number; y: number; escala: number }) {
-  return (
-    <g transform={`translate(${x} ${y}) scale(${escala})`} aria-hidden="true">
-      <rect x={-6} y={-40} width={12} height={40} fill="var(--cor-ilustra-tronco)" stroke={C} strokeWidth={3} />
-      <circle cx={0} cy={-62} r={30} fill="var(--cor-ilustra-arvore)" stroke={C} strokeWidth={3.5} />
-      <circle cx={-10} cy={-70} r={9} fill="var(--cor-ilustra-colina-longe)" opacity={0.6} />
-    </g>
-  );
-}
-
-function Placa({ x, y, texto, subtitulo }: { x: number; y: number; texto: string; subtitulo: string }) {
-  const largura = Math.max(texto.length, subtitulo.length) * 11 + 30;
-  return (
-    <g transform={`translate(${x} ${y})`} aria-hidden="true">
-      <rect x={-4} y={-44} width={8} height={44} fill="var(--cor-ilustra-tronco)" stroke={C} strokeWidth={2.5} />
-      <rect x={-largura / 2} y={-92} width={largura} height={50} rx={6} fill="var(--cor-ilustra-placa)" stroke={C} strokeWidth={3} />
-      <text x={0} y={-74} className={styles.placaTitulo} textAnchor="middle" dominantBaseline="central">
-        {texto}
-      </text>
-      <text x={0} y={-54} className={styles.placaSubtitulo} textAnchor="middle" dominantBaseline="central">
-        {subtitulo}
-      </text>
-    </g>
-  );
-}
-
-function Parque() {
-  return (
-    <g aria-hidden="true">
-      <ellipse cx={330} cy={622} rx={70} ry={20} fill="var(--cor-ilustra-agua)" stroke={C} strokeWidth={3.5} />
-      <ellipse cx={330} cy={618} rx={46} ry={11} fill="var(--cor-ilustra-agua-brilho)" />
-      <rect x={322} y={570} width={16} height={48} rx={4} fill="var(--cor-ilustra-placa)" stroke={C} strokeWidth={3} />
-      <g className={styles.jato} fill="var(--cor-ilustra-agua-brilho)" stroke={C} strokeWidth={2}>
-        <circle cx={330} cy={562} r={9} />
-        <circle cx={316} cy={576} r={5} />
-        <circle cx={344} cy={576} r={5} />
-      </g>
-    </g>
-  );
-}
-
 interface Posicao {
   x: number;
   y: number;
   olhandoPara: 'direita' | 'esquerda';
-  andando: boolean;
+  quadro: number;
+}
+
+function Selo({ item, lugar }: { item: ObraNoMapa; lugar: Lugar }) {
+  const [x, y] = lugar.selo;
+  const { situacao, progresso, obra } = item;
+  return (
+    <g className={styles[`selo-${situacao}`]} transform={`translate(${x} ${y})`}>
+      <circle className={styles.seloFundo} r={RAIO_DO_SELO} />
+      {situacao === 'em-obra' ? (
+        <circle
+          className={styles.seloProgresso}
+          r={RAIO_DO_SELO}
+          pathLength={100}
+          strokeDasharray={`${Math.max(4, Math.round(progresso * 100))} 100`}
+          transform="rotate(-90)"
+        />
+      ) : null}
+      <text className={styles.numero} textAnchor="middle" dominantBaseline="central">
+        {obra.ordem}
+      </text>
+      {situacao === 'bloqueado' ? (
+        <g className={styles.cadeado} transform="translate(15 -15)">
+          <circle r={10} />
+          <path d="M-4 -1 V-4 A4 4 0 0 1 4 -4 V-1" fill="none" />
+          <rect x={-6} y={-1} width={12} height={8} rx={2} />
+        </g>
+      ) : null}
+      {situacao === 'concluido' ? (
+        <g className={styles.concluida} transform="translate(15 -15)">
+          <circle r={10} />
+          <path d="M-5 0 L-1.5 3.5 L5 -3.5" fill="none" />
+        </g>
+      ) : null}
+    </g>
+  );
 }
 
 export interface MapaDaCidadeProps {
@@ -127,20 +131,20 @@ export function MapaDaCidade({ obras, selecionada, proximaAConstruir, aoSelecion
   const paradas = useRef<number[]>([]);
   const atual = useRef(0);
   const direcao = useRef<'direita' | 'esquerda'>('direita');
-  const [posicao, setPosicao] = useState<Posicao>({ x: 60, y: 940, olhandoPara: 'direita', andando: false });
+  const [posicao, setPosicao] = useState<Posicao>({ x: 150, y: 752, olhandoPara: 'direita', quadro: PARADO });
   const indiceSelecionado = obras.findIndex((item) => item.obra.id === selecionada);
 
-  // Onde cada porta encosta na estrada (comprimento ao longo do caminho).
+  // Onde cada terreno encosta na estrada (comprimento ao longo do caminho).
   useLayoutEffect(() => {
     const caminho = estrada.current;
     if (!caminho) return;
     const total = caminho.getTotalLength();
-    paradas.current = LUGARES.map((lugar) => {
+    paradas.current = LUGARES.map(({ parada: [x, y] }) => {
       let melhor = 0;
       let menorDistancia = Infinity;
       for (let s = 0; s <= total; s += 4) {
         const ponto = caminho.getPointAtLength(s);
-        const distancia = Math.hypot(ponto.x - lugar.x, ponto.y - lugar.estrada);
+        const distancia = Math.hypot(ponto.x - x, ponto.y - y);
         if (distancia < menorDistancia) {
           menorDistancia = distancia;
           melhor = s;
@@ -150,7 +154,9 @@ export function MapaDaCidade({ obras, selecionada, proximaAConstruir, aoSelecion
     });
   }, []);
 
-  // Caminhada até a obra selecionada.
+  const destinoConcluido = obras[indiceSelecionado]?.situacao === 'concluido';
+
+  // Caminhada até a obra selecionada; na chegada, o Guglo acena, ou comemora se a obra está pronta.
   useEffect(() => {
     const caminho = estrada.current;
     const destino = indiceSelecionado >= 0 ? paradas.current[indiceSelecionado] : undefined;
@@ -161,16 +167,19 @@ export function MapaDaCidade({ obras, selecionada, proximaAConstruir, aoSelecion
     if (distancia < 1 || prefereMenosMovimento()) {
       atual.current = destino;
       const final = ponto(destino);
-      const quadro = requestAnimationFrame(() => setPosicao((anterior) => ({ ...anterior, x: final.x, y: final.y, andando: false })));
-      return () => cancelAnimationFrame(quadro);
+      const pedido = requestAnimationFrame(() => setPosicao((anterior) => ({ ...anterior, x: final.x, y: final.y, quadro: PARADO })));
+      return () => cancelAnimationFrame(pedido);
     }
     const duracao = Math.min(DURACAO_MAXIMA, distancia / VELOCIDADE) * 1000;
+    const chegada = destinoConcluido ? CHEGADAS.comemorando : CHEGADAS.acenando;
     const total = caminho.getTotalLength();
     const sentido = Math.sign(destino - inicio);
     const comeco = performance.now();
-    let quadro = 0;
+    let pedido = 0;
     const passo = (agora: number) => {
-      const t = Math.min(1, (agora - comeco) / duracao);
+      // O carimbo do requestAnimationFrame pode vir um pouco antes de `comeco`.
+      const decorrido = Math.max(0, agora - comeco);
+      const t = Math.min(1, decorrido / duracao);
       const suave = t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2;
       const s = inicio + (destino - inicio) * suave;
       const aqui = ponto(s);
@@ -178,12 +187,16 @@ export function MapaDaCidade({ obras, selecionada, proximaAConstruir, aoSelecion
       if (adiante.x < aqui.x - 0.1) direcao.current = 'esquerda';
       else if (adiante.x > aqui.x + 0.1) direcao.current = 'direita';
       atual.current = s;
-      setPosicao({ x: aqui.x, y: aqui.y, olhandoPara: direcao.current, andando: t < 1 });
-      if (t < 1) quadro = requestAnimationFrame(passo);
+      const quadro =
+        t < 1
+          ? (PASSOS[Math.floor(decorrido / CADENCIA_DO_GUGLO_MS.passos) % PASSOS.length] ?? PARADO)
+          : (chegada.quadros[Math.floor((decorrido - duracao) / chegada.cadenciaMs)] ?? PARADO);
+      setPosicao({ x: aqui.x, y: aqui.y, olhandoPara: direcao.current, quadro });
+      if (quadro !== PARADO) pedido = requestAnimationFrame(passo);
     };
-    quadro = requestAnimationFrame(passo);
-    return () => cancelAnimationFrame(quadro);
-  }, [indiceSelecionado]);
+    pedido = requestAnimationFrame(passo);
+    return () => cancelAnimationFrame(pedido);
+  }, [indiceSelecionado, destinoConcluido]);
 
   const aoTeclar = (evento: KeyboardEvent<SVGGElement>, item: ObraNoMapa) => {
     if (evento.key !== 'Enter' && evento.key !== ' ') return;
@@ -198,49 +211,52 @@ export function MapaDaCidade({ obras, selecionada, proximaAConstruir, aoSelecion
   return (
     <svg className={styles.mapa} viewBox={`0 0 ${LARGURA} ${ALTURA}`} role="group" aria-label="Mapa da cidade">
       <defs>
-        <linearGradient id="ceu-da-cidade" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" style={{ stopColor: 'var(--cor-ilustra-ceu-topo)' }} />
-          <stop offset="1" style={{ stopColor: 'var(--cor-ilustra-ceu-horizonte)' }} />
-        </linearGradient>
+        <filter id="terreno-bloqueado">
+          <feColorMatrix type="saturate" values="0.15" />
+        </filter>
+        {LUGARES.map((lugar, indice) => (
+          <clipPath key={indice} id={`terreno-${indice}`}>
+            <rect x={lugar.x} y={lugar.y} width={lugar.largura} height={lugar.altura} rx={14} />
+          </clipPath>
+        ))}
       </defs>
-      <rect width={LARGURA} height={ALTURA} fill="url(#ceu-da-cidade)" />
-      <circle cx={1450} cy={110} r={54} fill="var(--cor-ilustra-sol)" stroke={C} strokeWidth={4} />
-      <g className={styles.nuvens} fill="var(--cor-ilustra-nuvem)" stroke={C} strokeWidth={3}>
-        <path d="M150 120 a28 28 0 0 1 50 -20 a34 34 0 0 1 62 10 a24 24 0 0 1 6 44 h-108 a20 20 0 0 1 -10 -34 Z" />
-        <path d="M620 80 a22 22 0 0 1 40 -16 a27 27 0 0 1 48 8 a19 19 0 0 1 5 34 h-84 a16 16 0 0 1 -9 -26 Z" />
-        <path d="M1080 150 a20 20 0 0 1 36 -14 a24 24 0 0 1 44 7 a17 17 0 0 1 4 31 h-76 a14 14 0 0 1 -8 -24 Z" />
+      <image href={arteDoMapa} width={LARGURA} height={ALTURA} />
+      <path ref={estrada} d={ESTRADA} fill="none" stroke="none" />
+
+      {/* Terreno bloqueado: a própria arte, sem cor. */}
+      {obras.map((item, indice) =>
+        item.situacao === 'bloqueado' && LUGARES[indice] ? (
+          <g key={item.obra.id} aria-hidden="true">
+            <image
+              href={arteDoMapa}
+              width={LARGURA}
+              height={ALTURA}
+              clipPath={`url(#terreno-${indice})`}
+              filter="url(#terreno-bloqueado)"
+            />
+            <rect
+              className={styles.veu}
+              x={LUGARES[indice].x}
+              y={LUGARES[indice].y}
+              width={LUGARES[indice].largura}
+              height={LUGARES[indice].altura}
+              rx={14}
+            />
+          </g>
+        ) : null,
+      )}
+
+      <g className={styles.emBreve} transform={`translate(${EM_BREVE[0]} ${EM_BREVE[1]})`} aria-hidden="true">
+        <rect x={-48} y={-15} width={96} height={30} rx={15} />
+        <text textAnchor="middle" dominantBaseline="central">
+          em breve
+        </text>
       </g>
-      <path d="M0 300 Q200 220 420 280 T860 270 T1260 250 T1600 280 V420 H0 Z" fill="var(--cor-ilustra-colina-longe)" stroke={C} strokeWidth={3} />
-      <path d="M0 330 H1600 V1000 H0 Z" fill="var(--cor-ilustra-chao)" />
-      <path d="M0 330 Q400 300 800 324 T1600 318" fill="none" stroke={C} strokeWidth={3} />
-      <rect x={0} y={330} width={LARGURA} height={6} fill="var(--cor-ilustra-chao-sombra)" />
-
-      <g aria-hidden="true">
-        <path d={ESTRADA} fill="none" stroke="var(--cor-ilustra-estrada-borda)" strokeWidth={66} strokeLinecap="round" strokeLinejoin="round" />
-        <path ref={estrada} d={ESTRADA} fill="none" stroke="var(--cor-ilustra-estrada)" strokeWidth={56} strokeLinecap="round" strokeLinejoin="round" />
-        <path d={ESTRADA} fill="none" stroke="var(--cor-ilustra-faixa)" strokeWidth={5} strokeDasharray="26 22" />
-      </g>
-
-      <Parque />
-      {BAIRROS.map((bairro) => (
-        <Placa key={bairro.texto} {...bairro} />
-      ))}
-
-      {TERRENOS_EM_BREVE.map((terreno) => (
-        <g key={terreno.x} transform={`translate(${terreno.x} ${terreno.y}) scale(${terreno.escala})`} aria-hidden="true">
-          <PredioDaCidade modelo={terreno.modelo} situacao="bloqueado" progresso={0} idUnico={`em-breve-${terreno.x}`} emBreve />
-        </g>
-      ))}
-
-      {[...ARVORES].sort((a, b) => a[1] - b[1]).map(([x, y, escala]) => (
-        <Arvore key={`${x}-${y}`} x={x} y={y} escala={escala} />
-      ))}
 
       {obras.map((item, indice) => {
         const lugar = LUGARES[indice];
         if (!lugar) return null;
         const { obra, situacao } = item;
-        const medidas = MEDIDAS[obra.modelo];
         const escolhida = obra.id === selecionada;
         const rotuloDaSituacao = {
           bloqueado: 'bloqueada',
@@ -259,36 +275,16 @@ export function MapaDaCidade({ obras, selecionada, proximaAConstruir, aoSelecion
             onClick={() => (escolhida && situacao !== 'bloqueado' ? aoEntrar(obra) : aoSelecionar(obra))}
             onKeyDown={(evento) => aoTeclar(evento, item)}
           >
-            <g transform={`translate(${lugar.x} ${lugar.y}) scale(${lugar.escala})`}>
-              <ellipse className={styles.anel} cx={0} cy={4} rx={medidas.largura / 2 + 34} ry={22} />
-              <rect
-                className={styles.areaDeToque}
-                x={-medidas.largura / 2 - 20}
-                y={-medidas.altura - 90}
-                width={medidas.largura + 40}
-                height={medidas.altura + 100}
-              />
-              <g className={styles.desenho}>
-                <PredioDaCidade modelo={obra.modelo} situacao={situacao} progresso={item.progresso} idUnico={obra.id} />
-              </g>
-              <g transform={`translate(${-medidas.largura / 2 - 22} -18)`}>
-                <circle r={16} fill={situacao === 'concluido' ? 'var(--cor-sucesso)' : 'var(--cor-ilustra-placa)'} stroke={C} strokeWidth={3} />
-                <text className={styles.numero} textAnchor="middle" dominantBaseline="central">
-                  {obra.ordem}
-                </text>
-              </g>
-            </g>
+            <rect className={styles.terreno} x={lugar.x} y={lugar.y} width={lugar.largura} height={lugar.altura} rx={14} />
+            <Selo item={item} lugar={lugar} />
           </g>
         );
       })}
 
-      {lugarDaProxima && proxima ? (
-        <g
-          transform={`translate(${lugarDaProxima.x} ${lugarDaProxima.y - (MEDIDAS[proxima.obra.modelo].altura + 78) * lugarDaProxima.escala})`}
-          aria-hidden="true"
-        >
+      {lugarDaProxima ? (
+        <g transform={`translate(${lugarDaProxima.x + lugarDaProxima.largura / 2} ${lugarDaProxima.y - 6})`} aria-hidden="true">
           <g className={styles.exclamacao}>
-            <circle r={20} fill="var(--cor-ilustra-destaque)" stroke={C} strokeWidth={4} />
+            <circle r={20} />
             <text className={styles.exclamacaoTexto} textAnchor="middle" dominantBaseline="central">
               !
             </text>
@@ -296,7 +292,7 @@ export function MapaDaCidade({ obras, selecionada, proximaAConstruir, aoSelecion
         </g>
       ) : null}
 
-      <PinguimNoMapa x={posicao.x} y={posicao.y + 18} escala={0.5} pose={posicao.andando ? 'andando' : 'parado'} olhandoPara={posicao.olhandoPara} />
+      <GugloPixeladoNoMapa {...posicao} escala={ESCALA_DO_GUGLO} />
     </svg>
   );
 }

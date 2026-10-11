@@ -53,6 +53,7 @@
 
 .ferramentas {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--espaco-3);
   margin-left: auto;
@@ -70,6 +71,30 @@
 
 .icone:hover {
   background: var(--cor-fundo-alternativo);
+}
+
+.gugloWars {
+  display: inline-flex;
+  white-space: nowrap;
+  align-items: center;
+  gap: var(--espaco-2);
+  min-height: var(--espaco-8);
+  padding: 0 var(--espaco-5);
+  border: var(--borda-grossa) solid var(--cor-contorno);
+  border-radius: var(--raio-medio);
+  background: var(--cor-editor-fundo);
+  color: var(--cor-texto-sobre-escuro);
+  font-family: var(--fonte-titulo);
+  font-weight: var(--peso-titulo);
+  box-shadow: var(--sombra-baixa);
+}
+
+.gugloWars svg {
+  color: var(--cor-codigo-palavra-chave);
+}
+
+.gugloWars:hover {
+  background: var(--cor-editor-faixa);
 }
 
 .area {

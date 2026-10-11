@@ -1,0 +1,19 @@
+/* Avulso, o sprite aparece maior que a folha: pixels duros, sem borrão. */
+.avulso {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  image-rendering: pixelated;
+}
+
+/* Parado, respira em dois tempos, como sprite de jogo antigo. */
+.respirando {
+  animation: respirar 1.4s steps(1) infinite;
+}
+
+@keyframes respirar {
+  50% {
+    transform: translateY(4px); /* fora-da-escala: unidade do SVG do sprite */
+  }
+}

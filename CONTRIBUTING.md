@@ -25,7 +25,7 @@ ordem: 1
 nome: Correio
 conceito: print() e textos
 nivel: basico          # basico | intermediario | avancado
-modelo: casa           # desenho do prédio no mapa
+modelo: casa           # tipo de prédio da obra
 aula:
   titulo: O Python fala com print()
   texto: |
@@ -83,7 +83,7 @@ igual à resposta (senão a explicação estaria mentindo).
 | `npm run lint` | ESLint e a barreira do design system (nada de cor ou px literal nos componentes) |
 | `npm run typecheck` | TypeScript |
 | `npm run build` | Gera `dist/`, já com o Python em `dist/pyodide/` |
-| `npm run fumaca` | Joga o primeiro desafio num Chromium de verdade, contra `npx vite preview --port 4173` |
+| `npm run fumaca` | Joga o primeiro desafio e uma peça do Guglo Wars num Chromium de verdade, contra `npx vite preview --port 4173` |
 
 Cores, espaços e tipos vêm de `tokens/*.json`; depois de mudá-los, rode `npm run tokens`. A vitrine dos
 componentes fica em `http://localhost:5173/#/design-system` (só em desenvolvimento).
@@ -93,7 +93,7 @@ Commits (`feat:`, `fix:`, `docs:`…) e abra um pull request.
 
 ## Como o código se organiza
 
-- `src/jogo/` — regras puras e testadas: leitura das obras, montagem das linhas, validação, pontuação e progresso.
+- `src/jogo/` — regras puras e testadas: leitura das obras, montagem das linhas, validação, pontuação, progresso e o Guglo Wars.
 - `src/python/` — execução do Python num Web Worker; o mesmo `executor.py` roda nos testes.
 - `src/components/` e `src/telas/` — interface. Componentes só usam os tokens do design system.
 - `conteudo/obras/` — as aulas, uma por arquivo.

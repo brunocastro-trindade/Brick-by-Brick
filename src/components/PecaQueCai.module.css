@@ -1,0 +1,99 @@
+/* A peça é uma barra de tijolo escura, como o editor, com a linha colorida por categoria. */
+.peca {
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 var(--espaco-4);
+  border: var(--borda-grossa) solid var(--cor-contorno);
+  border-radius: var(--raio-pequeno);
+  background: var(--cor-editor-fundo);
+  color: var(--cor-codigo-padrao);
+  font-family: var(--fonte-codigo);
+  font-weight: var(--peso-medio);
+  white-space: pre;
+  box-shadow:
+    inset 0 var(--espaco-1) 0 var(--cor-brilho),
+    inset 0 calc(var(--espaco-1) * -1) 0 var(--cor-sombra-difusa),
+    var(--sombra-baixa);
+}
+
+.palavra-chave {
+  color: var(--cor-codigo-palavra-chave);
+  font-weight: var(--peso-forte);
+}
+
+.funcao {
+  color: var(--cor-codigo-funcao);
+}
+
+.texto {
+  color: var(--cor-codigo-texto);
+}
+
+.numero {
+  color: var(--cor-codigo-numero);
+}
+
+.comentario {
+  color: var(--cor-codigo-comentario);
+  font-style: italic;
+}
+
+.operador,
+.pontuacao {
+  color: var(--cor-codigo-simbolo);
+}
+
+.nome,
+.espaco,
+.desconhecido {
+  color: var(--cor-codigo-padrao);
+}
+
+/* Trecho já digitado: assentado, como argamassa por baixo. */
+.assentado {
+  background: color-mix(in srgb, var(--cor-sucesso) 55%, transparent);
+  box-shadow: inset 0 calc(var(--espaco-1) * -1) 0 var(--cor-codigo-entrada);
+}
+
+/* Onde a digitação saiu do caminho. */
+.desvio {
+  text-decoration: underline wavy var(--cor-problema-fundo);
+  text-decoration-thickness: var(--espaco-1);
+  text-underline-offset: var(--espaco-2);
+}
+
+.vaga {
+  display: inline-block;
+  height: 1.5em;
+  line-height: 1.4em;
+  vertical-align: middle;
+  margin: 0 var(--espaco-1);
+  padding: 0 var(--espaco-1);
+  border: var(--borda-fina) dashed var(--cor-codigo-entrada);
+  border-radius: var(--raio-pequeno);
+  color: var(--cor-codigo-entrada);
+  font-weight: var(--peso-forte);
+  text-align: left;
+}
+
+.vagaComDesvio {
+  border-style: solid;
+  border-color: var(--cor-problema-fundo);
+  color: var(--cor-problema-fundo);
+}
+
+.entulho {
+  border-color: var(--cor-contorno-suave);
+  background: var(--cor-fundo-alternativo);
+  color: var(--cor-texto-suave);
+  box-shadow: none;
+}
+
+.silhueta {
+  max-width: 100%;
+  border-style: dashed;
+  border-color: var(--cor-contorno-suave);
+  background: var(--cor-fundo-alternativo);
+  box-shadow: none;
+}
