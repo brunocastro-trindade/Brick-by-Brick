@@ -2,13 +2,14 @@
 // Teste de fumaça (HARNESS §5.5): abre o jogo num Chromium de verdade, espera o Python carregar
 // no navegador e joga o primeiro mini desafio do Correio — errando uma vez e acertando depois —
 // acerta uma peça do Guglo Wars, abre o Anuncie aqui e garante que nada veio de outro domínio (INV-09)
-// e que a política de segurança de conteúdo está no ar sem barrar o próprio jogo (ADR-0009).
+// e que a política de segurança de conteúdo está no ar sem barrar o próprio jogo (ADR-0009). Por fim, tira
+// a rede e confere que o jogo abre do aparelho, com o Python saindo do service worker (ADR-0010).
 //
 // Uso:  npm run build && npx vite preview --port 4173   (em outro terminal)
 //       npm run fumaca
 // Variáveis: URL_DO_JOGO (padrão http://localhost:4173) e CHROMIUM (caminho do navegador).
 import { existsSync } from 'node:fs';
-import { mkdir } from 'node:fs/promises';
+import { mkdir, readFile } from 'node:fs/promises';
 import { chromium } from 'playwright-core';
 
 const URL_DO_JOGO = process.env.URL_DO_JOGO ?? 'http://localhost:4173';
@@ -54,6 +55,14 @@ const passo = async (descricao, acao) => {
   }
 };
 
+await passo('a home tem o link de retorno, com diagnóstico (ADR-0012)', async () => {
+  await pagina.goto(`${URL_DO_JOGO}/#/`);
+  const endereco = (await pagina.getByRole('link', { name: 'Dar retorno' }).getAttribute('href')) ?? '';
+  const corpo = decodeURIComponent(endereco.split('body=')[1] ?? '');
+  if (!endereco.startsWith('mailto:amaatShin@proton.me?subject=') || !corpo.includes('Versão: ')) {
+    throw new Error(`link de retorno inesperado: ${endereco.slice(0, 120)}`);
+  }
+});
 await passo('abre a tela inicial', async () => {
   await pagina.goto(`${URL_DO_JOGO}/#/`);
   await pagina.getByRole('button', { name: /Começar a construir/ }).click();
@@ -109,11 +118,42 @@ await passo('Guglo Wars: Enter errado não deixa peça fantasma no poço', async
   if (pecas !== 1) throw new Error(`${pecas} peças da vez no poço`);
 });
 
+await passo('progresso vai para um arquivo e volta pelos Ajustes (ADR-0011)', async () => {
+  await pagina.goto(`${URL_DO_JOGO}/#/cidade`);
+  await pagina.getByRole('button', { name: 'Ajustes' }).click();
+  const [baixado] = await Promise.all([pagina.waitForEvent('download'), pagina.getByRole('button', { name: 'Baixar progresso' }).click()]);
+  const caminho = await baixado.path();
+  const conteudo = JSON.parse(await readFile(caminho, 'utf8'));
+  if (conteudo.formato !== 'brick-by-brick/progresso') throw new Error(`arquivo inesperado: ${JSON.stringify(conteudo).slice(0, 80)}`);
+  await pagina.locator('input[type="file"]').setInputFiles(caminho);
+  await pagina.getByText('O arquivo tem').waitFor({ timeout: 5_000 });
+  await pagina.getByRole('button', { name: 'Trocar pelo do arquivo' }).click();
+  await pagina.getByRole('status').getByText('Progresso carregado.').waitFor({ timeout: 5_000 });
+  await pagina.getByRole('button', { name: 'Fechar ajustes' }).click();
+});
 await passo('Anuncie aqui abre com o e-mail de contato', async () => {
   await pagina.goto(`${URL_DO_JOGO}/#/anuncie`);
   await pagina.getByRole('heading', { name: /Sua marca na cidade/ }).waitFor({ timeout: 10_000 });
   const endereco = await pagina.getByRole('link', { name: 'Enviar e-mail' }).first().getAttribute('href');
   if (!endereco?.startsWith('mailto:amaatShin@proton.me')) throw new Error(`link de contato inesperado: ${endereco}`);
+});
+await passo('sem internet, o jogo abre do aparelho e o Python carrega (ADR-0010)', async () => {
+  // O service worker se registra com o Python pronto; `ready` só resolve depois de ele guardar tudo.
+  await pagina.evaluate(() => globalThis.navigator.serviceWorker.ready);
+  const wasmDoServico = [];
+  const anotar = (resposta) => resposta.url().endsWith('.wasm') && wasmDoServico.push(resposta.fromServiceWorker());
+  pagina.on('response', anotar);
+  await pagina.context().setOffline(true);
+  try {
+    // goto só troca o hash (mesmo documento); o reload é que baixa tudo de novo, agora sem rede.
+    await pagina.goto(`${URL_DO_JOGO}/#/`);
+    await pagina.reload();
+    await pagina.getByText('Python pronto').first().waitFor({ timeout: 60_000 });
+  } finally {
+    await pagina.context().setOffline(false);
+    pagina.off('response', anotar);
+  }
+  if (!wasmDoServico.includes(true)) throw new Error(`o .wasm não veio do service worker: ${JSON.stringify(wasmDoServico)}`);
 });
 await passo('nenhuma requisição a outro domínio (INV-09)', async () => {
   if (deFora.size > 0) throw new Error(`o jogo pediu algo a: ${[...deFora].join(', ')}`);

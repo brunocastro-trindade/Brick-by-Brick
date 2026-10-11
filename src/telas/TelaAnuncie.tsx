@@ -17,14 +17,14 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { useRef } from 'react';
-import logo from '../assets/logo.webp';
+import logo from '../assets/logo-pequeno.webp';
 import gugloComPlaca from '../assets/guglo-anuncie.webp';
 import { Botao } from '../components/Botao';
+import { CONTATO } from '../estado/contato';
 import { prefereMenosMovimento } from '../estado/usePython';
 import styles from './TelaAnuncie.module.css';
 
-export const CONTATO_DE_ANUNCIOS = 'amaatShin@proton.me';
-const MAILTO = `mailto:${CONTATO_DE_ANUNCIOS}?subject=${encodeURIComponent('Quero anunciar no Brick by Brick')}`;
+const MAILTO = `mailto:${CONTATO}?subject=${encodeURIComponent('Quero anunciar no Brick by Brick')}`;
 
 interface Item {
   icone: LucideIcon;
@@ -160,7 +160,7 @@ export function TelaAnuncie({ aoIrParaInicio, aoIrParaCidade }: TelaAnuncieProps
               </Botao>
             </div>
             <p className={styles.contato}>
-              Contato: <a href={MAILTO}>{CONTATO_DE_ANUNCIOS}</a>
+              Contato: <a href={MAILTO}>{CONTATO}</a>
             </p>
           </div>
           <div className={styles.guglo}>
@@ -199,7 +199,7 @@ export function TelaAnuncie({ aoIrParaInicio, aoIrParaCidade }: TelaAnuncieProps
             Como anunciar
           </h2>
           <ol className={styles.passos}>
-            <li>Escreva para {CONTATO_DE_ANUNCIOS} contando sobre a sua marca e o espaço que interessa.</li>
+            <li>Escreva para {CONTATO} contando sobre a sua marca e o espaço que interessa.</li>
             <li>Combinamos formato, período e valor.</li>
             <li>
               O anúncio entra no ar marcado como patrocinado. Como o código é aberto, a entrada dele fica registrada no repositório do

@@ -2,7 +2,7 @@
 // As regras moram em src/jogo/gugloWars.ts; aqui ficam o relógio, o teclado, o som e o recorde.
 import { ArrowLeft, Keyboard, Pause, Play, RotateCcw, Swords } from 'lucide-react';
 import { useEffect, useMemo, useReducer, useRef, useState, type CSSProperties, type KeyboardEvent } from 'react';
-import logo from '../assets/logo.webp';
+import logo from '../assets/logo-pequeno.webp';
 import { Botao } from '../components/Botao';
 import { GugloPixelado, type AcaoDoGuglo } from '../components/GugloPixelado';
 import { Modal } from '../components/Modal';

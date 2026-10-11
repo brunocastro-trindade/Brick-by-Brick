@@ -18,7 +18,8 @@ export interface BarraDaObraProps {
 export function BarraDaObra({ obra, fiadasProntas, pontos, combo, som, aoVoltar, aoAlternarSom }: BarraDaObraProps) {
   return (
     <header className={styles.barra}>
-      <button type="button" className={styles.voltar} onClick={aoVoltar}>
+      {/* No celular o texto some e fica só a seta: o nome vem do aria-label, que contém o texto visível. */}
+      <button type="button" className={styles.voltar} onClick={aoVoltar} aria-label="Voltar para a cidade">
         <ArrowLeft size={20} aria-hidden="true" />
         <span>Cidade</span>
       </button>

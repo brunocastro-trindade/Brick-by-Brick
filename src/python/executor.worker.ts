@@ -24,7 +24,7 @@ let executar: FuncaoExecutar | null = null;
 async function iniciar(): Promise<void> {
   try {
     const pyodide = await loadPyodide({
-      indexURL: new URL(`${import.meta.env.BASE_URL}pyodide/`, self.location.origin).href,
+      indexURL: new URL(`${import.meta.env.BASE_URL}pyodide/${__VERSAO_DO_PYODIDE__}/`, self.location.origin).href,
       stdout: () => {},
       stderr: () => {},
     });

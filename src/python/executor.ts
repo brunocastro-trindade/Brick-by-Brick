@@ -16,6 +16,7 @@ interface Pendente {
 export class PythonNoNavegador implements Executor {
   private worker: Worker | null = null;
   private estado: EstadoDoPython = 'carregando';
+  private motivo: string | null = null;
   private readonly ouvintes = new Set<(estado: EstadoDoPython) => void>();
   private readonly pendentes = new Map<number, Pendente>();
   private proximoId = 1;
@@ -25,7 +26,7 @@ export class PythonNoNavegador implements Executor {
     this.mudarEstado('carregando');
     const worker = new Worker(new URL('./executor.worker.ts', import.meta.url), { type: 'module' });
     worker.onmessage = (evento: MessageEvent<MensagemDoWorker>) => this.receber(evento.data);
-    worker.onerror = () => this.mudarEstado('falhou');
+    worker.onerror = (evento) => this.falhar(`o worker do Python falhou: ${evento.message}`);
     this.worker = worker;
   }
 
@@ -35,6 +36,11 @@ export class PythonNoNavegador implements Executor {
 
   obterEstado(): EstadoDoPython {
     return this.estado;
+  }
+
+  /** Por que o Python não carregou, para o retorno do beta (ADR-0012). */
+  motivoDaFalha(): string | null {
+    return this.motivo;
   }
 
   aoMudarEstado(ouvinte: (estado: EstadoDoPython) => void): () => void {
@@ -82,13 +88,18 @@ export class PythonNoNavegador implements Executor {
 
   private receber(mensagem: MensagemDoWorker): void {
     if (mensagem.tipo === 'pronto') return this.mudarEstado('pronto');
-    if (mensagem.tipo === 'falhou') return this.mudarEstado('falhou');
+    if (mensagem.tipo === 'falhou') return this.falhar(mensagem.mensagem);
     const pendente = this.pendentes.get(mensagem.id);
     if (!pendente) return;
     clearTimeout(pendente.temporizador);
     this.pendentes.delete(mensagem.id);
     if (mensagem.tipo === 'resultado') pendente.resolver(mensagem.resultado);
     else pendente.rejeitar(new Error(mensagem.mensagem));
+  }
+
+  private falhar(motivo: string): void {
+    this.motivo = motivo;
+    this.mudarEstado('falhou');
   }
 
   private mudarEstado(estado: EstadoDoPython): void {

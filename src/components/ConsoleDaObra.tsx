@@ -6,6 +6,7 @@ import type { EstadoDoPython } from '../python/executor';
 import type { ResultadoExecucao } from '../python/tipos';
 import { explicarErro } from '../jogo/erros-python';
 import { SaidaDoPrograma } from './SaidaDoPrograma';
+import { linkDeRetorno } from '../estado/retorno';
 import styles from './ConsoleDaObra.module.css';
 
 export interface ExecucaoNoConsole {
@@ -31,7 +32,12 @@ export function ConsoleDaObra({
   else if (estadoDoPython === 'carregando' || (!execucoes && estadoDoPython === 'pronto'))
     corpo = <p className={styles.aviso}>Preparando o Python… a saída aparece aqui em instantes.</p>;
   else if (estadoDoPython === 'falhou')
-    corpo = <p className={styles.aviso}>O Python não carregou, então não dá para mostrar a saída. Recarregue a página para tentar de novo.</p>;
+    corpo = (
+      <p className={styles.aviso}>
+        O Python não carregou, então não dá para mostrar a saída. Recarregue a página para tentar de novo. Se continuar,{' '}
+        <a {...linkDeRetorno()}>conte para a equipe</a>: o e-mail já leva o navegador e o erro.
+      </p>
+    );
   else if (atual) {
     const erro = atual.resultado.erro;
     corpo = (

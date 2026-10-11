@@ -92,32 +92,53 @@ function sanearGugloWars(bruto: unknown): RecordeDoGugloWars {
   return { recorde: ehInteiro(c.recorde) ? c.recorde : 0, partidas: ehInteiro(c.partidas) ? c.partidas : 0 };
 }
 
+/** Progresso de fonte não confiável (navegador ou arquivo): versão errada vira null; campo estranho, padrão. */
+function sanearProgresso(bruto: unknown): Progresso | null {
+  if (typeof bruto !== 'object' || bruto === null) return null;
+  const dados = bruto as Record<string, unknown>;
+  if (dados.versao !== 1 || typeof dados.obras !== 'object' || dados.obras === null) return null;
+  const obras: Record<string, ProgressoObra> = {};
+  for (const [id, valor] of Object.entries(dados.obras)) {
+    const saneada = sanearObra(valor);
+    if (saneada) obras[id] = saneada;
+  }
+  const tipos: TipoDesafio[] = ['montar', 'empilhar', 'digitar'];
+  return {
+    versao: 1,
+    obras,
+    som: dados.som !== false,
+    modoLivre: dados.modoLivre === true,
+    ultimaObra: typeof dados.ultimaObra === 'string' ? dados.ultimaObra : null,
+    mecanicasVistas: Array.isArray(dados.mecanicasVistas) ? tipos.filter((tipo) => (dados.mecanicasVistas as unknown[]).includes(tipo)) : [],
+    gugloWars: sanearGugloWars(dados.gugloWars),
+  };
+}
+
 export function carregarProgresso(armazenamento: Armazenamento | null): Progresso {
-  const novo = progressoNovo();
   try {
     const bruto = armazenamento?.getItem(CHAVE_DO_PROGRESSO);
-    if (!bruto) return novo;
-    const dados = JSON.parse(bruto) as Record<string, unknown>;
-    if (dados.versao !== 1 || typeof dados.obras !== 'object' || dados.obras === null) return novo;
-    const obras: Record<string, ProgressoObra> = {};
-    for (const [id, valor] of Object.entries(dados.obras)) {
-      const saneada = sanearObra(valor);
-      if (saneada) obras[id] = saneada;
-    }
-    const tipos: TipoDesafio[] = ['montar', 'empilhar', 'digitar'];
-    return {
-      versao: 1,
-      obras,
-      som: dados.som !== false,
-      modoLivre: dados.modoLivre === true,
-      ultimaObra: typeof dados.ultimaObra === 'string' ? dados.ultimaObra : null,
-      mecanicasVistas: Array.isArray(dados.mecanicasVistas)
-        ? tipos.filter((tipo) => (dados.mecanicasVistas as unknown[]).includes(tipo))
-        : [],
-      gugloWars: sanearGugloWars(dados.gugloWars),
-    };
+    return (bruto && sanearProgresso(JSON.parse(bruto))) || progressoNovo();
   } catch {
-    return novo;
+    return progressoNovo();
+  }
+}
+
+// Progresso em arquivo, para levar de um aparelho a outro (ADR-0011).
+export const FORMATO_DO_ARQUIVO = 'brick-by-brick/progresso';
+export const TAMANHO_MAXIMO_DO_ARQUIVO = 512 * 1024;
+
+export function arquivoDeProgresso(progresso: Progresso, agora: Date): string {
+  return JSON.stringify({ formato: FORMATO_DO_ARQUIVO, exportadoEm: agora.toISOString(), progresso }, null, 2);
+}
+
+/** Arquivo é dado não confiável (INV-06): só vale o formato certo, e o progresso passa pelo saneamento. */
+export function lerArquivoDeProgresso(texto: string): Progresso | null {
+  try {
+    const dados: unknown = JSON.parse(texto);
+    if (typeof dados !== 'object' || dados === null || (dados as Record<string, unknown>).formato !== FORMATO_DO_ARQUIVO) return null;
+    return sanearProgresso((dados as Record<string, unknown>).progresso);
+  } catch {
+    return null;
   }
 }
 

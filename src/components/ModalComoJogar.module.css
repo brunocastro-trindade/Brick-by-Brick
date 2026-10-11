@@ -18,8 +18,9 @@
 }
 
 .ilustracao {
-  width: var(--espaco-9);
-  height: calc(var(--espaco-9) + var(--espaco-5));
+  display: block;
+  width: min(100%, 9rem);
+  height: auto;
   margin: 0 auto;
 }
 

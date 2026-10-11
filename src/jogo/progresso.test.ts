@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { estrelasDaObra, pontuarDesafio, type ResultadoDesafio } from './pontuacao';
 import {
+  arquivoDeProgresso,
   carregarProgresso,
   CHAVE_DO_PROGRESSO,
+  lerArquivoDeProgresso,
   obraLiberada,
   progressoNovo,
   registrarAcerto,
@@ -122,5 +124,40 @@ describe('progresso', () => {
     let progresso = registrarPartidaDoGugloWars(progressoNovo(), 900);
     progresso = registrarPartidaDoGugloWars(progresso, 400);
     expect(progresso.gugloWars).toEqual({ recorde: 900, partidas: 2 });
+  });
+});
+
+describe('progresso em arquivo (ADR-0011)', () => {
+  const comAlgo = () => registrarPartidaDoGugloWars({ ...progressoNovo(), ultimaObra: OBRAS[0].id }, 120);
+
+  it('vai e volta pelo arquivo sem perder nada', () => {
+    const progresso = comAlgo();
+    const texto = arquivoDeProgresso(progresso, new Date('2026-10-10T12:00:00Z'));
+    expect(JSON.parse(texto)).toMatchObject({ formato: 'brick-by-brick/progresso', exportadoEm: '2026-10-10T12:00:00.000Z' });
+    expect(lerArquivoDeProgresso(texto)).toEqual(progresso);
+  });
+
+  it('recusa o que não é arquivo de progresso', () => {
+    const valido = JSON.parse(arquivoDeProgresso(comAlgo(), new Date()));
+    for (const texto of [
+      'isto não é JSON',
+      'null',
+      '[]',
+      JSON.stringify(valido.progresso),
+      JSON.stringify({ ...valido, formato: 'outro-jogo/progresso' }),
+      JSON.stringify({ ...valido, progresso: { ...valido.progresso, versao: 2 } }),
+      JSON.stringify({ ...valido, progresso: { ...valido.progresso, obras: null } }),
+    ]) {
+      expect(lerArquivoDeProgresso(texto), texto).toBeNull();
+    }
+  });
+
+  it('saneia o conteúdo como a leitura do navegador (INV-06)', () => {
+    const valido = JSON.parse(arquivoDeProgresso(comAlgo(), new Date()));
+    valido.progresso.obras = { correio: { passo: -1 } };
+    valido.progresso.gugloWars = { recorde: 'muito', partidas: 3 };
+    const lido = lerArquivoDeProgresso(JSON.stringify(valido));
+    expect(lido?.obras).toEqual({});
+    expect(lido?.gugloWars).toEqual({ recorde: 0, partidas: 3 });
   });
 });
