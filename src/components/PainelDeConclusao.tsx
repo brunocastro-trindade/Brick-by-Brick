@@ -1,5 +1,5 @@
-// Obra pronta: placar de acertos de primeira, estrelas, o programa inteiro e o próximo passo.
-import { Check, Copy, RotateCcw } from 'lucide-react';
+// Obra pronta: placar de acertos de primeira, estrelas, o programa inteiro, o convite à Vistoria e o próximo passo.
+import { Check, ClipboardCheck, Copy, RotateCcw } from 'lucide-react';
 import { useState } from 'react';
 import type { Estrelas as QuantidadeDeEstrelas, ResultadoDesafio } from '../jogo/pontuacao';
 import { totalDePontos } from '../jogo/pontuacao';
@@ -21,9 +21,22 @@ export interface PainelDeConclusaoProps {
   aoVoltar: () => void;
   aoRefazer: () => void;
   aoIrParaProxima: (obra: Obra) => void;
+  /** Vistoria (ADR-0016): reescrever o programa de memória. Opcional, não trava a próxima obra. */
+  aoFazerVistoria: () => void;
 }
 
-export function PainelDeConclusao({ obra, codigo, resultados, estrelas, novoRecorde, proximaObra, aoVoltar, aoRefazer, aoIrParaProxima }: PainelDeConclusaoProps) {
+export function PainelDeConclusao({
+  obra,
+  codigo,
+  resultados,
+  estrelas,
+  novoRecorde,
+  proximaObra,
+  aoVoltar,
+  aoRefazer,
+  aoIrParaProxima,
+  aoFazerVistoria,
+}: PainelDeConclusaoProps) {
   const [copiado, setCopiado] = useState(false);
   const dePrimeira = resultados.filter((resultado) => resultado.dePrimeira).length;
   const dicas = resultados.filter((resultado) => resultado.usouDica).length;
@@ -104,6 +117,18 @@ export function PainelDeConclusao({ obra, codigo, resultados, estrelas, novoReco
           </div>
           <BlocoDeCodigo codigo={codigo} rotulo={`Programa completo de ${obra.nome}`} />
         </div>
+        <section className={styles.vistoria} aria-labelledby="convite-da-vistoria">
+          <ClipboardCheck size={28} aria-hidden="true" className={styles.iconeDaVistoria} />
+          <div className={styles.vistoriaTexto}>
+            <h3 id="convite-da-vistoria" className={styles.rotulo}>
+              Vistoria: o programa ficou com você?
+            </h3>
+            <p>Reescreva {obra.arquivo} de memória, fiada por fiada. É opcional e vale o selo de vistoriada no mapa.</p>
+          </div>
+          <Botao variante="secundario" icone={<ClipboardCheck size={18} aria-hidden="true" />} aoClicar={aoFazerVistoria}>
+            Fazer a vistoria
+          </Botao>
+        </section>
       </div>
     </Modal>
   );

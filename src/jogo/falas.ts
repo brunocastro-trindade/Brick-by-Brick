@@ -1,8 +1,10 @@
 // O que o Guglo, o pinguim mascote, diz. Ele comemora, explica e reage a erro sem julgar (documento do projeto, "Mascote").
 import { explicarErro } from './erros-python';
-import { textoDaLinha } from './programa';
-import type { Classificacao, Desafio, TipoDesafio } from './tipos';
-import type { Diagnostico, Veredito } from './validacao';
+import { textoDaLinha, textoDoPrograma } from './programa';
+import type { Classificacao, Desafio, Linha, TipoDesafio } from './tipos';
+import type { ErroPython } from '../python/tipos';
+import type { Diagnostico, MotivoDiferenca, Veredito } from './validacao';
+import type { VereditoDaVistoria } from './vistoria';
 
 export type Humor = 'neutro' | 'feliz' | 'pensando' | 'ops' | 'comemorando';
 export type Selo = 'melhor' | 'funciona_mas' | 'problema' | 'dica';
@@ -49,6 +51,50 @@ function outrosTijolos(desafio: Desafio): Fala['outros'] {
   return extras.length > 0 ? extras : undefined;
 }
 
+function falaDoErroPython(erro: ErroPython, diagnostico: string): Fala {
+  const { nome, explicacao } = explicarErro(erro.tipo);
+  return {
+    humor: 'ops',
+    selo: 'problema',
+    titulo: 'O Python reclamou',
+    texto: juntar(explicacao, diagnostico),
+    erro: { nome, tipo: erro.tipo, mensagem: erro.mensagem, linha: erro.linha },
+  };
+}
+
+function falaDaDiferenca(motivo: MotivoDiferenca, diagnostico: string): Fala {
+  if (motivo.tipo === 'saida') {
+    return {
+      humor: 'pensando',
+      selo: 'problema',
+      titulo: 'Rodou, mas mostrou outra coisa',
+      texto: juntar('O programa funcionou, só que a saída não é a que a obra precisa.', diagnostico, 'Compare as duas:'),
+      comparacao: { esperado: motivo.esperado, obtido: motivo.obtido },
+    };
+  }
+  if (motivo.tipo === 'variavel') {
+    const detalhe =
+      motivo.obtido === null
+        ? `A variável ${motivo.nome} não foi criada.`
+        : motivo.esperado === null
+          ? `Apareceu uma variável ${motivo.nome} que a obra não usa.`
+          : `A variável ${motivo.nome} ficou com ${motivo.obtido}, mas a obra espera ${motivo.esperado}.`;
+    return {
+      humor: 'pensando',
+      selo: 'problema',
+      titulo: 'Rodou, mas uma variável ficou diferente',
+      texto: juntar(detalhe, diagnostico),
+    };
+  }
+  return {
+    humor: 'pensando',
+    selo: 'problema',
+    titulo: 'Rodou, mas o teste não passou',
+    texto: juntar('O programa roda, mas testei por baixo dos panos e o resultado não bateu.', diagnostico),
+    comparacao: { codigo: motivo.codigo, esperado: motivo.esperado, obtido: motivo.obtido },
+  };
+}
+
 /**
  * `errosAnteriores` conta as tentativas erradas antes desta. O diagnóstico de posição
  * só aparece da segunda tentativa errada em diante, para não virar tentativa e erro.
@@ -90,50 +136,11 @@ export function falaDoVeredito(
           }
         : { humor: 'ops', selo: 'problema', titulo: 'Esse tijolo tem um problema', texto: veredito.tijolo.porque };
 
-    case 'erro-python': {
-      const { nome, explicacao } = explicarErro(veredito.erro.tipo);
-      return {
-        humor: 'ops',
-        selo: 'problema',
-        titulo: 'O Python reclamou',
-        texto: juntar(explicacao, diagnostico),
-        erro: { nome, tipo: veredito.erro.tipo, mensagem: veredito.erro.mensagem, linha: veredito.erro.linha },
-      };
-    }
+    case 'erro-python':
+      return falaDoErroPython(veredito.erro, diagnostico);
 
-    case 'resultado-diferente': {
-      const { motivo } = veredito;
-      if (motivo.tipo === 'saida') {
-        return {
-          humor: 'pensando',
-          selo: 'problema',
-          titulo: 'Rodou, mas mostrou outra coisa',
-          texto: juntar('O programa funcionou, só que a saída não é a que a obra precisa. Compare as duas:', diagnostico),
-          comparacao: { esperado: motivo.esperado, obtido: motivo.obtido },
-        };
-      }
-      if (motivo.tipo === 'variavel') {
-        const detalhe =
-          motivo.obtido === null
-            ? `A variável ${motivo.nome} não foi criada.`
-            : motivo.esperado === null
-              ? `Apareceu uma variável ${motivo.nome} que a obra não usa.`
-              : `A variável ${motivo.nome} ficou com ${motivo.obtido}, mas a obra espera ${motivo.esperado}.`;
-        return {
-          humor: 'pensando',
-          selo: 'problema',
-          titulo: 'Rodou, mas uma variável ficou diferente',
-          texto: juntar(detalhe, diagnostico),
-        };
-      }
-      return {
-        humor: 'pensando',
-        selo: 'problema',
-        titulo: 'Rodou, mas o teste não passou',
-        texto: juntar('O programa roda, mas testei por baixo dos panos e o resultado não bateu.', diagnostico),
-        comparacao: { codigo: motivo.codigo, esperado: motivo.esperado, obtido: motivo.obtido },
-      };
-    }
+    case 'resultado-diferente':
+      return falaDaDiferenca(veredito.motivo, diagnostico);
 
     case 'sem-python':
       return {
@@ -144,6 +151,58 @@ export function falaDoVeredito(
           'Essa combinação não bate com a planta.',
           diagnostico,
           'O Python ainda está carregando; quando ele chegar, consigo testar soluções diferentes da planta.',
+        ),
+      };
+  }
+}
+
+const listaDeFiadas = (indices: number[]) => {
+  const numeros = indices.map((indice) => String(indice + 1));
+  return numeros.length === 1 ? `A fiada ${numeros[0]}` : `As fiadas ${numeros.slice(0, -1).join(', ')} e ${numeros.at(-1)}`;
+};
+
+/**
+ * Fala da Vistoria (ADR-0016). Como no mini desafio, a fiada que não confere só é apontada da segunda entrega
+ * errada em diante: a vistoria é de memória, não de tentativa e erro.
+ */
+export function falaDaVistoria(veredito: VereditoDaVistoria, planta: Linha[], errosAnteriores: number, espiadas: number): Fala {
+  const apontar = (linha: number | null) =>
+    errosAnteriores >= 1 && linha !== null ? `Olhe a fiada ${linha + 1}: é a primeira que não confere com a planta.` : '';
+  switch (veredito.tipo) {
+    case 'incompleta':
+      return {
+        humor: 'pensando',
+        titulo: 'Ainda faltam fiadas',
+        texto: `${listaDeFiadas(veredito.vazias)} ${veredito.vazias.length === 1 ? 'está vazia' : 'estão vazias'}. Toda fiada da planta precisa de código.`,
+      };
+    case 'certo': {
+      const dePrimeira = errosAnteriores === 0 && espiadas === 0;
+      const selo = dePrimeira
+        ? 'De primeira e sem espiar: a obra ganhou o selo de vistoriada.'
+        : 'A obra ganhou o selo de vistoriada. Na próxima vez, tente de primeira e sem espiar.';
+      return veredito.via === 'comportamento'
+        ? {
+            humor: 'comemorando',
+            selo: 'melhor',
+            titulo: 'Aprovada, do seu jeito!',
+            texto: `Seu programa ficou diferente da planta, mas faz exatamente a mesma coisa. ${selo} A planta está assim:`,
+            codigo: textoDoPrograma(planta),
+          }
+        : { humor: 'comemorando', selo: 'melhor', titulo: 'Vistoria aprovada!', texto: `Cada fiada confere com a planta. ${selo}` };
+    }
+    case 'erro-python':
+      return falaDoErroPython(veredito.erro, errosAnteriores >= 1 && veredito.linha !== null ? `Olhe a fiada ${veredito.linha + 1}.` : '');
+    case 'resultado-diferente':
+      return falaDaDiferenca(veredito.motivo, apontar(veredito.linha));
+    case 'sem-python':
+      return {
+        humor: 'pensando',
+        selo: 'problema',
+        titulo: 'Ainda não confere',
+        texto: juntar(
+          'Seu programa não bate com a planta.',
+          apontar(veredito.linha),
+          'O Python ainda está carregando; quando ele chegar, consigo testar se o seu jeito faz a mesma coisa.',
         ),
       };
   }

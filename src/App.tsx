@@ -6,13 +6,14 @@ import { navegar, useRota, type Rota } from './estado/rotas';
 import { useProgresso } from './estado/useProgresso';
 import { prefereMenosMovimento } from './estado/usePython';
 import { OBRAS, obraPorId } from './jogo/obras';
-import { obraLiberada } from './jogo/progresso';
+import { obraLiberada, progressoDaObra } from './jogo/progresso';
 import type { Obra } from './jogo/tipos';
 import { TelaAnuncie } from './telas/TelaAnuncie';
 import { TelaCidade } from './telas/TelaCidade';
 import { TelaGugloWars } from './telas/TelaGugloWars';
 import { TelaInicial } from './telas/TelaInicial';
 import { TelaObra } from './telas/TelaObra';
+import { TelaVistoria } from './telas/TelaVistoria';
 import styles from './App.module.css';
 
 // Vitrine do design system (HARNESS §2.5): só existe no modo de desenvolvimento.
@@ -74,6 +75,7 @@ export function App() {
           selecionada={exibida.obraId ?? null}
           aoSelecionar={(obra) => navegar({ tela: 'cidade', obraId: obra.id })}
           aoEntrar={entrar}
+          aoFazerVistoria={(obra) => navegar({ tela: 'vistoria', obraId: obra.id })}
           aoIrParaInicio={() => navegar({ tela: 'inicio' })}
           aoAbrirGugloWars={() => navegar({ tela: 'guglo-wars' })}
         />
@@ -115,6 +117,32 @@ export function App() {
           proximaObra={OBRAS[indice + 1] ?? null}
           aoVoltar={() => navegar({ tela: 'cidade', obraId: obra.id })}
           aoIrParaObra={entrar}
+          aoFazerVistoria={() => navegar({ tela: 'vistoria', obraId: obra.id })}
+        />
+      );
+      break;
+    }
+    case 'vistoria': {
+      const obra = obraPorId(exibida.obraId);
+      // Vistoria é da obra pronta (ADR-0016); no modo livre, de qualquer uma.
+      if (!obra || !(progresso.modoLivre || progressoDaObra(progresso, obra.id).concluida)) {
+        tela = (
+          <main className={styles.fechada}>
+            <h1>A vistoria vem depois da obra</h1>
+            <p>Conclua a obra para reescrever o programa dela de memória.</p>
+            <Botao aoClicar={() => navegar({ tela: 'cidade', obraId: obra?.id })}>Voltar à cidade</Botao>
+          </main>
+        );
+        break;
+      }
+      tela = (
+        <TelaVistoria
+          key={obra.id}
+          obra={obra}
+          progresso={progresso}
+          atualizarProgresso={atualizarProgresso}
+          aoVoltar={() => navegar({ tela: 'cidade', obraId: obra.id })}
+          aoIrParaInicio={() => navegar({ tela: 'inicio' })}
         />
       );
       break;

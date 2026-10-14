@@ -1,8 +1,8 @@
 // A planta da obra: o editor onde o programa cresce. Linhas assentadas aparecem como código;
 // a linha da vez aparece com vagas para tijolos (montar), fileiras com recuo (empilhar)
-// ou um molde para digitar (digitar).
+// ou um molde para digitar (digitar). Na Vistoria (ADR-0016), toda linha é um molde vazio.
 import { ArrowLeft, ArrowRight, FileCode, Undo2 } from 'lucide-react';
-import type { ClipboardEvent, CSSProperties, KeyboardEvent, PointerEvent, ReactNode } from 'react';
+import type { ClipboardEvent, CSSProperties, KeyboardEvent, PointerEvent, ReactNode, Ref } from 'react';
 import { RECUO_MAXIMO, type Montagem } from '../jogo/montagem';
 import type { DesafioDigitar, DesafioEmpilhar, DesafioMontar, Linha, Tijolo } from '../jogo/tipos';
 import { CodigoColorido } from './CodigoColorido';
@@ -316,3 +316,69 @@ export function MoldeParaDigitar({
     </LinhaDaPlanta>
   );
 }
+
+// ── vistoria ────────────────────────────────────────────────────────────────
+
+/**
+ * Uma fiada da Vistoria: molde vazio no recuo da planta. Espiada, a linha da planta aparece como guia
+ * dentro da caixa (some ao digitar). Sem colar: é reescrita de memória.
+ */
+export function LinhaDaVistoria({
+  numero,
+  recuo,
+  valor,
+  guia,
+  realce,
+  bloqueada,
+  campo,
+  aoMudar,
+  aoTeclar,
+  aoFocar,
+  aoColar,
+}: {
+  numero: number;
+  recuo: number;
+  valor: string;
+  /** Texto da planta, só quando a fiada foi espiada. */
+  guia: string | null;
+  realce: boolean;
+  bloqueada: boolean;
+  campo?: Ref<HTMLInputElement>;
+  aoMudar: (texto: string) => void;
+  aoTeclar: (evento: KeyboardEvent<HTMLInputElement>) => void;
+  aoFocar: () => void;
+  aoColar: () => void;
+}) {
+  const bloquearCola = (evento: ClipboardEvent<HTMLInputElement>) => {
+    evento.preventDefault();
+    aoColar();
+  };
+  return (
+    <LinhaDaPlanta numero={numero} recuo={recuo} estado="atual" realce={realce}>
+      {guia !== null && valor !== '' ? (
+        <span className={styles.guia} aria-hidden="true">
+          {guia}
+        </span>
+      ) : null}
+      <input
+        ref={campo}
+        className={`${styles.molde} ${styles.moldeDaVistoria} ${guia !== null ? styles.espiada : ''}`}
+        value={valor}
+        disabled={bloqueada}
+        onChange={(evento) => aoMudar(evento.target.value)}
+        onKeyDown={aoTeclar}
+        onFocus={aoFocar}
+        onPaste={bloquearCola}
+        onDrop={(evento) => evento.preventDefault()}
+        placeholder={guia ?? `fiada ${numero}`}
+        aria-label={guia !== null ? `Fiada ${numero}, espiada: ${guia}` : `Fiada ${numero}: digite o código`}
+        aria-invalid={realce || undefined}
+        autoComplete="off"
+        autoCorrect="off"
+        autoCapitalize="off"
+        spellCheck={false}
+      />
+    </LinhaDaPlanta>
+  );
+}
+

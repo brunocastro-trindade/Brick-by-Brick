@@ -1,5 +1,5 @@
 // A placa da obra escolhida no mapa: o que ela ensina, quanto já foi construído e o botão de entrar.
-import { ArrowRight, Lock } from 'lucide-react';
+import { ArrowRight, ClipboardCheck, Lock } from 'lucide-react';
 import type { ProgressoObra } from '../jogo/progresso';
 import type { Nivel, Obra } from '../jogo/tipos';
 import { Botao } from './Botao';
@@ -19,9 +19,11 @@ export interface PlacaDaObraProps {
   progresso: ProgressoObra;
   obraAnterior: Obra | null;
   aoEntrar: () => void;
+  /** Vistoria da obra pronta (ADR-0016); o botão só aparece em obra concluída. */
+  aoFazerVistoria: () => void;
 }
 
-export function PlacaDaObra({ obra, situacao, progresso, obraAnterior, aoEntrar }: PlacaDaObraProps) {
+export function PlacaDaObra({ obra, situacao, progresso, obraAnterior, aoEntrar, aoFazerVistoria }: PlacaDaObraProps) {
   const feitos = Math.min(progresso.passo, obra.desafios.length);
   const rotuloDoBotao =
     situacao === 'concluido' && progresso.passo >= obra.desafios.length
@@ -68,6 +70,21 @@ export function PlacaDaObra({ obra, situacao, progresso, obraAnterior, aoEntrar 
           <Botao tamanho="grande" larguraTotal icone={<ArrowRight size={20} aria-hidden="true" />} aoClicar={aoEntrar}>
             {rotuloDoBotao}
           </Botao>
+          {situacao === 'concluido' ? (
+            <div className={styles.vistoria}>
+              <p className={styles.situacaoDaVistoria}>
+                <ClipboardCheck size={18} aria-hidden="true" />
+                {progresso.vistoria === null
+                  ? 'Vistoria: reescreva o programa de memória e ganhe o selo.'
+                  : progresso.vistoria.dePrimeira
+                    ? 'Vistoriada de primeira.'
+                    : `Vistoriada, com ${progresso.vistoria.espiadas} ${progresso.vistoria.espiadas === 1 ? 'fiada espiada' : 'fiadas espiadas'}.`}
+              </p>
+              <Botao variante="secundario" larguraTotal aoClicar={aoFazerVistoria}>
+                {progresso.vistoria === null ? 'Fazer a vistoria' : 'Refazer a vistoria'}
+              </Botao>
+            </div>
+          ) : null}
         </>
       )}
     </section>

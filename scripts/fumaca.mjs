@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Teste de fumaça (HARNESS §5.5): abre o jogo num Chromium de verdade, espera o Python carregar
 // no navegador e joga o primeiro mini desafio do Correio — errando uma vez e acertando depois —
-// acerta uma peça do Guglo Wars (e liga o tema Drácula), abre o Anuncie aqui e garante que nada veio de outro domínio (INV-09)
+// acerta uma peça do Guglo Wars (e liga o tema Drácula), passa na vistoria do Correio, abre o Anuncie aqui e garante que nada veio de outro domínio (INV-09)
 // e que a política de segurança de conteúdo está no ar sem barrar o próprio jogo (ADR-0009). Por fim, tira
 // a rede e confere que o jogo abre do aparelho, com o Python saindo do service worker (ADR-0010).
 // Num celular de 360 px, confere que nenhuma tela rola para o lado e que o modal da aula cabe na tela.
@@ -138,6 +138,24 @@ await passo('Guglo Wars: o botão Drácula liga o tema, que fica guardado e sai 
   await botao.click();
   await semTema('o tema não desligou');
 });
+await passo('Vistoria: reescrever o Correio espiando as fiadas aprova e põe o selo na cidade (ADR-0016)', async () => {
+  await pagina.goto(`${URL_DO_JOGO}/#/vistoria/correio`);
+  await pagina.getByRole('heading', { name: 'Reescreva correio.py de memória' }).waitFor({ timeout: 10_000 });
+  const fiadas = pagina.locator('input[aria-label^="Fiada "]');
+  const total = await fiadas.count();
+  if (total < 2) throw new Error(`só ${total} fiadas na planta`);
+  for (let indice = 0; indice < total; indice += 1) {
+    const fiada = fiadas.nth(indice);
+    await fiada.focus();
+    await pagina.getByRole('button', { name: `Espiar a fiada ${indice + 1}` }).click();
+    await fiada.fill((await fiada.getAttribute('placeholder')) ?? '');
+  }
+  await fiadas.nth(total - 1).press('Enter');
+  const aprovada = pagina.getByRole('dialog', { name: 'Vistoria aprovada!' });
+  await aprovada.waitFor({ timeout: 10_000 });
+  await aprovada.getByRole('button', { name: 'Voltar à cidade' }).click();
+  await pagina.getByLabel('vistoriada').first().waitFor({ timeout: 10_000 });
+});
 
 await passo('progresso vai para um arquivo e volta pelos Ajustes (ADR-0011)', async () => {
   await pagina.goto(`${URL_DO_JOGO}/#/cidade`);
@@ -179,7 +197,7 @@ await passo('sem internet, o jogo abre do aparelho e o Python carrega (ADR-0010)
 await passo('no celular (360 px), nada passa da largura da tela, nem o modal da aula', async () => {
   const celular = await navegador.newPage({ viewport: { width: 360, height: 756 }, isMobile: true, hasTouch: true });
   try {
-    for (const hash of ['#/', '#/cidade', '#/obra/correio', '#/guglo-wars', '#/anuncie']) {
+    for (const hash of ['#/', '#/cidade', '#/obra/correio', '#/vistoria/correio', '#/guglo-wars', '#/anuncie']) {
       await celular.goto(`${URL_DO_JOGO}/${hash}`);
       await celular.waitForTimeout(800);
       const sobra = await celular.evaluate(() => {

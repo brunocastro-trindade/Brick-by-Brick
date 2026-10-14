@@ -13,6 +13,14 @@ export interface ProgressoObra {
   concluida: boolean;
   estrelas: 0 | Estrelas;
   melhorPontuacao: number;
+  /** Melhor vistoria aprovada (ADR-0016); null enquanto não houve. */
+  vistoria: ResultadoDaVistoria | null;
+}
+
+export interface ResultadoDaVistoria {
+  /** Aprovada na primeira entrega, sem espiar nenhuma linha. */
+  dePrimeira: boolean;
+  espiadas: number;
 }
 
 export interface Progresso {
@@ -47,7 +55,7 @@ export function progressoNovo(): Progresso {
 }
 
 export function progressoDeObraNovo(): ProgressoObra {
-  return { passo: 0, resultados: [], combo: 0, aulaVista: false, concluida: false, estrelas: 0, melhorPontuacao: 0 };
+  return { passo: 0, resultados: [], combo: 0, aulaVista: false, concluida: false, estrelas: 0, melhorPontuacao: 0, vistoria: null };
 }
 
 export function progressoDaObra(progresso: Progresso, obraId: string): ProgressoObra {
@@ -87,7 +95,16 @@ function sanearObra(bruto: unknown): ProgressoObra | null {
     concluida: o.concluida === true,
     estrelas,
     melhorPontuacao: o.melhorPontuacao,
+    vistoria: sanearVistoria(o.vistoria),
   };
+}
+
+/** Campo que entrou depois (ADR-0016): ausente ou estranho vira "sem vistoria", sem derrubar a obra. */
+function sanearVistoria(bruto: unknown): ResultadoDaVistoria | null {
+  if (typeof bruto !== 'object' || bruto === null) return null;
+  const v = bruto as Record<string, unknown>;
+  if (typeof v.dePrimeira !== 'boolean' || !ehInteiro(v.espiadas)) return null;
+  return { dePrimeira: v.dePrimeira && v.espiadas === 0, espiadas: v.espiadas };
 }
 
 /** Campo que entrou depois (ADR-0007): ausente ou estranho vira recorde zero. */
@@ -189,6 +206,18 @@ export function registrarAcerto(progresso: Progresso, obra: Obra, resultado: Res
 /** Começa a obra de novo do alicerce, mantendo conclusão e recordes. */
 export function reiniciarObra(progresso: Progresso, obraId: string): Progresso {
   return comObra(progresso, obraId, (atual) => ({ ...atual, passo: 0, resultados: [], combo: 0 }));
+}
+
+/** Guarda a vistoria aprovada se ela for melhor que a anterior: de primeira vence; depois, menos espiadas. */
+export function registrarVistoria(progresso: Progresso, obraId: string, resultado: ResultadoDaVistoria): Progresso {
+  return comObra(progresso, obraId, (atual) => {
+    const anterior = atual.vistoria;
+    const melhor =
+      !anterior ||
+      (resultado.dePrimeira && !anterior.dePrimeira) ||
+      (resultado.dePrimeira === anterior.dePrimeira && resultado.espiadas < anterior.espiadas);
+    return melhor ? { ...atual, vistoria: resultado } : atual;
+  });
 }
 
 export function marcarAulaVista(progresso: Progresso, obraId: string): Progresso {

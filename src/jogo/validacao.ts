@@ -86,6 +86,42 @@ async function executarPlanta(executor: Executor, codigo: string, verificacao: s
   return resultado;
 }
 
+export type DiferencaDeComportamento = { tipo: 'erro-python'; erro: ErroPython } | { tipo: 'resultado-diferente'; motivo: MotivoDiferenca };
+
+/**
+ * Roda a planta e o programa do jogador com cada conjunto de entradas e devolve a primeira diferença observável:
+ * erro do programa, saída, variáveis, teste oculto ou tipo de erro. Null quando se comportam igual.
+ * Usada pelo mini desafio e pela Vistoria (ADR-0004, ADR-0016).
+ */
+export async function compararComportamento(parametros: {
+  executor: Executor;
+  codigoPlanta: string;
+  codigoJogador: string;
+  verificacao: string | undefined;
+  entradas: string[][];
+}): Promise<DiferencaDeComportamento | null> {
+  const { executor, codigoPlanta, codigoJogador, verificacao, entradas: conjuntos } = parametros;
+  for (const entradas of conjuntos) {
+    const planta = await executarPlanta(executor, codigoPlanta, verificacao, entradas);
+    const jogador = await executor.executar({ codigo: codigoJogador, verificacao, entradas });
+
+    if (jogador.erro?.fase === 'programa') return { tipo: 'erro-python', erro: jogador.erro };
+    if (jogador.saida !== planta.saida) {
+      return { tipo: 'resultado-diferente', motivo: { tipo: 'saida', esperado: planta.saida, obtido: jogador.saida, entradas } };
+    }
+    const variavel = primeiraVariavelDiferente(planta.variaveis, jogador.variaveis);
+    if (variavel) return { tipo: 'resultado-diferente', motivo: { tipo: 'variavel', ...variavel } };
+
+    const testeDiferente =
+      jogador.saidaVerificacao !== planta.saidaVerificacao || (jogador.erro?.tipo ?? null) !== (planta.erro?.tipo ?? null);
+    if (testeDiferente) {
+      const obtido = jogador.erro ? `${jogador.saidaVerificacao}${jogador.erro.tipo}: ${jogador.erro.mensagem}` : jogador.saidaVerificacao;
+      return { tipo: 'resultado-diferente', motivo: { tipo: 'teste', codigo: verificacao ?? '', esperado: planta.saidaVerificacao, obtido } };
+    }
+  }
+  return null;
+}
+
 export async function avaliarTentativa(parametros: {
   obra: Obra;
   passo: number;
@@ -104,43 +140,21 @@ export async function avaliarTentativa(parametros: {
   if (!executor?.pronto()) return { tipo: 'sem-python', diagnostico };
 
   const anteriores = linhasAntesDoPasso(obra, passo);
-  const codigoPlanta = textoDoPrograma(fecharBlocoAberto([...anteriores, ...desafio.linhas], CORPO_DE_SONDAGEM));
-  const codigoJogador = textoDoPrograma(fecharBlocoAberto([...anteriores, ...tentativa.linhas], CORPO_DE_SONDAGEM));
-
-  for (const entradas of obra.entradas) {
-    const planta = await executarPlanta(executor, codigoPlanta, desafio.verificar, entradas);
-    const jogador = await executor.executar({ codigo: codigoJogador, verificacao: desafio.verificar, entradas });
-
-    if (jogador.erro?.fase === 'programa') {
-      const { linha } = jogador.erro;
-      const dentroDaTentativa = linha !== null && linha > anteriores.length && linha <= anteriores.length + tentativa.linhas.length;
-      return {
-        tipo: 'erro-python',
-        erro: jogador.erro,
-        linhaNaTentativa: dentroDaTentativa ? linha - anteriores.length - 1 : null,
-        diagnostico,
-      };
-    }
-    if (jogador.saida !== planta.saida) {
-      return {
-        tipo: 'resultado-diferente',
-        motivo: { tipo: 'saida', esperado: planta.saida, obtido: jogador.saida, entradas },
-        diagnostico,
-      };
-    }
-    const variavel = primeiraVariavelDiferente(planta.variaveis, jogador.variaveis);
-    if (variavel) return { tipo: 'resultado-diferente', motivo: { tipo: 'variavel', ...variavel }, diagnostico };
-
-    const testeDiferente =
-      jogador.saidaVerificacao !== planta.saidaVerificacao || (jogador.erro?.tipo ?? null) !== (planta.erro?.tipo ?? null);
-    if (testeDiferente) {
-      const obtido = jogador.erro ? `${jogador.saidaVerificacao}${jogador.erro.tipo}: ${jogador.erro.mensagem}` : jogador.saidaVerificacao;
-      return {
-        tipo: 'resultado-diferente',
-        motivo: { tipo: 'teste', codigo: desafio.verificar ?? '', esperado: planta.saidaVerificacao, obtido },
-        diagnostico,
-      };
-    }
-  }
-  return { tipo: 'certo', via: 'comportamento' };
+  const diferenca = await compararComportamento({
+    executor,
+    codigoPlanta: textoDoPrograma(fecharBlocoAberto([...anteriores, ...desafio.linhas], CORPO_DE_SONDAGEM)),
+    codigoJogador: textoDoPrograma(fecharBlocoAberto([...anteriores, ...tentativa.linhas], CORPO_DE_SONDAGEM)),
+    verificacao: desafio.verificar,
+    entradas: obra.entradas,
+  });
+  if (!diferenca) return { tipo: 'certo', via: 'comportamento' };
+  if (diferenca.tipo === 'resultado-diferente') return { ...diferenca, diagnostico };
+  const { linha } = diferenca.erro;
+  const dentroDaTentativa = linha !== null && linha > anteriores.length && linha <= anteriores.length + tentativa.linhas.length;
+  return {
+    tipo: 'erro-python',
+    erro: diferenca.erro,
+    linhaNaTentativa: dentroDaTentativa ? linha - anteriores.length - 1 : null,
+    diagnostico,
+  };
 }

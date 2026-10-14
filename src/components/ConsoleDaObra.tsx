@@ -18,10 +18,13 @@ export function ConsoleDaObra({
   execucoes,
   estadoDoPython,
   programaVazio,
+  titulo = 'Console',
 }: {
   execucoes: ExecucaoNoConsole[] | null;
   estadoDoPython: EstadoDoPython;
   programaVazio: boolean;
+  /** "Saída esperada" na Vistoria, que mostra a saída da planta (ADR-0016). */
+  titulo?: 'Console' | 'Saída esperada';
 }) {
   const [aba, setAba] = useState(0);
   const indice = execucoes && aba < execucoes.length ? aba : 0;
@@ -53,11 +56,11 @@ export function ConsoleDaObra({
   }
 
   return (
-    <section className={styles.console} aria-label="Console do programa">
+    <section className={styles.console} aria-label={titulo === 'Console' ? 'Console do programa' : titulo}>
       <header className={styles.cabecalho}>
         <span className={styles.titulo}>
           <SquareTerminal size={16} aria-hidden="true" />
-          Console
+          {titulo}
         </span>
         {execucoes && execucoes.length > 1 ? (
           <div className={styles.abas} role="tablist" aria-label="Testes com entradas diferentes">
