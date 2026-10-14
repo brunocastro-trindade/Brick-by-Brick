@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Teste de fumaça (HARNESS §5.5): abre o jogo num Chromium de verdade, espera o Python carregar
 // no navegador e joga o primeiro mini desafio do Correio — errando uma vez e acertando depois —
-// acerta uma peça do Guglo Wars, abre o Anuncie aqui e garante que nada veio de outro domínio (INV-09)
+// acerta uma peça do Guglo Wars (e liga o tema Drácula), abre o Anuncie aqui e garante que nada veio de outro domínio (INV-09)
 // e que a política de segurança de conteúdo está no ar sem barrar o próprio jogo (ADR-0009). Por fim, tira
 // a rede e confere que o jogo abre do aparelho, com o Python saindo do service worker (ADR-0010).
 // Num celular de 360 px, confere que nenhuma tela rola para o lado e que o modal da aula cabe na tela.
@@ -117,6 +117,26 @@ await passo('Guglo Wars: Enter errado não deixa peça fantasma no poço', async
   await pagina.getByText(/Acertou! Mais \d+ pontos/).waitFor({ timeout: 5_000 });
   const pecas = await pagina.locator('[data-peca="da-vez"]').count();
   if (pecas !== 1) throw new Error(`${pecas} peças da vez no poço`);
+});
+await passo('Guglo Wars: o botão Drácula liga o tema, que fica guardado e sai junto com a tela (ADR-0015)', async () => {
+  const botao = pagina.getByRole('button', { name: 'Tema Drácula' });
+  const tema = () => pagina.evaluate(() => globalThis.document.documentElement.dataset.tema ?? null);
+  await botao.click();
+  if ((await botao.getAttribute('aria-pressed')) !== 'true' || (await tema()) !== 'dracula') throw new Error('o tema não ligou');
+  await pagina.screenshot({ path: `${PASTA}/guglo-wars-dracula.png` });
+  await pagina.reload();
+  await pagina.getByRole('button', { name: 'Começar partida' }).waitFor({ timeout: 10_000 });
+  if ((await tema()) !== 'dracula') throw new Error('o tema não ficou guardado');
+  // O goto só troca o hash: a tela sai um instante depois, então a conferência espera.
+  const semTema = (motivo) =>
+    pagina.waitForFunction(() => !globalThis.document.documentElement.dataset.tema, null, { timeout: 5_000 }).catch(() => {
+      throw new Error(motivo);
+    });
+  await pagina.goto(`${URL_DO_JOGO}/#/cidade`);
+  await semTema('o tema vazou para a cidade');
+  await pagina.goto(`${URL_DO_JOGO}/#/guglo-wars`);
+  await botao.click();
+  await semTema('o tema não desligou');
 });
 
 await passo('progresso vai para um arquivo e volta pelos Ajustes (ADR-0011)', async () => {

@@ -73,6 +73,23 @@ function refinar(categoria: CategoriaToken, texto: string): CategoriaToken {
   return 'nome';
 }
 
+/**
+ * Realce semântico, só para exibir (ADR-0015): nome seguido de `(` é chamada de função, e o nome depois de
+ * `def` ou `class` é o que está sendo definido. Fica fora de `tokenizar` porque o Guglo Wars escolhe a
+ * lacuna pela categoria, e nome do programa nunca pode virar lacuna (ADR-0007).
+ */
+export function realceSemantico(tokens: readonly Token[]): Token[] {
+  const significativos = tokens.filter((token) => token.categoria !== 'espaco');
+  return tokens.map((token) => {
+    if (token.categoria !== 'nome') return token;
+    const posicao = significativos.indexOf(token);
+    const anterior = significativos[posicao - 1];
+    const seguinte = significativos[posicao + 1];
+    const definido = anterior?.categoria === 'palavra-chave' && (anterior.texto === 'def' || anterior.texto === 'class');
+    return seguinte?.texto === '(' || definido ? { ...token, categoria: 'funcao' } : token;
+  });
+}
+
 /** Tokens sem os espaços. */
 export function tokensSignificativos(linha: string): Token[] {
   return tokenizar(linha).filter((token) => token.categoria !== 'espaco');

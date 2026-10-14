@@ -1,8 +1,8 @@
 // Peças do Guglo Wars (ADR-0007): uma barra de tijolo com a linha de código colorida, com o espaçamento exato
 // (o que se vê é o que se digita). Copiando, o trecho já digitado fica assentado; na lacuna, o que a pessoa
-// digita aparece dentro da vaga.
+// digita aparece dentro da vaga. O realce é semântico (ADR-0015): chamada de função tem cor de função.
 import { caracteresCertos, conferir, type Peca } from '../jogo/gugloWars';
-import { tokenizar, type CategoriaToken } from '../jogo/tokenizador';
+import { realceSemantico, tokenizar, type CategoriaToken } from '../jogo/tokenizador';
 import styles from './PecaQueCai.module.css';
 
 interface Segmento {
@@ -16,7 +16,7 @@ interface Segmento {
 function segmentos(texto: string, certos = 0, desvioEm = -1): Segmento[] {
   const lista: Segmento[] = [];
   let posicao = 0;
-  for (const token of tokenizar(texto)) {
+  for (const token of realceSemantico(tokenizar(texto))) {
     for (const caractere of token.texto) {
       const atual = { categoria: token.categoria, assentado: posicao < certos, desvio: posicao === desvioEm };
       const ultimo = lista.at(-1);

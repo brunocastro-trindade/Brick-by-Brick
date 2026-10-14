@@ -39,12 +39,18 @@
   font-style: italic;
 }
 
-.operador,
+.operador {
+  color: var(--cor-codigo-operador);
+}
+
 .pontuacao {
   color: var(--cor-codigo-simbolo);
 }
 
-.nome,
+.nome {
+  color: var(--cor-codigo-nome);
+}
+
 .espaco,
 .desconhecido {
   color: var(--cor-codigo-padrao);
@@ -52,7 +58,7 @@
 
 /* Trecho já digitado: assentado, como argamassa por baixo. */
 .assentado {
-  background: color-mix(in srgb, var(--cor-sucesso) 55%, transparent);
+  background: color-mix(in srgb, var(--cor-codigo-assentado) 55%, transparent);
   box-shadow: inset 0 calc(var(--espaco-1) * -1) 0 var(--cor-codigo-entrada);
 }
 
