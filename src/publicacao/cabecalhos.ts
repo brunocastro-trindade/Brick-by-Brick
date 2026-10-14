@@ -34,14 +34,26 @@ export const CABECALHOS_DE_SEGURANCA: Record<string, string> = {
 const CAMINHOS_IMUTAVEIS = ['/assets/*', '/pyodide/*'];
 const CACHE_IMUTAVEL = 'public, max-age=31536000, immutable';
 
+/**
+ * O HTML pede revalidação (o padrão do Cloudflare) e proíbe reescrita na borda: com no-transform, o Cloudflare
+ * não injeta o beacon do Web Analytics, o Rocket Loader nem a Email Obfuscation, mesmo ligados no painel (INV-09).
+ */
+const CAMINHOS_DO_HTML = ['/', '/index.html', '/404.html'];
+export const CACHE_DO_HTML = 'public, max-age=0, must-revalidate, no-transform';
+
 function regra(caminho: string, cabecalhos: Record<string, string>): string {
   return [caminho, ...Object.entries(cabecalhos).map(([nome, valor]) => `  ${nome}: ${valor}`)].join('\n');
 }
 
 /**
  * Arquivo _headers do Cloudflare. Sem Cache-Control em /*: o padrão do Cloudflare (revalidar sempre) é o certo
- * para /, sw.js e manifest, e ele junta com vírgula o mesmo cabeçalho vindo de duas regras.
+ * para sw.js e manifest, e ele junta com vírgula o mesmo cabeçalho vindo de duas regras.
  */
 export function arquivoDeCabecalhos(): string {
-  return `${[regra('/*', CABECALHOS_DE_SEGURANCA), ...CAMINHOS_IMUTAVEIS.map((caminho) => regra(caminho, { 'Cache-Control': CACHE_IMUTAVEL }))].join('\n\n')}\n`;
+  const regras = [
+    regra('/*', CABECALHOS_DE_SEGURANCA),
+    ...CAMINHOS_DO_HTML.map((caminho) => regra(caminho, { 'Cache-Control': CACHE_DO_HTML })),
+    ...CAMINHOS_IMUTAVEIS.map((caminho) => regra(caminho, { 'Cache-Control': CACHE_IMUTAVEL })),
+  ];
+  return `${regras.join('\n\n')}\n`;
 }
