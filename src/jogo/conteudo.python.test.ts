@@ -8,7 +8,8 @@ import { OBRAS } from './obras';
 import { CORPO_DE_SONDAGEM, fecharBlocoAberto, linhasAntesDoPasso, textoDoPrograma } from './programa';
 import type { Desafio, Linha, Obra } from './tipos';
 import { avaliarTentativa } from './validacao';
-import { avaliarVistoria, moldeDaVistoria, verificacaoDaObra } from './vistoria';
+import { MARCA_COMENTARIO_FIM, MARCA_COMENTARIO_INICIO } from '../python/tipos';
+import { avaliarVistoria, moldeDaVistoria, programaDaSaidaEsperada, saidaComComentarios, verificacaoDaObra } from './vistoria';
 
 let executor: Executor;
 
@@ -203,6 +204,22 @@ describe('vistoria no Python de verdade (ADR-0016)', () => {
   it.each(OBRAS.map((item) => [item.nome, item] as const))('%s: a planta escrita com outro espaçamento passa', async (_, item) => {
     const textos = moldeDaVistoria(item).map((linha) => linha.texto.replace(/ = /g, '='));
     expect(await avaliarVistoria({ obra: item, textos, executor })).toMatchObject({ tipo: 'certo' });
+  });
+
+  it.each(OBRAS.map((item) => [item.nome, item] as const))('%s: a saída esperada é a da planta, mais os comentários dela', async (_, item) => {
+    const semComentario = new RegExp(`${MARCA_COMENTARIO_INICIO}[^${MARCA_COMENTARIO_FIM}]*${MARCA_COMENTARIO_FIM}\\n`, 'g');
+    for (const entradas of item.entradas) {
+      const planta = await rodar(textoDoPrograma(moldeDaVistoria(item)), entradas);
+      const esperada = await rodar(programaDaSaidaEsperada(item), entradas);
+      expect(esperada.erro).toBeNull();
+      expect(saidaComComentarios(item, esperada.saida).replace(semComentario, '')).toBe(planta.saida);
+    }
+  });
+
+  it('Correio: o comentário aparece entre as linhas que ele separa', async () => {
+    const correio = OBRAS.find((item) => item.id === 'correio')!;
+    const saida = saidaComComentarios(correio, (await rodar(programaDaSaidaEsperada(correio))).saida);
+    expect(saida.split('\n').slice(1, 4)).toEqual(['Cartas e pacotes', '\u00043\u001f# Quem enviou o cartão\u0005', 'Remetente: Guglo']);
   });
 
   // O programa que só imprime a saída pronta, com o mesmo número de fiadas, nas obras sem recuo e sem input():

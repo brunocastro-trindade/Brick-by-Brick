@@ -2,7 +2,16 @@ import { describe, expect, it } from 'vitest';
 import type { Executor, ResultadoExecucao } from '../python/tipos';
 import { processarObra } from './conteudo';
 import { falaDaVistoria } from './falas';
-import { avaliarVistoria, linhasDaVistoria, moldeDaVistoria, primeiraLinhaDiferente, verificacaoDaObra } from './vistoria';
+import {
+  avaliarVistoria,
+  fiadasDeComentario,
+  linhasDaVistoria,
+  moldeDaVistoria,
+  primeiraLinhaDiferente,
+  programaDaSaidaEsperada,
+  saidaComComentarios,
+  verificacaoDaObra,
+} from './vistoria';
 
 const obra = processarObra(
   {
@@ -111,6 +120,40 @@ describe('fala da vistoria', () => {
     expect(falaDaVistoria({ tipo: 'certo', via: 'planta' }, planta, 0, 0).texto).toContain('De primeira e sem espiar');
     expect(falaDaVistoria({ tipo: 'certo', via: 'planta' }, planta, 0, 1).texto).toContain('tente de primeira e sem espiar');
     expect(falaDaVistoria({ tipo: 'certo', via: 'comportamento' }, planta, 1, 0).codigo).toBe('x = 1\nprint(x)\nif x > 0:\n    print("positivo")');
+  });
+});
+
+describe('comentários da planta na saída esperada', () => {
+  const comComentario = processarObra(
+    {
+      id: 'comentada',
+      ordem: 1,
+      nome: 'Comentada',
+      conceito: 'comentários',
+      nivel: 'basico',
+      modelo: 'casa',
+      aula: { titulo: 'Aula', texto: 'Texto', exemplo: 'x = 1' },
+      inicial: '# começo\nx = 1\nif x > 5:\n    # nunca roda\n    print("grande")',
+      desafios: [{ tipo: 'digitar', titulo: 'Mostre', contexto: 'Mostre.', codigo: 'print(x)  # mostra x', explicacao: 'Assim.' }],
+    },
+    'comentada.yaml',
+  );
+
+  it('só a fiada que é inteira comentário conta (comentário no fim de uma linha de código não)', () => {
+    expect(fiadasDeComentario(comComentario)).toEqual([0, 3]);
+    expect(fiadasDeComentario(obra)).toEqual([]);
+  });
+
+  it('o programa troca o comentário por uma marca com o número da fiada, sem o texto e no mesmo recuo', () => {
+    const programa = programaDaSaidaEsperada(comComentario);
+    expect(programa).not.toContain('começo');
+    expect(programa.split('\n').slice(2)).toEqual(['__comentario_da_planta__(0)', 'x = 1', 'if x > 5:', '    __comentario_da_planta__(3)', '    print("grande")', 'print(x)  # mostra x']);
+    expect(programaDaSaidaEsperada(obra)).toBe('x = 1\nprint(x)\nif x > 0:\n    print("positivo")');
+  });
+
+  it('a marca vira o comentário com a fiada; o que não rodou vai para o fim', () => {
+    expect(saidaComComentarios(comComentario, '\u00040\u0005\n1\n')).toBe('\u00041\u001f# começo\u0005\n1\n\u00044\u001f# nunca roda\u0005\n');
+    expect(saidaComComentarios(obra, '1\npositivo\n')).toBe('1\npositivo\n');
   });
 });
 

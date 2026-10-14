@@ -19,3 +19,16 @@
   text-decoration: underline;
   text-underline-offset: 0.2em;
 }
+
+/* Comentário da planta na saída esperada da Vistoria: não é saída, é a fiada que não mostra nada. */
+.comentario {
+  color: var(--cor-codigo-comentario);
+  font-style: italic;
+}
+
+.fiada {
+  color: var(--cor-editor-texto-suave);
+  font-family: var(--fonte-texto);
+  font-size: var(--tipo-legenda-tamanho);
+  font-style: normal;
+}
