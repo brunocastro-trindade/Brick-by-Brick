@@ -69,6 +69,14 @@ describe('progresso', () => {
     expect(carregarProgresso(null)).toEqual(progressoNovo());
   });
 
+  it('guarda o tema do Guglo Wars e devolve o padrão quando o valor é estranho (ADR-0015)', () => {
+    const comTema = (tema: unknown) =>
+      carregarProgresso(armazenamentoEmMemoria({ [CHAVE_DO_PROGRESSO]: JSON.stringify({ ...progressoNovo(), temaDoGugloWars: tema }) }));
+    expect(comTema('dracula').temaDoGugloWars).toBe('dracula');
+    expect(comTema('<script>').temaDoGugloWars).toBe('canteiro');
+    expect(comTema(undefined).temaDoGugloWars).toBe('canteiro');
+  });
+
   it('descarta só a obra com dado inválido', () => {
     const bruto = JSON.stringify({
       versao: 1,

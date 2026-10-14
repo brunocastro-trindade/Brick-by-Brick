@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { categoriaDoTijolo, linhasEquivalentes, tokenizar, tokensSignificativos } from './tokenizador';
+import { categoriaDoTijolo, linhasEquivalentes, realceSemantico, tokenizar, tokensSignificativos } from './tokenizador';
 
 describe('tokenizar', () => {
   it('reconstrói a linha exata, espaços incluídos', () => {
@@ -62,5 +62,48 @@ describe('categoriaDoTijolo', () => {
     expect(categoriaDoTijolo('>=')).toBe('operador');
     expect(categoriaDoTijolo('if')).toBe('palavra-chave');
     expect(categoriaDoTijolo('#')).toBe('comentario');
+  });
+});
+
+describe('realceSemantico', () => {
+  const categorias = (linha: string) =>
+    realceSemantico(tokenizar(linha))
+      .filter((token) => token.categoria !== 'espaco')
+      .map((token) => [token.categoria, token.texto]);
+
+  it('trata nome seguido de ( como chamada de função, inclusive método depois do ponto', () => {
+    expect(categorias('total = somar (a, b) + itens.count(1)')).toEqual([
+      ['nome', 'total'],
+      ['operador', '='],
+      ['funcao', 'somar'],
+      ['pontuacao', '('],
+      ['nome', 'a'],
+      ['pontuacao', ','],
+      ['nome', 'b'],
+      ['pontuacao', ')'],
+      ['operador', '+'],
+      ['nome', 'itens'],
+      ['pontuacao', '.'],
+      ['funcao', 'count'],
+      ['pontuacao', '('],
+      ['numero', '1'],
+      ['pontuacao', ')'],
+    ]);
+  });
+
+  it('marca o nome definido por def e class', () => {
+    expect(categorias('class Casa:')[1]).toEqual(['funcao', 'Casa']);
+    expect(categorias('def area(self):').slice(1, 4)).toEqual([
+      ['funcao', 'area'],
+      ['pontuacao', '('],
+      ['nome', 'self'],
+    ]);
+  });
+
+  it('não muda o texto nem a categoria do que já tinha', () => {
+    const linha = 'print(nome)  # oi';
+    const realcados = realceSemantico(tokenizar(linha));
+    expect(realcados.map((token) => token.texto).join('')).toBe(linha);
+    expect(realcados.find((token) => token.texto === 'nome')?.categoria).toBe('nome');
   });
 });

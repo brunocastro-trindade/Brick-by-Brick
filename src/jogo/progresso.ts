@@ -24,7 +24,11 @@ export interface Progresso {
   ultimaObra: string | null;
   mecanicasVistas: TipoDesafio[];
   gugloWars: RecordeDoGugloWars;
+  /** Tema da tela do Guglo Wars (ADR-0015). */
+  temaDoGugloWars: TemaDoGugloWars;
 }
+
+export type TemaDoGugloWars = 'canteiro' | 'dracula';
 
 export interface RecordeDoGugloWars {
   recorde: number;
@@ -39,7 +43,7 @@ export interface Armazenamento {
 export const CHAVE_DO_PROGRESSO = 'brick-by-brick:progresso:v1';
 
 export function progressoNovo(): Progresso {
-  return { versao: 1, obras: {}, som: true, modoLivre: false, ultimaObra: null, mecanicasVistas: [], gugloWars: { recorde: 0, partidas: 0 } };
+  return { versao: 1, obras: {}, som: true, modoLivre: false, ultimaObra: null, mecanicasVistas: [], gugloWars: { recorde: 0, partidas: 0 }, temaDoGugloWars: 'canteiro' };
 }
 
 export function progressoDeObraNovo(): ProgressoObra {
@@ -111,6 +115,7 @@ function sanearProgresso(bruto: unknown): Progresso | null {
     ultimaObra: typeof dados.ultimaObra === 'string' ? dados.ultimaObra : null,
     mecanicasVistas: Array.isArray(dados.mecanicasVistas) ? tipos.filter((tipo) => (dados.mecanicasVistas as unknown[]).includes(tipo)) : [],
     gugloWars: sanearGugloWars(dados.gugloWars),
+    temaDoGugloWars: dados.temaDoGugloWars === 'dracula' ? 'dracula' : 'canteiro',
   };
 }
 

@@ -24,7 +24,28 @@
     "branco": "#FFFFFF",
     "branco-translucido": "rgba(255, 255, 255, 0.35)",
     "marrom-escuro-veu": "rgba(38, 13, 13, 0.55)",
-    "marrom-escuro-sombra": "rgba(38, 13, 13, 0.18)"
+    "marrom-escuro-sombra": "rgba(38, 13, 13, 0.18)",
+
+    "dracula-fundo": "#282A36",
+    "dracula-noite": "#21222C",
+    "dracula-superficie": "#343746",
+    "dracula-linha-atual": "#44475A",
+    "dracula-frente": "#F8F8F2",
+    "dracula-comentario": "#6272A4",
+    "dracula-comentario-claro": "#A0A8CF",
+    "dracula-ciano": "#8BE9FD",
+    "dracula-verde": "#50FA7B",
+    "dracula-verde-musgo": "#3A6B4C",
+    "dracula-laranja": "#FFB86C",
+    "dracula-rosa": "#FF79C6",
+    "dracula-rosa-claro": "#FF92D0",
+    "dracula-roxo": "#BD93F9",
+    "dracula-vermelho": "#FF5555",
+    "dracula-vermelho-claro": "#FF6E6E",
+    "dracula-amarelo": "#F1FA8C",
+    "dracula-brilho": "rgba(248, 248, 242, 0.08)",
+    "dracula-veu": "rgba(25, 26, 33, 0.72)",
+    "dracula-sombra": "rgba(0, 0, 0, 0.35)"
   },
   "espaco": {
     "1": "2px",
@@ -69,7 +90,10 @@
   "sombra": {
     "baixa": "0 3px 0 #260D0D",
     "media": "0 5px 0 #260D0D, 0 10px 24px rgba(38, 13, 13, 0.18)",
-    "alta": "0 8px 0 #260D0D, 0 24px 48px rgba(38, 13, 13, 0.28)"
+    "alta": "0 8px 0 #260D0D, 0 24px 48px rgba(38, 13, 13, 0.28)",
+    "dracula-baixa": "0 3px 0 #191A21",
+    "dracula-media": "0 5px 0 #191A21, 0 10px 24px rgba(0, 0, 0, 0.35)",
+    "dracula-alta": "0 8px 0 #191A21, 0 24px 48px rgba(0, 0, 0, 0.5)"
   },
   "duracao": {
     "rapida": "120ms",

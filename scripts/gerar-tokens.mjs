@@ -2,7 +2,7 @@
 // Gera src/styles/tokens.css a partir de tokens/base.json e tokens/semantico.json (HARNESS §2.1).
 // Uso: node scripts/gerar-tokens.mjs            → escreve o arquivo
 //      node scripts/gerar-tokens.mjs --verificar → falha se o arquivo commitado estiver desatualizado
-import { readFile, writeFile } from 'node:fs/promises';
+import { readdir, readFile, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
@@ -40,6 +40,21 @@ function resolver(valor, nomeSemantico) {
 }
 
 const semanticos = achatar(semantico).flatMap(([nome, valor]) => resolver(valor, nome));
+const nomesSemanticos = new Set(semanticos.map(([nome]) => nome));
+
+/** Temas (ADR-0015): cada arquivo em tokens/temas redefine papéis que já existem no semântico. */
+const pastaDeTemas = path.join(raiz, 'tokens/temas');
+const arquivosDeTema = (await readdir(pastaDeTemas).catch(() => [])).filter((nome) => nome.endsWith('.json')).sort();
+const temas = [];
+for (const arquivo of arquivosDeTema) {
+  const nomeDoTema = path.basename(arquivo, '.json');
+  const tema = JSON.parse(await readFile(path.join(pastaDeTemas, arquivo), 'utf8'));
+  const tokens = achatar(tema).flatMap(([nome, valor]) => resolver(valor, `${nomeDoTema}: ${nome}`).map(([n, v]) => [n.slice(nomeDoTema.length + 2), v]));
+  for (const [nome] of tokens) {
+    if (!nomesSemanticos.has(nome)) throw new Error(`Tema "${nomeDoTema}" redefine "--${nome}", que não existe em semantico.json.`);
+  }
+  temas.push({ nome: nomeDoTema, esquema: tema.$esquema, tokens });
+}
 
 const linhas = [
   '/* Gerado por scripts/gerar-tokens.mjs a partir de tokens/*.json. Não edite à mão: rode `npm run tokens`. */',
@@ -50,6 +65,14 @@ const linhas = [
   '  /* Semânticos — a única camada que componentes podem ler */',
   ...semanticos.map(([nome, valor]) => `  --${nome}: ${valor};`),
   '}',
+  ...temas.flatMap(({ nome, esquema, tokens }) => [
+    '',
+    `/* Tema ${nome} (tokens/temas/${nome}.json) */`,
+    `:root[data-tema="${nome}"] {`,
+    ...(esquema ? [`  color-scheme: ${esquema};`] : []),
+    ...tokens.map(([token, valor]) => `  --${token}: ${valor};`),
+    '}',
+  ]),
   '',
 ];
 const css = linhas.join('\n');
