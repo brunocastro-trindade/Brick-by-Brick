@@ -81,3 +81,27 @@
     grid-template-columns: repeat(2, auto);
   }
 }
+
+/* Convite à Vistoria (ADR-0016) */
+.vistoria {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espaco-4);
+  padding: var(--espaco-4) var(--espaco-5);
+  border: var(--borda-fina) dashed var(--cor-contorno);
+  border-radius: var(--raio-medio);
+  background: var(--cor-fundo-alternativo);
+}
+
+.iconeDaVistoria {
+  flex-shrink: 0;
+  color: var(--cor-sucesso);
+}
+
+.vistoriaTexto {
+  display: grid;
+  flex: 1 1 16rem;
+  gap: var(--espaco-1);
+}
+

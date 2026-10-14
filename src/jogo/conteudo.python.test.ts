@@ -8,6 +8,7 @@ import { OBRAS } from './obras';
 import { CORPO_DE_SONDAGEM, fecharBlocoAberto, linhasAntesDoPasso, textoDoPrograma } from './programa';
 import type { Desafio, Linha, Obra } from './tipos';
 import { avaliarTentativa } from './validacao';
+import { avaliarVistoria, moldeDaVistoria, verificacaoDaObra } from './vistoria';
 
 let executor: Executor;
 
@@ -190,3 +191,32 @@ describe('avaliarTentativa com Python de verdade', () => {
     expect(veredito).toMatchObject({ tipo: 'resultado-diferente', motivo: { tipo: 'teste', esperado: '6\n', obtido: '6\nNone\n' } });
   });
 });
+
+describe('vistoria no Python de verdade (ADR-0016)', () => {
+  it.each(OBRAS.map((item) => [item.nome, item] as const))('%s: os testes ocultos de todas as etapas rodam juntos na planta', async (_, item) => {
+    for (const entradas of item.entradas) {
+      const resultado = await rodar(textoDoPrograma(moldeDaVistoria(item)), entradas, verificacaoDaObra(item));
+      expect(resultado.erro).toBeNull();
+    }
+  });
+
+  it.each(OBRAS.map((item) => [item.nome, item] as const))('%s: a planta escrita com outro espaçamento passa', async (_, item) => {
+    const textos = moldeDaVistoria(item).map((linha) => linha.texto.replace(/ = /g, '='));
+    expect(await avaliarVistoria({ obra: item, textos, executor })).toMatchObject({ tipo: 'certo' });
+  });
+
+  // O programa que só imprime a saída pronta, com o mesmo número de fiadas, nas obras sem recuo e sem input():
+  // a comparação de variáveis é o que barra (sem ela, ele passaria pela saída).
+  const semBloco = OBRAS.filter((item) => moldeDaVistoria(item).every((linha) => linha.recuo === 0 && !linha.texto.includes('input(')));
+  it.each(semBloco.map((item) => [item.nome, item] as const))('%s: print com a saída pronta não passa na vistoria', async (_, item) => {
+    const molde = moldeDaVistoria(item);
+    const planta = await rodar(textoDoPrograma(molde), item.entradas[0]);
+    // Programa só de print com texto (o Correio): imprimir a saída pronta é o próprio programa.
+    if (Object.keys(planta.variaveis).length === 0) return;
+    const saida = planta.saida.replace(/\n$/, '').split('\n');
+    const prints = saida.length <= molde.length ? saida.map((linha) => `print(${JSON.stringify(linha)})`) : [`print(${JSON.stringify(saida.join('\n'))})`];
+    const textos = [...prints, ...Array.from({ length: molde.length - prints.length }, () => 'pass')];
+    expect(await avaliarVistoria({ obra: item, textos, executor })).not.toMatchObject({ tipo: 'certo' });
+  });
+});
+

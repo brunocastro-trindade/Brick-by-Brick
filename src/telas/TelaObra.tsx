@@ -182,9 +182,10 @@ export interface TelaObraProps {
   proximaObra: Obra | null;
   aoVoltar: () => void;
   aoIrParaObra: (obra: Obra) => void;
+  aoFazerVistoria: () => void;
 }
 
-export function TelaObra({ obra, progresso, atualizarProgresso, proximaObra, aoVoltar, aoIrParaObra }: TelaObraProps) {
+export function TelaObra({ obra, progresso, atualizarProgresso, proximaObra, aoVoltar, aoIrParaObra, aoFazerVistoria }: TelaObraProps) {
   const redutor = useMemo(() => criarRedutor(obra), [obra]);
   const daObra = progressoDaObra(progresso, obra.id);
   const [estado, despachar] = useReducer(redutor, daObra.passo, (passo) => estadoDoPasso(obra, passo));
@@ -630,6 +631,7 @@ export function TelaObra({ obra, progresso, atualizarProgresso, proximaObra, aoV
           aoVoltar={aoVoltar}
           aoRefazer={refazer}
           aoIrParaProxima={aoIrParaObra}
+          aoFazerVistoria={aoFazerVistoria}
         />
       ) : null}
     </div>

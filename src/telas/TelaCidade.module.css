@@ -284,3 +284,9 @@
     display: none;
   }
 }
+
+/* Vistoriada (ADR-0016) */
+.itemVistoriada {
+  flex-shrink: 0;
+  color: var(--cor-sucesso);
+}

@@ -6,9 +6,12 @@ import {
   CHAVE_DO_PROGRESSO,
   lerArquivoDeProgresso,
   obraLiberada,
+  progressoDaObra,
+  progressoDeObraNovo,
   progressoNovo,
   registrarAcerto,
   registrarPartidaDoGugloWars,
+  registrarVistoria,
   reiniciarObra,
   salvarProgresso,
   type Armazenamento,
@@ -169,3 +172,33 @@ describe('progresso em arquivo (ADR-0011)', () => {
     expect(lido?.gugloWars).toEqual({ recorde: 0, partidas: 3 });
   });
 });
+
+describe('vistoria no progresso (ADR-0016)', () => {
+  it('guarda o melhor resultado: de primeira vence, depois menos espiadas', () => {
+    let progresso = registrarVistoria(progressoNovo(), 'correio', { dePrimeira: false, espiadas: 3 });
+    progresso = registrarVistoria(progresso, 'correio', { dePrimeira: false, espiadas: 5 });
+    expect(progressoDaObra(progresso, 'correio').vistoria).toEqual({ dePrimeira: false, espiadas: 3 });
+    progresso = registrarVistoria(progresso, 'correio', { dePrimeira: false, espiadas: 1 });
+    progresso = registrarVistoria(progresso, 'correio', { dePrimeira: true, espiadas: 0 });
+    progresso = registrarVistoria(progresso, 'correio', { dePrimeira: false, espiadas: 0 });
+    expect(progressoDaObra(progresso, 'correio').vistoria).toEqual({ dePrimeira: true, espiadas: 0 });
+  });
+
+  it('refazer a obra não apaga a vistoria', () => {
+    const progresso = registrarVistoria(progressoNovo(), 'correio', { dePrimeira: true, espiadas: 0 });
+    expect(progressoDaObra(reiniciarObra(progresso, 'correio'), 'correio').vistoria).toEqual({ dePrimeira: true, espiadas: 0 });
+  });
+
+  it('vistoria salva estranha vira "sem vistoria" sem perder a obra; progresso antigo sem o campo carrega', () => {
+    const obraSalva = { ...progressoDeObraNovo(), concluida: true, estrelas: 3 };
+    const comVistoria = (vistoria: unknown) =>
+      progressoDaObra(
+        carregarProgresso(armazenamentoEmMemoria({ [CHAVE_DO_PROGRESSO]: JSON.stringify({ ...progressoNovo(), obras: { correio: { ...obraSalva, vistoria } } }) })),
+        'correio',
+      );
+    expect(comVistoria({ dePrimeira: 'sim', espiadas: 0 })).toMatchObject({ concluida: true, vistoria: null });
+    expect(comVistoria({ dePrimeira: true, espiadas: 2 }).vistoria).toEqual({ dePrimeira: false, espiadas: 2 });
+    expect(comVistoria(undefined)).toMatchObject({ concluida: true, estrelas: 3, vistoria: null });
+  });
+});
+

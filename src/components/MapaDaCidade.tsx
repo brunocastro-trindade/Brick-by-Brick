@@ -78,6 +78,8 @@ export interface ObraNoMapa {
   obra: Obra;
   situacao: SituacaoDoPredio;
   progresso: number;
+  /** Passou na Vistoria (ADR-0016): o selo de concluída ganha o carimbo. */
+  vistoriada: boolean;
 }
 
 /** A estrada e os terrenos são fixos: as paradas se calculam uma vez por sessão. */
@@ -154,9 +156,13 @@ function Selo({ item, lugar }: { item: ObraNoMapa; lugar: Lugar }) {
         </g>
       ) : null}
       {situacao === 'concluido' ? (
-        <g className={styles.concluida} transform="translate(15 -15)">
+        <g className={`${styles.concluida} ${item.vistoriada ? styles.vistoriada : ''}`} transform="translate(15 -15)">
           <circle r={10} />
-          <path d="M-5 0 L-1.5 3.5 L5 -3.5" fill="none" />
+          {item.vistoriada ? (
+            <path d="M-6.5 0 L-3.5 3 L1.5 -3 M-1 1.5 L0.5 3 L6 -3.5" fill="none" />
+          ) : (
+            <path d="M-5 0 L-1.5 3.5 L5 -3.5" fill="none" />
+          )}
         </g>
       ) : null}
     </g>

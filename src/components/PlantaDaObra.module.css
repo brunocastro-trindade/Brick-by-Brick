@@ -260,6 +260,30 @@
   font-style: italic;
 }
 
+/* Vistoria: uma caixa por fiada, mais baixa que o molde do mini desafio, para o programa caber na tela. */
+.moldeDaVistoria {
+  min-height: var(--espaco-7);
+  border-color: var(--cor-editor-texto-suave);
+}
+
+/* Fiada espiada: o guia aparece em tom de planta, sem itálico, para dar para copiar com os olhos. */
+.espiada {
+  border-color: var(--cor-aviso);
+}
+
+.guia {
+  display: block;
+  padding: 0 var(--espaco-4) var(--espaco-1);
+  color: var(--cor-editor-texto-suave);
+  font-size: var(--tipo-legenda-tamanho);
+  white-space: pre;
+}
+
+.espiada::placeholder {
+  color: var(--cor-editor-texto-suave);
+  font-style: normal;
+}
+
 .molde:focus-visible {
   outline: var(--borda-grossa) solid var(--cor-foco-sobre-escuro);
   border-style: solid;

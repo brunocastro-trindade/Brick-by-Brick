@@ -1,5 +1,5 @@
 // A cidade: o mapa das obras, a placa da obra escolhida e a lista de todas elas.
-import { CircleCheck, CircleHelp, Construction, Lock, MessageSquareText, Settings, Star, Swords, Volume2, VolumeX } from 'lucide-react';
+import { CircleCheck, CircleHelp, ClipboardCheck, Construction, Lock, MessageSquareText, Settings, Star, Swords, Volume2, VolumeX } from 'lucide-react';
 import { useState } from 'react';
 import { ChipDoPython } from '../components/ChipDoPython';
 import { MapaDaCidade, type ObraNoMapa } from '../components/MapaDaCidade';
@@ -23,7 +23,7 @@ export function situacaoDaObra(obras: Obra[], progresso: Progresso, indice: numb
   if (!obraLiberada(obras, progresso, indice)) situacao = 'bloqueado';
   else if (daObra.concluida) situacao = 'concluido';
   else if (daObra.passo > 0) situacao = 'em-obra';
-  return { obra, situacao, progresso: progressoDasLinhas };
+  return { obra, situacao, progresso: progressoDasLinhas, vistoriada: daObra.vistoria !== null };
 }
 
 const ICONES: Record<SituacaoDoPredio, typeof Lock> = {
@@ -40,6 +40,7 @@ export interface TelaCidadeProps {
   selecionada: string | null;
   aoSelecionar: (obra: Obra) => void;
   aoEntrar: (obra: Obra) => void;
+  aoFazerVistoria: (obra: Obra) => void;
   aoIrParaInicio: () => void;
   aoAbrirGugloWars: () => void;
 }
@@ -51,6 +52,7 @@ export function TelaCidade({
   selecionada,
   aoSelecionar,
   aoEntrar,
+  aoFazerVistoria,
   aoIrParaInicio,
   aoAbrirGugloWars,
 }: TelaCidadeProps) {
@@ -135,6 +137,7 @@ export function TelaCidade({
               progresso={progressoDaObra(progresso, escolhida.obra.id)}
               obraAnterior={obras[indiceEscolhida - 1] ?? null}
               aoEntrar={() => entrar(escolhida)}
+              aoFazerVistoria={() => aoFazerVistoria(escolhida.obra)}
             />
           ) : null}
 
@@ -162,6 +165,7 @@ export function TelaCidade({
                           {'★'.repeat(estrelas)}
                         </span>
                       ) : null}
+                      {item.vistoriada ? <ClipboardCheck size={18} className={styles.itemVistoriada} aria-label="vistoriada" /> : null}
                       <Icone size={18} aria-hidden="true" />
                     </button>
                   </li>

@@ -113,6 +113,27 @@
   color: var(--cor-texto-suave);
 }
 
+/* Vistoria (ADR-0016): convite ou situação, abaixo do botão de entrar. */
+.vistoria {
+  display: grid;
+  gap: var(--espaco-3);
+  padding-top: var(--espaco-4);
+  border-top: var(--borda-fina) dashed var(--cor-contorno-suave);
+}
+
+.situacaoDaVistoria {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-2);
+  font-size: var(--tipo-corpo-pequeno-tamanho);
+  font-weight: var(--peso-medio);
+}
+
+.situacaoDaVistoria svg {
+  flex-shrink: 0;
+  color: var(--cor-sucesso);
+}
+
 @keyframes chegar {
   from {
     opacity: 0;

@@ -105,6 +105,16 @@
   stroke-linejoin: round;
 }
 
+/* Vistoriada (ADR-0016): o selo vira carimbo cheio, com check duplo. */
+.vistoriada circle {
+  fill: var(--cor-sucesso);
+}
+
+.vistoriada path {
+  stroke: var(--cor-texto-sobre-escuro);
+  stroke-width: 2.5;
+}
+
 /* Outdoor: pixels duros como o resto da Vila; realce no passar e no foco do teclado. */
 .outdoor {
   cursor: pointer;
