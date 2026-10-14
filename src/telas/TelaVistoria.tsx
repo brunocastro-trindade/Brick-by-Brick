@@ -11,10 +11,9 @@ import { Modal } from '../components/Modal';
 import { LinhaDaVistoria, PlantaDaObra } from '../components/PlantaDaObra';
 import { prefereMenosMovimento, useEstadoDoPython } from '../estado/usePython';
 import { falaDaVistoria, type Fala } from '../jogo/falas';
-import { textoDoPrograma } from '../jogo/programa';
 import { registrarVistoria, type Progresso } from '../jogo/progresso';
 import type { Obra } from '../jogo/tipos';
-import { avaliarVistoria, moldeDaVistoria, type VereditoDaVistoria } from '../jogo/vistoria';
+import { avaliarVistoria, fiadasDeComentario, moldeDaVistoria, programaDaSaidaEsperada, saidaComComentarios, type VereditoDaVistoria } from '../jogo/vistoria';
 import { pythonDoJogo } from '../python/executor';
 import { definirSom, sons } from '../som/sons';
 import styles from './TelaVistoria.module.css';
@@ -54,21 +53,28 @@ export function TelaVistoria({ obra, progresso, atualizarProgresso, aoVoltar, ao
   useEffect(() => definirSom(progresso.som), [progresso.som]);
   useEffect(() => campos.current[0]?.focus(), []);
 
-  // Saída esperada: a planta rodando com cada conjunto de entradas.
-  const codigoDaPlanta = textoDoPrograma(planta);
+  // Saída esperada: a planta rodando com cada conjunto de entradas, com os comentários dela no lugar.
+  const codigoDaPlanta = useMemo(() => programaDaSaidaEsperada(obra), [obra]);
+  const temComentario = fiadasDeComentario(obra).length > 0;
   const [execucoes, setExecucoes] = useState<ExecucaoNoConsole[] | null>(null);
   useEffect(() => {
     if (estadoDoPython !== 'pronto') return;
     let cancelado = false;
     Promise.all(obra.entradas.map((entradas) => pythonDoJogo.executar({ codigo: codigoDaPlanta, entradas })))
       .then((resultados) => {
-        if (!cancelado) setExecucoes(resultados.map((resultado, i) => ({ entradas: obra.entradas[i] ?? [], resultado })));
+        if (cancelado) return;
+        setExecucoes(
+          resultados.map((resultado, i) => ({
+            entradas: obra.entradas[i] ?? [],
+            resultado: { ...resultado, saida: saidaComComentarios(obra, resultado.saida) },
+          })),
+        );
       })
       .catch(() => undefined);
     return () => {
       cancelado = true;
     };
-  }, [codigoDaPlanta, estadoDoPython, obra.entradas]);
+  }, [codigoDaPlanta, estadoDoPython, obra]);
 
   // Cada entrega traz uma fala nova: ela precisa entrar na tela, mesmo com a planta comprida.
   useEffect(() => {
@@ -251,7 +257,10 @@ export function TelaVistoria({ obra, progresso, atualizarProgresso, aoVoltar, ao
 
         <aside className={styles.lateral}>
           <ConsoleDaObra titulo="Saída esperada" execucoes={execucoes} estadoDoPython={estadoDoPython} programaVazio={false} />
-          <p className={styles.nota}>É o que o programa da planta mostra. O seu precisa mostrar o mesmo, com as mesmas entradas.</p>
+          <p className={styles.nota}>
+            É o que o programa da planta mostra. O seu precisa mostrar o mesmo, com as mesmas entradas.
+            {temComentario ? ' Comentário não aparece na tela: ele está aqui em cinza, no ponto do programa e com a fiada dele.' : ''}
+          </p>
         </aside>
       </main>
 

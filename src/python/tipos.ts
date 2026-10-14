@@ -32,3 +32,8 @@ export interface Executor {
 
 export const MARCA_ENTRADA_INICIO = '\u0002';
 export const MARCA_ENTRADA_FIM = '\u0003';
+
+/** Comentário da planta na saída esperada da Vistoria (ADR-0016): número da fiada, separador e texto. */
+export const MARCA_COMENTARIO_INICIO = '\u0004';
+export const MARCA_COMENTARIO_SEPARADOR = '\u001f';
+export const MARCA_COMENTARIO_FIM = '\u0005';
