@@ -35,8 +35,8 @@ describe('metadados de publicação (ADR-0013, ADR-0014)', () => {
     expect(sitemap(site)).toBeNull();
   });
 
-  it('produção no Workers Builds (main) entra nos buscadores e usa URL_DO_SITE', () => {
-    expect(publicacao({ WORKERS_CI: '1', WORKERS_CI_BRANCH: 'main' })).toEqual({ url: null, indexavel: true });
+  it('produção no Workers Builds (main) entra nos buscadores, no domínio próprio ou em URL_DO_SITE', () => {
+    expect(publicacao({ WORKERS_CI: '1', WORKERS_CI_BRANCH: 'main' })).toEqual({ url: 'https://gugloeduca.site', indexavel: true });
     expect(publicacao({ WORKERS_CI: '1', WORKERS_CI_BRANCH: 'main', URL_DO_SITE: 'https://brickbybrick.com.br' })).toEqual({
       url: 'https://brickbybrick.com.br',
       indexavel: true,

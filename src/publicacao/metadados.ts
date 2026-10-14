@@ -29,6 +29,8 @@ const IMAGEM_ALT = 'Logo do Brick by Brick ao lado do Guglo, o pinguim pedreiro 
 
 /** Branch que o Workers Builds publica como produção (ADR-0014); as outras viram prévia. */
 const BRANCH_DE_PRODUCAO = 'main';
+/** Domínio de produção, versionado aqui para não depender de variável no painel (ADR-0014). */
+export const DOMINIO_DE_PRODUCAO = 'https://gugloeduca.site';
 
 export function publicacao(ambiente: AmbienteDeBuild): Publicacao {
   const noCloudflare = ambiente.WORKERS_CI === '1';
@@ -36,8 +38,9 @@ export function publicacao(ambiente: AmbienteDeBuild): Publicacao {
   if (nome !== 'producao' && nome !== 'teste') {
     throw new Error(`AMBIENTE_DO_SITE precisa ser "producao" ou "teste"; veio "${nome}"`);
   }
-  // Só URL_DO_SITE: o endereço de prévia de uma versão não serve de canonical.
-  const bruta = ambiente.URL_DO_SITE ?? '';
+  // Só URL_DO_SITE ou o domínio de produção: o endereço de prévia de uma versão não serve de canonical.
+  const producaoNoCloudflare = noCloudflare && ambiente.WORKERS_CI_BRANCH === BRANCH_DE_PRODUCAO;
+  const bruta = ambiente.URL_DO_SITE ?? (producaoNoCloudflare ? DOMINIO_DE_PRODUCAO : '');
   if (bruta && !/^https:\/\/[^/\s]+\/?$/.test(bruta)) {
     throw new Error(`URL_DO_SITE precisa ser só https://dominio, sem caminho; veio "${bruta}"`);
   }
