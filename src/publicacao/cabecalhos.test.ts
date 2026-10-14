@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { arquivoDeCabecalhos, CABECALHOS_DE_SEGURANCA, POLITICA_NA_META } from './cabecalhos';
+import { arquivoDeCabecalhos, CABECALHOS_DE_SEGURANCA, CACHE_DO_HTML, POLITICA_NA_META } from './cabecalhos';
 
 /** Lê o _headers no formato do Cloudflare: caminho na coluna 0, cabeçalhos recuados abaixo. */
 function regras(texto: string): Map<string, Record<string, string>> {
@@ -24,7 +24,7 @@ describe('cabeçalhos do host (ADR-0014)', () => {
 
   it('_headers põe a segurança em tudo e cache imutável só no que tem hash ou versão no nome', () => {
     const lidas = regras(arquivoDeCabecalhos());
-    expect([...lidas.keys()]).toEqual(['/*', '/assets/*', '/pyodide/*']);
+    expect([...lidas.keys()]).toEqual(['/*', '/', '/index.html', '/404.html', '/assets/*', '/pyodide/*']);
     expect(lidas.get('/*')).toEqual(CABECALHOS_DE_SEGURANCA);
     // Sem Cache-Control em /*: o padrão do Cloudflare (revalidar sempre) é o certo para /, sw.js e manifest,
     // e um segundo Cache-Control seria juntado com vírgula ao das regras abaixo.
@@ -32,6 +32,13 @@ describe('cabeçalhos do host (ADR-0014)', () => {
     for (const caminho of ['/assets/*', '/pyodide/*']) {
       expect(lidas.get(caminho)).toEqual({ 'Cache-Control': 'public, max-age=31536000, immutable' });
     }
+  });
+
+  it('o HTML revalida sempre e proíbe a borda de reescrever a página (INV-09: nada de beacon injetado)', () => {
+    const lidas = regras(arquivoDeCabecalhos());
+    expect(CACHE_DO_HTML).toContain('no-transform');
+    expect(CACHE_DO_HTML).toContain('max-age=0');
+    for (const caminho of ['/', '/index.html', '/404.html']) expect(lidas.get(caminho)).toEqual({ 'Cache-Control': CACHE_DO_HTML });
   });
 
   it('respeita os limites do _headers: até 100 regras e 2.000 caracteres por linha', () => {
