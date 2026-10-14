@@ -10,5 +10,9 @@
     "directory": "./dist",
     // Rotas por hash: endereço que não existe responde 404, não a página do jogo.
     "not_found_handling": "404-page"
-  }
+  },
+  // Domínio próprio. O endereço *.workers.dev mostrava o usuário da conta: fica desligado, com as prévias.
+  "routes": [{ "pattern": "gugloeduca.site", "custom_domain": true }],
+  "workers_dev": false,
+  "preview_urls": false
 }
