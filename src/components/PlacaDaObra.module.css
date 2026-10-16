@@ -24,6 +24,7 @@
   border: var(--borda-grossa) solid var(--cor-contorno);
   border-radius: 50%;
   background: var(--cor-acento);
+  color: var(--cor-texto-sobre-acento);
   font-family: var(--fonte-titulo);
   font-size: var(--tipo-destaque-tamanho);
   font-weight: var(--peso-titulo);
@@ -31,10 +32,12 @@
 
 .concluido .numero {
   background: var(--cor-sucesso);
+  color: var(--cor-texto-sobre-sucesso);
 }
 
 .bloqueado .numero {
   background: var(--cor-fundo-alternativo);
+  color: var(--cor-texto);
 }
 
 .nomes {

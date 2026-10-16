@@ -1,0 +1,22 @@
+/* Mostra o logo do tema. `:root` na frente para vencer o `.logo img { display: block }` de quem usa o componente. */
+:global(:root) .escuro {
+  display: none;
+}
+
+:global(:root[data-tema='dracula']) .claro {
+  display: none;
+}
+
+:global(:root[data-tema='dracula']) .escuro {
+  display: block;
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(:root:not([data-tema])) .claro {
+    display: none;
+  }
+
+  :global(:root:not([data-tema])) .escuro {
+    display: block;
+  }
+}

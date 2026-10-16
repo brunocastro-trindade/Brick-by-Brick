@@ -108,6 +108,7 @@
   --cor-texto-suave: var(--base-cor-marrom-suave);
   --cor-texto-sobre-acento: var(--base-cor-marrom-escuro);
   --cor-texto-sobre-aviso: var(--base-cor-marrom-escuro);
+  --cor-texto-sobre-sucesso: var(--base-cor-marrom-escuro);
   --cor-texto-sobre-escuro: var(--base-cor-creme);
   --cor-texto-sobre-escuro-suave: var(--base-cor-marrom-claro);
   --cor-contorno: var(--base-cor-marrom-escuro);
@@ -243,6 +244,7 @@
   --cor-texto-suave: var(--base-cor-dracula-comentario-claro);
   --cor-texto-sobre-acento: var(--base-cor-dracula-fundo);
   --cor-texto-sobre-aviso: var(--base-cor-dracula-fundo);
+  --cor-texto-sobre-sucesso: var(--base-cor-dracula-fundo);
   --cor-texto-sobre-escuro: var(--base-cor-dracula-frente);
   --cor-texto-sobre-escuro-suave: var(--base-cor-dracula-comentario-claro);
   --cor-contorno: var(--base-cor-dracula-comentario);
@@ -293,6 +295,7 @@
     --cor-texto-suave: var(--base-cor-dracula-comentario-claro);
     --cor-texto-sobre-acento: var(--base-cor-dracula-fundo);
     --cor-texto-sobre-aviso: var(--base-cor-dracula-fundo);
+    --cor-texto-sobre-sucesso: var(--base-cor-dracula-fundo);
     --cor-texto-sobre-escuro: var(--base-cor-dracula-frente);
     --cor-texto-sobre-escuro-suave: var(--base-cor-dracula-comentario-claro);
     --cor-contorno: var(--base-cor-dracula-comentario);

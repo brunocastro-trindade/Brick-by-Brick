@@ -5,7 +5,7 @@ import { Botao } from '../components/Botao';
 import { ChipDoPython } from '../components/ChipDoPython';
 import { ModalComoJogar } from '../components/ModalComoJogar';
 import { linkDeRetorno } from '../estado/retorno';
-import logo from '../assets/logo.webp';
+import { Logo } from '../components/Logo';
 import mascote from '../assets/mascote.webp';
 import styles from './TelaInicial.module.css';
 
@@ -16,7 +16,9 @@ export function TelaInicial({ temProgresso, aoComecar }: { temProgresso: boolean
       <main className={styles.palco}>
         <div className={styles.texto}>
           <h1 className={styles.titulo}>
-            <img className={styles.logo} src={logo} alt="Brick by Brick" width={900} height={668} />
+            <span className={styles.logo}>
+              <Logo tamanho="grande" alt="Brick by Brick" />
+            </span>
           </h1>
           <p className={styles.chamada}>
             Aprenda Python construindo uma cidade, <strong>tijolo por tijolo</strong>.

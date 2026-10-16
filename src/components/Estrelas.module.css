@@ -4,7 +4,7 @@
 }
 
 .estrelas svg {
-  stroke: var(--cor-contorno);
+  stroke: var(--cor-ilustra-contorno);
   stroke-width: 2;
 }
 

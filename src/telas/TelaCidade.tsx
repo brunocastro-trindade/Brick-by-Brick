@@ -8,7 +8,7 @@ import { ModalComoJogar } from '../components/ModalComoJogar';
 import { ModalDeAjustes } from '../components/ModalDeAjustes';
 import { PlacaDaObra } from '../components/PlacaDaObra';
 import type { SituacaoDoPredio } from '../components/PredioDaCidade';
-import logo from '../assets/logo-pequeno.webp';
+import { Logo } from '../components/Logo';
 import { linhasAntesDoPasso } from '../jogo/programa';
 import { obraLiberada, progressoDaObra, progressoNovo, totalDeEstrelas, type Progresso } from '../jogo/progresso';
 import type { Obra } from '../jogo/tipos';
@@ -74,7 +74,7 @@ export function TelaCidade({
     <div className={styles.tela}>
       <header className={styles.barra}>
         <button type="button" className={styles.logo} onClick={aoIrParaInicio} aria-label="Brick by Brick: voltar ao início">
-          <img src={logo} alt="" width={90} height={67} />
+          <Logo tamanho="pequeno" alt="" />
         </button>
         <div className={styles.placar}>
           <span className={styles.medida} title="Estrelas conquistadas">
