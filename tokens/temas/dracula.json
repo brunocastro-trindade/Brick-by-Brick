@@ -11,6 +11,7 @@
     "texto-suave": "{cor.dracula-comentario-claro}",
     "texto-sobre-acento": "{cor.dracula-fundo}",
     "texto-sobre-aviso": "{cor.dracula-fundo}",
+    "texto-sobre-sucesso": "{cor.dracula-fundo}",
     "texto-sobre-escuro": "{cor.dracula-frente}",
     "texto-sobre-escuro-suave": "{cor.dracula-comentario-claro}",
     "contorno": "{cor.dracula-comentario}",

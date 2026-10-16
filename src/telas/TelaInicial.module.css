@@ -31,8 +31,13 @@
 .logo {
   display: block;
   width: min(100%, 30rem);
-  height: auto;
   animation: assentar 700ms var(--curva-mola) both;
+}
+
+.logo img {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
 .chamada {

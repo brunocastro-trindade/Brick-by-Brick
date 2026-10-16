@@ -9,6 +9,7 @@
     "texto-suave": "{cor.marrom-suave}",
     "texto-sobre-acento": "{cor.marrom-escuro}",
     "texto-sobre-aviso": "{cor.marrom-escuro}",
+    "texto-sobre-sucesso": "{cor.marrom-escuro}",
     "texto-sobre-escuro": "{cor.creme}",
     "texto-sobre-escuro-suave": "{cor.marrom-claro}",
     "contorno": "{cor.marrom-escuro}",

@@ -17,7 +17,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { useRef } from 'react';
-import logo from '../assets/logo-pequeno.webp';
+import { Logo } from '../components/Logo';
 import gugloComPlaca from '../assets/guglo-anuncie.webp';
 import { Botao } from '../components/Botao';
 import { CONTATO } from '../estado/contato';
@@ -126,7 +126,7 @@ export function TelaAnuncie({ aoIrParaInicio, aoIrParaCidade }: TelaAnuncieProps
     <div className={styles.tela}>
       <header className={styles.barra}>
         <button type="button" className={styles.logo} onClick={aoIrParaInicio} aria-label="Brick by Brick: voltar ao início">
-          <img src={logo} alt="" width={90} height={67} />
+          <Logo tamanho="pequeno" alt="" />
         </button>
         <div className={styles.acoesDaBarra}>
           {/* No celular o logo já volta ao início, e o cabeçalho cabe numa linha. */}

@@ -47,8 +47,10 @@
   font-weight: var(--peso-titulo);
 }
 
+/* Ícone preenchido de amarelo: o traço (currentColor) é contorno de figura, escuro nos dois temas. */
 .medida svg {
   fill: var(--cor-aviso);
+  color: var(--cor-ilustra-contorno);
 }
 
 .ferramentas {
@@ -175,6 +177,7 @@
 
 .concluido .itemNumero {
   background: var(--cor-sucesso);
+  color: var(--cor-texto-sobre-sucesso);
 }
 
 .itemTextos {
@@ -198,7 +201,7 @@
 
 .itemEstrelas {
   color: var(--cor-aviso);
-  -webkit-text-stroke: 1px var(--cor-contorno); /* fora-da-escala: contorno fino da estrela */
+  -webkit-text-stroke: 1px var(--cor-ilustra-contorno); /* fora-da-escala: contorno fino da estrela */
   letter-spacing: 0.05em;
 }
 
