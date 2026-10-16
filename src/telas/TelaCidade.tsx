@@ -1,17 +1,24 @@
-// A cidade: o mapa das obras, a placa da obra escolhida e a lista de todas elas.
-import { CircleCheck, CircleHelp, ClipboardCheck, Construction, Lock, Settings, Star, Volume2, VolumeX } from 'lucide-react';
-import { useState } from 'react';
+// Um mapa (ADR-0021): a arte com as obras, a placa da obra escolhida e a lista das obras dele. Na Vila, a primeira
+// entrada toca o vídeo de abertura, e a Vila inteira pronta toca o da cidade pronta, que leva à Serra Verde (ADR-0020).
+import { ArrowRight, CircleCheck, CircleHelp, ClipboardCheck, Construction, Lock, Settings, Star, Volume2, VolumeX } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Botao } from '../components/Botao';
 import { ChipDoPython } from '../components/ChipDoPython';
+import { ARTES_DOS_MAPAS } from '../components/artesDosMapas';
 import { MapaDaCidade, type ObraNoMapa } from '../components/MapaDaCidade';
 import { MenuDosModos } from '../components/MenuDosModos';
 import { ModalComoJogar } from '../components/ModalComoJogar';
+import { Modal } from '../components/Modal';
 import { ModalDeAjustes } from '../components/ModalDeAjustes';
 import { PlacaDaObra } from '../components/PlacaDaObra';
+import { PlayerDaAbertura } from '../components/PlayerDaAbertura';
+import { VideoDoGuglo } from '../components/VideoDoGuglo';
 import type { SituacaoDoPredio } from '../components/PredioDaCidade';
 import { Logo } from '../components/Logo';
 import { linhasAntesDoPasso } from '../jogo/programa';
-import { obraLiberada, progressoDaObra, progressoNovo, totalDeEstrelas, type Progresso } from '../jogo/progresso';
-import type { Obra } from '../jogo/tipos';
+import { DADOS_DOS_MAPAS, mapaCompleto, mapaLiberado, mapaSeguinte } from '../jogo/mapas';
+import { marcarVideoVisto, obraLiberada, progressoDaObra, progressoNovo, type Progresso, type VideoDoJogo } from '../jogo/progresso';
+import { MAPAS, type MapaId, type Obra } from '../jogo/tipos';
 import styles from './TelaCidade.module.css';
 
 export function situacaoDaObra(obras: Obra[], progresso: Progresso, indice: number): ObraNoMapa | null {
@@ -34,6 +41,8 @@ const ICONES: Record<SituacaoDoPredio, typeof Lock> = {
 };
 
 export interface TelaCidadeProps {
+  mapa: MapaId;
+  /** Todas as obras, de todos os mapas: o desbloqueio olha os mapas de antes. */
   obras: Obra[];
   progresso: Progresso;
   atualizarProgresso: (mudar: (atual: Progresso) => Progresso) => void;
@@ -44,9 +53,12 @@ export interface TelaCidadeProps {
   aoIrParaInicio: () => void;
   aoAbrirGugloWars: () => void;
   aoAbrirQualSaida: () => void;
+  aoAbrirLeiaOErro: () => void;
+  aoTrocarDeMapa: (mapa: MapaId) => void;
 }
 
 export function TelaCidade({
+  mapa,
   obras,
   progresso,
   atualizarProgresso,
@@ -57,14 +69,40 @@ export function TelaCidade({
   aoIrParaInicio,
   aoAbrirGugloWars,
   aoAbrirQualSaida,
+  aoAbrirLeiaOErro,
+  aoTrocarDeMapa,
 }: TelaCidadeProps) {
   const [modal, setModal] = useState<'ajustes' | 'como-jogar' | null>(null);
-  const noMapa = obras.map((_, indice) => situacaoDaObra(obras, progresso, indice)).filter((item): item is ObraNoMapa => item !== null);
+  const noMapa = obras
+    .map((obra, indice) => (obra.mapa === mapa ? situacaoDaObra(obras, progresso, indice) : null))
+    .filter((item): item is ObraNoMapa => item !== null);
   const proxima = noMapa.find((item) => item.situacao === 'disponivel' || item.situacao === 'em-obra') ?? null;
-  const escolhidaId = selecionada ?? progresso.ultimaObra ?? proxima?.obra.id ?? obras[0]?.id ?? null;
+  const naoEDoMapa = (id: string | null) => (id && noMapa.some((item) => item.obra.id === id) ? id : null);
+  const escolhidaId = naoEDoMapa(selecionada) ?? naoEDoMapa(progresso.ultimaObra) ?? proxima?.obra.id ?? noMapa[0]?.obra.id ?? null;
   const escolhida = noMapa.find((item) => item.obra.id === escolhidaId) ?? null;
-  const indiceEscolhida = escolhida ? noMapa.indexOf(escolhida) : -1;
+  const indiceEscolhida = escolhida ? obras.indexOf(escolhida.obra) : -1;
   const concluidas = noMapa.filter((item) => item.situacao === 'concluido').length;
+  const estrelas = noMapa.reduce((soma, item) => soma + progressoDaObra(progresso, item.obra.id).estrelas, 0);
+  const seguinte = mapaSeguinte(mapa);
+  const seguinteLiberado = seguinte !== null && mapaLiberado(obras, progresso, seguinte);
+  const [avisoDoMapa, setAvisoDoMapa] = useState<string | null>(null);
+
+  const irPara = (destino: MapaId) => {
+    if (mapaLiberado(obras, progresso, destino)) aoTrocarDeMapa(destino);
+    else setAvisoDoMapa(`A ${DADOS_DOS_MAPAS[destino].nome} abre quando as obras da ${DADOS_DOS_MAPAS.vila.nome} estiverem todas prontas.`);
+  };
+
+  // O vídeo da vez, decidido ao abrir a Vila: a cidade pronta tem a vez sobre a abertura.
+  const [video, setVideo] = useState<VideoDoJogo | null>(() => {
+    if (mapa !== 'vila') return null;
+    if (mapaCompleto(obras, progresso, 'vila') && !progresso.videosVistos.includes('cidade-pronta')) return 'cidade-pronta';
+    if (!progresso.videosVistos.includes('abertura')) return 'abertura';
+    return null;
+  });
+  // Marca assim que aparece: recarregar a página no meio não toca de novo.
+  useEffect(() => {
+    if (video) atualizarProgresso((atual) => marcarVideoVisto(atual, video));
+  }, [video, atualizarProgresso]);
 
   const entrar = (item: ObraNoMapa) => {
     if (item.situacao !== 'bloqueado') aoEntrar(item.obra);
@@ -79,17 +117,17 @@ export function TelaCidade({
         <div className={styles.placar}>
           <span className={styles.medida} title="Estrelas conquistadas">
             <Star size={18} aria-hidden="true" />
-            {totalDeEstrelas(progresso)}/{obras.length * 3}
+            {estrelas}/{noMapa.length * 3}
             <span className="somente-leitor">estrelas</span>
           </span>
           <span className={styles.medida} title="Obras concluídas">
             <CircleCheck size={18} aria-hidden="true" />
-            {concluidas}/{obras.length}
+            {concluidas}/{noMapa.length}
             <span className="somente-leitor">obras concluídas</span>
           </span>
         </div>
         <div className={styles.ferramentas}>
-          <MenuDosModos aoAbrirGugloWars={aoAbrirGugloWars} aoAbrirQualSaida={aoAbrirQualSaida} />
+          <MenuDosModos aoAbrirGugloWars={aoAbrirGugloWars} aoAbrirQualSaida={aoAbrirQualSaida} aoAbrirLeiaOErro={aoAbrirLeiaOErro} />
           <button type="button" className={styles.icone} onClick={() => setModal('como-jogar')} aria-label="Como jogar">
             <CircleHelp size={20} aria-hidden="true" />
           </button>
@@ -113,8 +151,34 @@ export function TelaCidade({
 
       <main className={styles.area}>
         <div className={styles.mapa}>
-          <h1 className="somente-leitor">Cidade das obras</h1>
+          <h1 className="somente-leitor">{DADOS_DOS_MAPAS[mapa].nome}: mapa das obras</h1>
+          <nav className={styles.mapas} aria-label="Mapas">
+            {MAPAS.map((outro) => {
+              const liberado = mapaLiberado(obras, progresso, outro);
+              return (
+                <button
+                  key={outro}
+                  type="button"
+                  className={styles.mapaBotao}
+                  aria-current={outro === mapa ? 'page' : undefined}
+                  onClick={() => (outro === mapa ? undefined : irPara(outro))}
+                >
+                  {liberado ? null : <Lock size={16} aria-hidden="true" />}
+                  {DADOS_DOS_MAPAS[outro].nome}
+                  {liberado ? null : <span className="somente-leitor"> (fechada)</span>}
+                </button>
+              );
+            })}
+          </nav>
+          {avisoDoMapa ? (
+            <p className={styles.aviso} role="status">
+              {avisoDoMapa}
+            </p>
+          ) : null}
           <MapaDaCidade
+            arte={ARTES_DOS_MAPAS[mapa]}
+            nome={DADOS_DOS_MAPAS[mapa].nome}
+            placaDoFim={seguinte ? { nome: DADOS_DOS_MAPAS[seguinte].nome, liberado: seguinteLiberado, aoAbrir: () => irPara(seguinte) } : null}
             obras={noMapa}
             selecionada={escolhidaId}
             proximaAConstruir={proxima?.obra.id ?? null}
@@ -131,14 +195,14 @@ export function TelaCidade({
               obra={escolhida.obra}
               situacao={escolhida.situacao}
               progresso={progressoDaObra(progresso, escolhida.obra.id)}
-              obraAnterior={obras[indiceEscolhida - 1] ?? null}
+              obraAnterior={indiceEscolhida > 0 && obras[indiceEscolhida - 1]?.mapa === mapa ? (obras[indiceEscolhida - 1] ?? null) : null}
               aoEntrar={() => entrar(escolhida)}
               aoFazerVistoria={() => aoFazerVistoria(escolhida.obra)}
             />
           ) : null}
 
-          <nav className={styles.lista} aria-label="Todas as obras">
-            <h2 className={styles.listaTitulo}>Obras da cidade</h2>
+          <nav className={styles.lista} aria-label={`Obras da ${DADOS_DOS_MAPAS[mapa].nome}`}>
+            <h2 className={styles.listaTitulo}>Obras da {DADOS_DOS_MAPAS[mapa].nome}</h2>
             <ol>
               {noMapa.map((item) => {
                 const Icone = ICONES[item.situacao];
@@ -151,7 +215,7 @@ export function TelaCidade({
                       aria-current={item.obra.id === escolhidaId ? 'true' : undefined}
                       onClick={() => aoSelecionar(item.obra)}
                     >
-                      <span className={styles.itemNumero}>{item.obra.ordem}</span>
+                      <span className={styles.itemNumero}>{item.obra.numero}</span>
                       <span className={styles.itemTextos}>
                         <span className={styles.itemNome}>{item.obra.nome}</span>
                         <span className={styles.itemConceito}>{item.obra.conceito}</span>
@@ -171,6 +235,33 @@ export function TelaCidade({
           </nav>
         </aside>
       </main>
+
+      {video === 'abertura' && modal === null ? <PlayerDaAbertura somLigado={progresso.som} aoFechar={() => setVideo(null)} /> : null}
+      {video === 'cidade-pronta' ? (
+        <Modal
+          titulo="A cidade está de pé!"
+          largura="larga"
+          aoFechar={() => setVideo(null)}
+          rodape={
+            <>
+              <Botao variante="secundario" aoClicar={() => setVideo(null)}>
+                Ficar na Vila
+              </Botao>
+              <Botao tamanho="grande" autofoco icone={<ArrowRight size={20} aria-hidden="true" />} aoClicar={() => aoTrocarDeMapa('serra-verde')}>
+                Ir para a Serra Verde
+              </Botao>
+            </>
+          }
+        >
+          <div className={styles.cidadePronta}>
+            <VideoDoGuglo video="cidade-pronta" somLigado={progresso.som} />
+            <p>
+              Você concluiu as {noMapa.length} obras da Vila, do <code>print()</code> às classes. A Serra Verde abriu: textos, tuplas,
+              conjuntos, sorteios, erros tratados e arquivos esperam pelo Guglo.
+            </p>
+          </div>
+        </Modal>
+      ) : null}
 
       {modal === 'como-jogar' ? <ModalComoJogar aoFechar={() => setModal(null)} /> : null}
       {modal === 'ajustes' ? (

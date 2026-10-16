@@ -87,9 +87,25 @@ const OPERADORES_VIZINHOS: Record<string, string[]> = {
   '>=': ['>', '<'],
   '==': ['!='],
   '!=': ['=='],
+  // Conjuntos (ADR-0021): interseção, união e diferença.
+  '&': ['|', '-'],
+  '|': ['&'],
 };
 
 const PALAVRAS_VIZINHAS: Record<string, string> = { True: 'False', False: 'True', and: 'or', or: 'and' };
+
+/** Método vizinho, depois do ponto (ADR-0021): as obras de texto da Serra Verde quase não têm número nem operador. */
+const METODOS_VIZINHOS: Record<string, string[]> = {
+  upper: ['lower', 'capitalize'],
+  lower: ['upper'],
+  capitalize: ['upper', 'title'],
+  title: ['capitalize'],
+  strip: ['lstrip', 'rstrip'],
+  count: ['find'],
+  find: ['count'],
+  ceil: ['floor'],
+  floor: ['ceil'],
+};
 
 const juntar = (tokens: readonly Token[]) => tokens.map((token) => token.texto).join('');
 
@@ -130,6 +146,7 @@ function mutacoesComEngano(texto: string): Array<{ texto: string; engano: Engano
     }
     if (token.categoria === 'operador') for (const outro of OPERADORES_VIZINHOS[token.texto] ?? []) trocar(indice, outro);
     if (token.categoria === 'palavra-chave' && PALAVRAS_VIZINHAS[token.texto]) trocar(indice, PALAVRAS_VIZINHAS[token.texto] ?? token.texto);
+    if (vizinho(tokens, indice, -1)?.texto === '.') for (const outro of METODOS_VIZINHOS[token.texto] ?? []) trocar(indice, outro);
     if (token.categoria === 'texto' && /^[fF]["']/.test(token.texto)) trocar(indice, token.texto.slice(1));
     // As aspas aparecem na tela? Engano de quem está começando.
     if (noPrint && token.categoria === 'texto' && /^"[^"'\\]*"$/.test(token.texto)) trocar(indice, `'${token.texto}'`, 'aspas');

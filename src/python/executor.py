@@ -8,8 +8,12 @@ import builtins
 import inspect
 import io
 import json
+import os
+import random
 import re
+import shutil
 import sys
+import tempfile
 import traceback
 import types
 
@@ -19,6 +23,8 @@ ARQUIVO_PROGRAMA = "obra.py"
 ARQUIVO_VERIFICACAO = "verificacao.py"
 NOMES_IGNORADOS = {"__name__", "__builtins__", "input"}
 ENDERECO_DE_MEMORIA = re.compile(r" at 0x[0-9a-fA-F]+")
+# Sorteio repetível (ADR-0021): o mesmo programa sorteia igual a cada execução, então dá para comparar dois.
+SEMENTE_DO_SORTEIO = 2026
 
 
 class LimiteDePassos(Exception):
@@ -102,6 +108,19 @@ def _rodar(fonte, arquivo, escopo, saida, rastrear):
 
 
 def executar(codigo, verificacao="", entradas=(), limite_passos=200_000):
+    """Roda numa pasta vazia e só desta execução (ADR-0021): arquivo escrito aqui não aparece na próxima."""
+    random.seed(SEMENTE_DO_SORTEIO)
+    anterior = os.getcwd()
+    pasta = tempfile.mkdtemp(prefix="obra-")
+    os.chdir(pasta)
+    try:
+        return _executar_na_pasta(codigo, verificacao, entradas, limite_passos)
+    finally:
+        os.chdir(anterior)
+        shutil.rmtree(pasta, ignore_errors=True)
+
+
+def _executar_na_pasta(codigo, verificacao, entradas, limite_passos):
     saida = io.StringIO()
     fila = [str(valor) for valor in entradas]
     passos = 0

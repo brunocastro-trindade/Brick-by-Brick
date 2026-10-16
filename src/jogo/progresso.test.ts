@@ -11,6 +11,8 @@ import {
   progressoNovo,
   registrarAcerto,
   registrarPartidaDoGugloWars,
+  marcarVideoVisto,
+  registrarRodadaDoLeiaOErro,
   registrarRodadaDoQualSaida,
   registrarVistoria,
   reiniciarObra,
@@ -223,3 +225,37 @@ describe('"Qual é a saída?" no progresso (ADR-0017)', () => {
   });
 });
 
+
+describe('"Leia o erro" no progresso (ADR-0019)', () => {
+  it('guarda o recorde e conta as rodadas', () => {
+    let progresso = registrarRodadaDoLeiaOErro(progressoNovo(), 480);
+    progresso = registrarRodadaDoLeiaOErro(progresso, 900);
+    expect(progresso.leiaOErro).toEqual({ recorde: 900, partidas: 2 });
+    expect(progresso.qualSaida).toEqual({ recorde: 0, partidas: 0 });
+  });
+
+  it('progresso antigo sem o campo, ou com lixo nele, carrega com recorde zero', () => {
+    const carregar = (leiaOErro: unknown) =>
+      carregarProgresso(armazenamentoEmMemoria({ [CHAVE_DO_PROGRESSO]: JSON.stringify({ ...progressoNovo(), leiaOErro }) })).leiaOErro;
+    expect(carregar(undefined)).toEqual({ recorde: 0, partidas: 0 });
+    expect(carregar({ recorde: 'muito', partidas: -1 })).toEqual({ recorde: 0, partidas: 0 });
+    expect(carregar({ recorde: 700, partidas: 4 })).toEqual({ recorde: 700, partidas: 4 });
+  });
+});
+
+describe('vídeos que tocam uma vez (ADR-0020)', () => {
+  it('marca cada vídeo uma vez só', () => {
+    let progresso = marcarVideoVisto(progressoNovo(), 'abertura');
+    progresso = marcarVideoVisto(progresso, 'abertura');
+    expect(progresso.videosVistos).toEqual(['abertura']);
+    expect(marcarVideoVisto(progresso, 'cidade-pronta').videosVistos).toEqual(['abertura', 'cidade-pronta']);
+  });
+
+  it('progresso antigo sem o campo, ou com lixo nele, carrega sem vídeo visto', () => {
+    const carregar = (videosVistos: unknown) =>
+      carregarProgresso(armazenamentoEmMemoria({ [CHAVE_DO_PROGRESSO]: JSON.stringify({ ...progressoNovo(), videosVistos }) })).videosVistos;
+    expect(carregar(undefined)).toEqual([]);
+    expect(carregar('abertura')).toEqual([]);
+    expect(carregar(['abertura', 'constructor', 42])).toEqual(['abertura']);
+  });
+});

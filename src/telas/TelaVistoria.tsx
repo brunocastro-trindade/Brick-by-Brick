@@ -6,6 +6,7 @@ import { BalaoDoPinguim } from '../components/BalaoDoPinguim';
 import { Botao } from '../components/Botao';
 import { CabecalhoDoModo } from '../components/CabecalhoDoModo';
 import { ConsoleDaObra, type ExecucaoNoConsole } from '../components/ConsoleDaObra';
+import { GugloComFerramenta } from '../components/GugloComFerramenta';
 import { GugloPixelado } from '../components/GugloPixelado';
 import { Modal } from '../components/Modal';
 import { LinhaDaVistoria, PlantaDaObra } from '../components/PlantaDaObra';
@@ -44,6 +45,7 @@ export function TelaVistoria({ obra, progresso, atualizarProgresso, aoVoltar, ao
   const [erros, setErros] = useState(0);
   const [fala, setFala] = useState<Fala | null>(null);
   const [realce, setRealce] = useState<number | null>(null);
+  const [mostrarExplicacao, setMostrarExplicacao] = useState(true);
   const [mostrarFim, setMostrarFim] = useState(false);
   const [dePrimeira, setDePrimeira] = useState(false);
   const campos = useRef<(HTMLInputElement | null)[]>([]);
@@ -51,7 +53,12 @@ export function TelaVistoria({ obra, progresso, atualizarProgresso, aoVoltar, ao
   const estadoDoPython = useEstadoDoPython();
 
   useEffect(() => definirSom(progresso.som), [progresso.som]);
-  useEffect(() => campos.current[0]?.focus(), []);
+
+  const comecarVistoria = () => {
+    setMostrarExplicacao(false);
+    // Espera o modal fechar e devolver o foco antes de levar o cursor para a primeira fiada.
+    setTimeout(() => focar(0), 0);
+  };
 
   // Saída esperada: a planta rodando com cada conjunto de entradas, com os comentários dela no lugar.
   const codigoDaPlanta = useMemo(() => programaDaSaidaEsperada(obra), [obra]);
@@ -254,6 +261,35 @@ export function TelaVistoria({ obra, progresso, atualizarProgresso, aoVoltar, ao
           </p>
         </aside>
       </main>
+
+      {mostrarExplicacao ? (
+        <Modal
+          titulo="Reescreva o programa de memória"
+          aoFechar={comecarVistoria}
+          cabecalho={
+            <span className={styles.etiqueta}>
+              <ClipboardCheck size={16} aria-hidden="true" />
+              Vistoria · {obra.nome}
+            </span>
+          }
+          rodape={
+            <Botao tamanho="grande" atalho="Enter" autofoco aoClicar={comecarVistoria}>
+              Começar a vistoria
+            </Botao>
+          }
+        >
+          <div className={styles.fim}>
+            <div className={styles.gugloDoFim}>
+              <GugloComFerramenta ferramenta="picareta" />
+            </div>
+            <ul className={styles.regrasDaExplicacao}>
+              <li>O código de {obra.arquivo} sumiu da planta. Cada caixa é uma fiada (uma linha), com o recuo já no lugar.</li>
+              <li>Digite o que vai em cada fiada. Vale escrever do seu jeito, desde que faça a mesma coisa e use os mesmos nomes.</li>
+              <li>Travou? O botão "Espiar a fiada" mostra só aquela fiada.</li>
+            </ul>
+          </div>
+        </Modal>
+      ) : null}
 
       {mostrarFim ? (
         <Modal

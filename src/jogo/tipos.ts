@@ -2,6 +2,10 @@
 
 export type Nivel = 'basico' | 'intermediario' | 'avancado';
 
+/** Os mapas, na ordem em que abrem (ADR-0021): a Serra Verde só depois da Vila inteira. */
+export const MAPAS = ['vila', 'serra-verde'] as const;
+export type MapaId = (typeof MAPAS)[number];
+
 export const MODELOS_DE_PREDIO = [
   'casa',
   'armazem',
@@ -87,6 +91,10 @@ export interface Obra {
   conceito: string;
   nivel: Nivel;
   modelo: ModeloPredio;
+  /** O mapa onde a obra fica (ADR-0021). */
+  mapa: MapaId;
+  /** Número da obra no mapa dela, de 1 em diante: o que a placa e o selo mostram. */
+  numero: number;
   /** Nome do arquivo exibido na planta, como "correio.py". */
   arquivo: string;
   aula: Aula;

@@ -1,17 +1,13 @@
 // A placa da obra escolhida no mapa: o que ela ensina, quanto já foi construído e o botão de entrar.
 import { ArrowRight, ClipboardCheck, Lock } from 'lucide-react';
 import type { ProgressoObra } from '../jogo/progresso';
-import type { Nivel, Obra } from '../jogo/tipos';
+import type { Obra } from '../jogo/tipos';
 import { Botao } from './Botao';
 import { Estrelas } from './Estrelas';
 import type { SituacaoDoPredio } from './PredioDaCidade';
+import { bairroDaObra, DADOS_DOS_MAPAS } from '../jogo/mapas';
 import styles from './PlacaDaObra.module.css';
 
-export const NOMES_DO_NIVEL: Record<Nivel, string> = {
-  basico: 'Vila do Alicerce · básico',
-  intermediario: 'Centro · intermediário',
-  avancado: 'Alto da Colina · avançado',
-};
 
 export interface PlacaDaObraProps {
   obra: Obra;
@@ -36,12 +32,12 @@ export function PlacaDaObra({ obra, situacao, progresso, obraAnterior, aoEntrar,
   return (
     <section className={`${styles.placa} ${styles[situacao]}`} aria-labelledby={`placa-${obra.id}`}>
       <header className={styles.cabecalho}>
-        <span className={styles.numero}>{obra.ordem}</span>
+        <span className={styles.numero}>{obra.numero}</span>
         <div className={styles.nomes}>
           <h2 id={`placa-${obra.id}`} className={styles.nome}>
             {obra.nome}
           </h2>
-          <span className={styles.bairro}>{NOMES_DO_NIVEL[obra.nivel]}</span>
+          <span className={styles.bairro}>{bairroDaObra(obra)}</span>
         </div>
         {progresso.estrelas > 0 ? <Estrelas quantidade={progresso.estrelas} tamanho="pequeno" /> : null}
       </header>
@@ -55,7 +51,11 @@ export function PlacaDaObra({ obra, situacao, progresso, obraAnterior, aoEntrar,
       {situacao === 'bloqueado' ? (
         <p className={styles.trava}>
           <Lock size={18} aria-hidden="true" />
-          {obraAnterior ? `Conclua ${obraAnterior.nome} para liberar esta obra.` : 'Esta obra ainda está fechada.'}
+          {obraAnterior
+            ? `Conclua ${obraAnterior.nome} para liberar esta obra.`
+            : obra.mapa === 'vila'
+              ? 'Esta obra ainda está fechada.'
+              : `Conclua as obras da ${DADOS_DOS_MAPAS.vila.nome} para abrir a ${DADOS_DOS_MAPAS[obra.mapa].nome}.`}
         </p>
       ) : (
         <>

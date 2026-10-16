@@ -114,7 +114,8 @@ function pyodideLocal(): Plugin {
 // A página entra como "/"; robots, sitemap e a imagem de compartilhar são para buscadores e redes, não para
 // jogar sem internet. O _headers e os arquivos com ponto no começo (.assetsignore) nem são servidos pelo
 // Cloudflare: se entrassem na lista, o cache inteiro falharia (ou guardaria a página no lugar deles).
-const FORA_DO_CACHE = /^index\.html$|\.(map|txt|xml)$|^compartilhar\.png$|^_headers$|(^|\/)\./;
+// Os vídeos (ADR-0020) também ficam de fora: tocam uma vez e pesariam a instalação offline.
+const FORA_DO_CACHE = /^index\.html$|\.(map|txt|xml|mp4)$|^compartilhar\.png$|^_headers$|(^|\/)\./;
 
 /** Conteúdo de um arquivo do bundle, para a versão do cache mudar quando qualquer arquivo mudar. */
 function conteudoDoArquivo(arquivo: Rolldown.OutputBundle[string]): string | Uint8Array {

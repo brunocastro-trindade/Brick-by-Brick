@@ -1,0 +1,110 @@
+id: serraria
+ordem: 12
+mapa: serra-verde
+nome: Serraria
+conceito: f-strings com formato
+nivel: basico
+modelo: fabrica
+aula:
+  titulo: Número no formato certo
+  texto: |
+    Numa f-string, depois do valor e de dois-pontos vem o **formato**: `{preco:.2f}` mostra o número com 2 casas depois do ponto.
+
+    O formato também alinha: `{nome:>10}` ocupa 10 espaços com o texto encostado à direita, `<` encosta à esquerda e `^` centraliza.
+
+    Dentro das chaves cabe qualquer conta: `{preco * 2:.2f}` calcula primeiro e formata depois.
+  exemplo: |
+    preco = 7.5
+    print(f"R$ {preco:.2f}")
+  saida: |
+    R$ 7.50
+inicial: |
+  madeira = "pinho"
+  preco = 12.5
+  tabuas = 8
+desafios:
+  - tipo: montar
+    titulo: Preço com centavos
+    contexto: >-
+      Mostre o preço da tábua com duas casas decimais, assim: **Preço da tábua: R$ 12.50**.
+    linha: 'print(f"Preço da tábua: R$ {preco`:.2f`}")'
+    extras:
+      - texto: ':.1f'
+        porque: >-
+          `.1f` mostra uma casa só depois do ponto: sairia 12.5, sem o zero dos centavos.
+      - texto: ':2f'
+        porque: >-
+          Sem o ponto, o 2 vira a largura mínima, e as casas decimais ficam no padrão, que é 6:
+          sairia 12.500000.
+    dica: >-
+      Ponto, número de casas e a letra f, de número decimal.
+    explicacao: >-
+      `:.2f` quer dizer: número decimal com 2 casas. 12.5 vira 12.50, do jeito que preço
+      costuma aparecer.
+
+  - tipo: montar
+    titulo: Conta dentro das chaves
+    contexto: >-
+      Mostre quanto custam todas as tábuas, com centavos: **8 tábuas custam R$ 100.00**.
+    linha: 'print(f"{tabuas} tábuas custam R$ {`preco * tabuas`:.2f}")'
+    extras:
+      - texto: 'preco + tabuas'
+        porque: >-
+          Somar preço com quantidade dá 20.50, que não é o valor de nada. O total é preço vezes
+          quantidade.
+      - texto: '"preco * tabuas"'
+        porque: >-
+          Entre aspas, a conta vira texto, e texto não aceita o formato `.2f`: dá ValueError.
+          Dentro das chaves, a conta vai sem aspas.
+    dica: >-
+      Dentro das chaves vale qualquer conta, sem aspas.
+    explicacao: >-
+      O Python calcula `preco * tabuas` (100.0) e só depois aplica o formato: 100.00.
+
+  - tipo: montar
+    titulo: Etiqueta alinhada
+    contexto: >-
+      Na etiqueta, o nome da madeira ocupa 10 espaços e fica encostado à **direita**, antes
+      da barra: **     pinho|**.
+    linha: 'print(f"{madeira`:>10`}|")'
+    extras:
+      - texto: ':<10'
+        porque: >-
+          `<` encosta o texto à esquerda: sairia "pinho     |", com os espaços depois do nome.
+      - texto: ':^10'
+        porque: >-
+          `^` centraliza o texto nos 10 espaços, com sobra dos dois lados.
+    dica: >-
+      O sinal aponta para o lado onde o texto encosta.
+    explicacao: >-
+      `:>10` reserva 10 espaços e encosta "pinho" à direita: 5 espaços e depois as 5 letras.
+      Assim, várias etiquetas ficam alinhadas umas embaixo das outras.
+
+  - tipo: empilhar
+    titulo: Tabela de metros
+    contexto: >-
+      Mostre o preço de 1, 2 e 3 metros de tábua, sempre com centavos.
+    codigo: |
+      for metros in [1, 2, 3]:
+          print(f"{metros} m de tábua: R$ {preco * metros:.2f}")
+    extras:
+      - texto: '    print(f"{metros} m de tábua: R$ {preco * metros}")'
+        porque: >-
+          Sem o formato, cada número sai do jeito do Python: 12.5, 25.0 e 37.5, com uma casa
+          só. O `:.2f` deixa todos com centavos.
+    dica: >-
+      Um `for` passa pela lista de metros; a f-string calcula e formata.
+    explicacao: >-
+      A cada volta, `metros` vale 1, 2 e 3, e a conta dentro das chaves dá o preço com duas
+      casas: 12.50, 25.00 e 37.50.
+
+  - tipo: digitar
+    titulo: Desconto em porcentagem
+    contexto: >-
+      A serraria dá 10% de desconto. Mostre **Desconto: 10%** a partir do número `0.1`,
+      usando o formato de porcentagem sem casas decimais (`.0%`).
+    codigo: 'print(f"Desconto: {0.1:.0%}")'
+    dica: >-
+      O formato `%` multiplica por 100 e põe o sinal de porcentagem.
+    explicacao: >-
+      `:.0%` multiplica 0.1 por 100, tira as casas decimais e acrescenta o %: 10%.

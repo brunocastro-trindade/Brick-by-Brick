@@ -24,6 +24,12 @@ describe('mutações (ADR-0017)', () => {
     expect(mutacoesDaLinha('print(livros[0])')).toEqual(['print(livros[1])']);
   });
 
+  it('método vizinho depois do ponto (ADR-0021)', () => {
+    expect(mutacoesDaLinha('print(placa.upper())')).toEqual(['print(placa.lower())', 'print(placa.capitalize())']);
+    expect(mutacoesDaLinha('print(math.ceil(area))')).toEqual(['print(math.floor(area))', 'print(math.ceil("area"))']);
+    expect(mutacoesDaLinha('upper = 1')).toEqual(['upper = 2', 'upper = 0']);
+  });
+
   it('f-string sem f, True/False e and/or', () => {
     expect(mutacoesDaLinha('print(f"Oi, {nome}!")')).toEqual(['print("Oi, {nome}!")']);
     expect(mutacoesDaLinha('ok = True and pronto')).toEqual(['ok = False and pronto', 'ok = True or pronto']);

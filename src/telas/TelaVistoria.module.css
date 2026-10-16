@@ -103,6 +103,14 @@
   justify-items: start;
 }
 
+.regrasDaExplicacao {
+  display: grid;
+  gap: var(--espaco-3);
+  padding-left: var(--espaco-6);
+  font-size: var(--tipo-destaque-tamanho);
+  line-height: var(--tipo-corpo-altura);
+}
+
 .selo {
   padding: var(--espaco-1) var(--espaco-4);
   border: var(--borda-fina) solid var(--cor-contorno);

@@ -1,0 +1,389 @@
+.tela {
+  min-height: 100dvh;
+  background: var(--cor-fundo);
+}
+
+/* Antes da rodada (e quando ainda não há obra concluída), como no "Qual é a saída?" */
+.inicio {
+  display: grid;
+  place-items: center;
+  padding: var(--espaco-8) var(--espaco-6);
+}
+
+.convite {
+  display: grid;
+  grid-template-columns: auto minmax(0, 36rem);
+  gap: var(--espaco-7);
+  align-items: center;
+  padding: var(--espaco-7);
+  border: var(--borda-grossa) solid var(--cor-contorno);
+  border-radius: var(--raio-grande);
+  background: var(--cor-superficie);
+  box-shadow: var(--sombra-media);
+}
+
+.gugloDoConvite {
+  width: 10rem;
+  height: 12.5rem;
+}
+
+.conviteTexto {
+  display: grid;
+  gap: var(--espaco-5);
+  justify-items: start;
+}
+
+.conviteTitulo {
+  font-size: var(--tipo-titulo-pequeno-tamanho);
+}
+
+.regras {
+  display: grid;
+  gap: var(--espaco-3);
+  margin: 0;
+  padding-left: var(--espaco-6);
+}
+
+.fonte {
+  font-size: var(--tipo-corpo-pequeno-tamanho);
+  font-weight: var(--peso-medio);
+  color: var(--cor-texto-suave);
+}
+
+.aviso {
+  padding: var(--espaco-2) var(--espaco-4);
+  border: var(--borda-fina) solid var(--cor-contorno);
+  border-radius: var(--raio-medio);
+  background: var(--cor-problema-fundo);
+  color: var(--cor-texto-sobre-aviso);
+}
+
+/* Rodada */
+.jogo {
+  display: grid;
+  gap: var(--espaco-5);
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: var(--espaco-6);
+}
+
+.placar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-3);
+  margin: 0;
+}
+
+.placar div {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--espaco-2);
+  padding: var(--espaco-1) var(--espaco-4);
+  border: var(--borda-fina) solid var(--cor-contorno);
+  border-radius: var(--raio-grande);
+  background: var(--cor-superficie);
+}
+
+.placar dt,
+.numeros dt {
+  font-size: var(--tipo-legenda-tamanho);
+  font-weight: var(--peso-forte);
+  color: var(--cor-texto-suave);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.placar dd {
+  margin: 0;
+  font-family: var(--fonte-titulo);
+  font-weight: var(--peso-titulo);
+}
+
+.enunciado {
+  display: grid;
+  gap: var(--espaco-1);
+}
+
+.titulo {
+  font-size: var(--tipo-titulo-pequeno-tamanho);
+  line-height: var(--tipo-titulo-pequeno-altura);
+}
+
+.obra {
+  font-size: var(--tipo-corpo-pequeno-tamanho);
+  color: var(--cor-texto-suave);
+}
+
+/* O erro como o Python mostra, num terminal; a explicação em português fica ao lado (INV-07). */
+.erro {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: var(--espaco-4);
+}
+
+.terminal {
+  display: grid;
+  gap: var(--espaco-1);
+  align-content: start;
+  margin: 0;
+  padding: var(--espaco-4) var(--espaco-5);
+  border: var(--borda-grossa) solid var(--cor-contorno);
+  border-left: var(--espaco-2) solid var(--cor-problema);
+  border-radius: var(--raio-medio);
+  background: var(--cor-editor-fundo);
+  color: var(--cor-editor-texto);
+  font-family: var(--fonte-codigo);
+  font-size: var(--tipo-corpo-pequeno-tamanho);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.arquivo {
+  color: var(--cor-editor-texto-suave);
+}
+
+.tipoDoErro {
+  color: var(--cor-codigo-problema);
+  font-weight: var(--peso-forte);
+}
+
+.traducao {
+  display: grid;
+  gap: var(--espaco-2);
+  align-content: start;
+  padding: var(--espaco-4) var(--espaco-5);
+  border: var(--borda-fina) solid var(--cor-contorno);
+  border-radius: var(--raio-medio);
+  background: var(--cor-superficie);
+  font-size: var(--tipo-corpo-pequeno-tamanho);
+}
+
+.traducao strong {
+  font-family: var(--fonte-titulo);
+}
+
+.dicaDeLeitura {
+  color: var(--cor-texto-suave);
+}
+
+/* A correção: a linha nova, com o recuo dela, ou "apagar a linha". */
+.correcao {
+  display: grid;
+  gap: var(--espaco-1);
+  min-width: 0;
+}
+
+.numeroDaLinha {
+  font-size: var(--tipo-legenda-tamanho);
+  font-weight: var(--peso-forte);
+  color: var(--cor-editor-texto-suave);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.codigo {
+  min-width: 0;
+  color: var(--cor-editor-texto);
+  font-family: var(--fonte-codigo);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* A linha longa quebra dentro da caixa, em vez de vazar (o realce do código não quebra linha por padrão). */
+.codigo code {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.apagar {
+  color: var(--cor-editor-texto);
+  font-weight: var(--peso-forte);
+}
+
+.leitura {
+  padding: var(--espaco-3) var(--espaco-5);
+  border-radius: var(--raio-medio);
+  background: var(--cor-fundo-alternativo);
+}
+
+.alternativas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: var(--espaco-4);
+}
+
+.alternativa {
+  display: grid;
+  gap: var(--espaco-2);
+  align-content: start;
+}
+
+.escolha {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--espaco-4);
+  align-items: start;
+  width: 100%;
+  min-height: var(--espaco-8);
+  padding: var(--espaco-4);
+  border: var(--borda-grossa) solid var(--cor-contorno);
+  border-radius: var(--raio-medio);
+  background: var(--cor-editor-fundo);
+  box-shadow: var(--sombra-baixa);
+  text-align: left;
+  transition:
+    transform var(--duracao-rapida) var(--curva-saida),
+    border-color var(--duracao-rapida) var(--curva-saida);
+}
+
+.escolha:hover:not(:disabled) {
+  border-color: var(--cor-acento);
+  transform: translateY(calc(var(--espaco-1) * -0.5));
+}
+
+.escolha:focus-visible {
+  outline: var(--borda-grossa) solid var(--cor-foco);
+  outline-offset: var(--espaco-1);
+}
+
+.escolha:disabled {
+  cursor: default;
+}
+
+.letra {
+  display: inline-grid;
+  place-items: center;
+  width: var(--espaco-7);
+  height: var(--espaco-7);
+  border: var(--borda-fina) solid var(--cor-editor-texto-suave);
+  border-radius: var(--raio-pequeno);
+  color: var(--cor-editor-texto);
+  font-family: var(--fonte-titulo);
+  font-weight: var(--peso-titulo);
+}
+
+.certa .escolha {
+  border-color: var(--cor-sucesso);
+  box-shadow: inset 0 0 0 var(--borda-fina) var(--cor-sucesso);
+}
+
+.certa .letra {
+  border-color: var(--cor-sucesso);
+  background: var(--cor-sucesso);
+  color: var(--cor-texto-sobre-escuro);
+}
+
+.errada .escolha {
+  border-color: var(--cor-problema);
+}
+
+.errada .letra {
+  border-color: var(--cor-problema);
+  background: var(--cor-problema);
+  color: var(--cor-texto-sobre-escuro);
+}
+
+.apagada .escolha {
+  opacity: 0.75;
+}
+
+.origem {
+  font-size: var(--tipo-corpo-pequeno-tamanho);
+  color: var(--cor-texto-suave);
+}
+
+.origem code {
+  padding: 0 var(--espaco-2);
+  border-radius: var(--raio-pequeno);
+  background: var(--cor-fundo-alternativo);
+  color: var(--cor-texto);
+  white-space: pre-wrap;
+}
+
+.veredito {
+  font-weight: var(--peso-forte);
+}
+
+.veredito:empty {
+  display: none;
+}
+
+.seguir {
+  justify-self: end;
+}
+
+/* Fim da rodada */
+.fim {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--espaco-6);
+  align-items: center;
+}
+
+.gugloDoFim {
+  width: 8rem;
+  height: 10rem;
+}
+
+.fimTexto {
+  display: grid;
+  gap: var(--espaco-4);
+  justify-items: start;
+}
+
+.selo {
+  padding: var(--espaco-1) var(--espaco-4);
+  border: var(--borda-fina) solid var(--cor-contorno);
+  border-radius: var(--raio-grande);
+  background: var(--cor-aviso);
+  color: var(--cor-texto-sobre-aviso);
+  font-weight: var(--peso-forte);
+}
+
+.numeros {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  gap: var(--espaco-5);
+  margin: 0;
+}
+
+.numeros dd {
+  margin: 0;
+  font-family: var(--fonte-titulo);
+  font-size: var(--tipo-titulo-pequeno-tamanho);
+  font-weight: var(--peso-titulo);
+}
+
+@media (max-width: 860px) /* fora-da-escala: breakpoint */ {
+  .inicio {
+    padding: var(--espaco-5) var(--espaco-4);
+  }
+
+  .convite {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    padding: var(--espaco-5);
+  }
+
+  .jogo {
+    padding: var(--espaco-4);
+  }
+
+  .alternativas,
+  .erro {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .seguir {
+    justify-self: stretch;
+  }
+
+  .fim {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .numeros {
+    grid-template-columns: repeat(2, auto);
+  }
+}

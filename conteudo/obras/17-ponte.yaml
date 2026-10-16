@@ -1,0 +1,125 @@
+id: ponte
+ordem: 17
+mapa: serra-verde
+nome: Ponte
+conceito: try e except
+nivel: intermediario
+modelo: prefeitura
+entradas:
+  - ["12", "3"]
+  - ["doze", "2"]
+  - ["9", "0"]
+aula:
+  titulo: Quando o erro é esperado
+  texto: |
+    Alguns erros dá para prever: a pessoa pode digitar "doze" quando o programa espera 12. Em vez de deixar o programa parar, você **trata** o erro.
+
+    O código arriscado vai dentro de `try:`. Se ele der erro, o Python pula para o `except` daquele erro e roda o plano B, sem parar o programa.
+
+    Diga qual erro você espera, como `except ValueError:`. Com `except ValueError as erro:`, a mensagem do erro fica guardada em `erro`.
+  exemplo: |
+    try:
+        idade = int("doze")
+    except ValueError:
+        print("Digite com números.")
+  saida: |
+    Digite com números.
+inicial: |
+  resposta = input("Quantas tábuas faltam? ")
+  equipe = input("Quantas pessoas na equipe? ")
+desafios:
+  - tipo: empilhar
+    titulo: Número ou não?
+    contexto: >-
+      A pessoa pode responder com letras. Tente converter a `resposta` para número em
+      `tabuas`; se der ValueError, avise **Isso não é um número. Vou contar zero.** e use 0.
+    codigo: |
+      try:
+          tabuas = int(resposta)
+      except ValueError:
+          print("Isso não é um número. Vou contar zero.")
+          tabuas = 0
+    extras:
+      - texto: 'except TypeError:'
+        porque: >-
+          `int("doze")` dá ValueError, não TypeError. O `except` só pega o erro que ele
+          nomeia: com TypeError, o ValueError passaria reto e pararia o programa.
+      - texto: 'catch ValueError:'
+        porque: >-
+          `catch` é de outras linguagens, como Java. Em Python a palavra é `except`; com
+          `catch`, dá erro de sintaxe.
+    dica: >-
+      O código arriscado no `try`; o plano B no `except` do erro que `int()` dá.
+    explicacao: >-
+      Com "12", o `int` funciona e o `except` nem roda. Com "doze", o `int` dá ValueError, o
+      Python pula para o `except`, avisa e guarda 0. O programa segue nos dois casos.
+
+  - tipo: montar
+    titulo: Quantas faltam
+    contexto: >-
+      Mostre quantas tábuas faltam, já convertidas: **Faltam 12 tábuas**.
+    linha: 'print(f"Faltam `{tabuas}` tábuas")'
+    extras:
+      - texto: '{resposta}'
+        porque: >-
+          `resposta` é o texto digitado: com "doze", sairia "Faltam doze tábuas" em vez do 0 do
+          plano B.
+      - texto: 'tabuas'
+        porque: >-
+          Sem chaves, `tabuas` é só uma palavra dentro do texto. As chaves trocam o nome pelo
+          valor.
+    dica: >-
+      O valor que vale é o convertido, entre chaves.
+    explicacao: >-
+      `tabuas` é o número que sobreviveu ao `try`: o convertido, ou o 0 do plano B.
+
+  - tipo: empilhar
+    titulo: Divisão pela equipe
+    contexto: >-
+      Divida as tábuas pela equipe (divisão inteira). Se a equipe for 0, dá ZeroDivisionError:
+      nesse caso, mostre **Sem equipe:** seguido da mensagem do erro, e uma pessoa leva todas.
+    codigo: |
+      try:
+          por_pessoa = tabuas // int(equipe)
+      except ZeroDivisionError as erro:
+          print("Sem equipe:", erro)
+          por_pessoa = tabuas
+    extras:
+      - texto: 'except ValueError as erro:'
+        porque: >-
+          Dividir por zero dá ZeroDivisionError. Com `except ValueError`, a divisão por zero
+          passaria reto e pararia o programa.
+    dica: >-
+      O erro de dividir por zero tem o nome do que aconteceu.
+    explicacao: >-
+      Com equipe 0, a divisão dá ZeroDivisionError, e o `as erro` guarda a mensagem do Python,
+      "integer division or modulo by zero". O plano B dá todas as tábuas para uma pessoa.
+
+  - tipo: montar
+    titulo: Cada um leva
+    contexto: >-
+      Mostre quantas tábuas cada pessoa leva: **Cada pessoa leva 4 tábuas**.
+    linha: 'print(f"Cada pessoa leva {`por_pessoa`} tábuas")'
+    extras:
+      - texto: 'tabuas'
+        porque: >-
+          `tabuas` é o total, antes da divisão: com 12 tábuas e 3 pessoas, sairia 12 em vez
+          de 4.
+      - texto: 'equipe'
+        porque: >-
+          `equipe` é quantas pessoas são, não quantas tábuas cada uma leva.
+    dica: >-
+      O resultado da divisão ficou guardado numa variável.
+    explicacao: >-
+      `por_pessoa` tem a divisão, ou o plano B quando a equipe é 0.
+
+  - tipo: digitar
+    titulo: Ponte conferida
+    contexto: >-
+      Mostre **Ponte conferida!** no fim: o programa chega até aqui com qualquer resposta.
+    codigo: 'print("Ponte conferida!")'
+    dica: >-
+      Um `print` com o texto entre aspas.
+    explicacao: >-
+      Sem o `try`, uma resposta com letras ou uma equipe 0 parariam o programa antes desta
+      linha. Com ele, a ponte sempre é conferida.

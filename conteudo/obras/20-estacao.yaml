@@ -1,0 +1,116 @@
+id: estacao
+ordem: 20
+mapa: serra-verde
+nome: Estação
+conceito: Arquivos com try/except
+nivel: avancado
+modelo: biblioteca
+entradas:
+  - ["Choveu na serra"]
+  - ["Céu limpo"]
+aula:
+  titulo: O diário que nunca quebra
+  texto: |
+    Abrir para ler um arquivo que não existe dá `FileNotFoundError`. Na primeira vez que o programa roda, o arquivo ainda não foi criado: é um erro esperado, e o `try` resolve.
+
+    Junte as duas aulas: tente ler; se o arquivo não existir, comece do zero; depois escreva com `"a"` para acrescentar sem apagar.
+
+    `enumerate(lista, start=1)` numera os itens de um `for`, começando do 1.
+  exemplo: |
+    try:
+        open("sumido.txt")
+    except FileNotFoundError:
+        print("Ainda não existe.")
+  saida: |
+    Ainda não existe.
+desafios:
+  - tipo: empilhar
+    titulo: Abrindo o diário
+    contexto: >-
+      Tente ler as linhas de `diario.txt` em `registros`. Se o arquivo ainda não existir,
+      comece com uma lista vazia.
+    codigo: |
+      try:
+          with open("diario.txt") as arquivo:
+              registros = arquivo.read().splitlines()
+      except FileNotFoundError:
+          registros = []
+    extras:
+      - texto: 'except ValueError:'
+        porque: >-
+          Arquivo que não existe dá FileNotFoundError, não ValueError: o erro passaria reto e
+          pararia o programa logo na primeira vez.
+    dica: >-
+      O nome do erro diz o que houve: arquivo não encontrado.
+    explicacao: >-
+      Na primeira vez, o `open` dá FileNotFoundError e o plano B começa um diário vazio. Nas
+      próximas, o arquivo existe e as linhas antigas entram em `registros`.
+
+  - tipo: montar
+    titulo: Quantos registros?
+    contexto: >-
+      Mostre quantos registros antigos o diário tinha.
+    linha: 'print("Registros antigos:", `len(registros)`)'
+    extras:
+      - texto: 'registros'
+        porque: >-
+          Sem o `len`, sairia a lista inteira, `[]`, em vez da quantidade.
+      - texto: 'len(diario.txt)'
+        porque: >-
+          Sem aspas, `diario.txt` não é o nome do arquivo: o Python procura uma variável
+          `diario` e dá NameError. A contagem vem da lista `registros`.
+    dica: >-
+      A quantidade de itens de uma lista se mede com `len`.
+    explicacao: >-
+      Na primeira vez, `registros` está vazia: 0 registros antigos.
+
+  - tipo: empilhar
+    titulo: Anotação de hoje
+    contexto: >-
+      Pergunte **O que aconteceu hoje?**, guarde em `nota` e acrescente a nota no fim do
+      diário, numa linha própria.
+    codigo: |
+      nota = input("O que aconteceu hoje? ")
+      with open("diario.txt", "a") as arquivo:
+          arquivo.write(nota + "\n")
+    extras:
+      - texto: '    arquivo.write(nota)'
+        porque: >-
+          Sem o `"\n"`, a próxima anotação ficaria grudada nesta, na mesma linha.
+    dica: >-
+      Modo de acrescentar e uma quebra de linha no fim da nota.
+    explicacao: >-
+      O modo `"a"` cria o arquivo se ele não existir e escreve no fim se existir. O `+ "\n"`
+      fecha a linha.
+    verificar: |
+      print(repr(open("diario.txt").read()))
+
+  - tipo: empilhar
+    titulo: Diário numerado
+    contexto: >-
+      Leia o diário de novo e mostre cada anotação numerada a partir de 1: **1. Choveu na
+      serra**.
+    codigo: |
+      with open("diario.txt") as arquivo:
+          for numero, linha in enumerate(arquivo, start=1):
+              print(f"{numero}. {linha.strip()}")
+    extras:
+      - texto: '    for numero, linha in enumerate(arquivo):'
+        porque: >-
+          Sem o `start=1`, o `enumerate` começa do 0: a primeira anotação sairia como "0.".
+    dica: >-
+      `enumerate` dá o número e a linha juntos; `start` escolhe de onde a contagem começa.
+    explicacao: >-
+      A cada volta, `enumerate` entrega um par (número, linha), desempacotado no próprio
+      `for`.
+
+  - tipo: digitar
+    titulo: Estação fechada
+    contexto: >-
+      Feche o dia mostrando **Diário salvo na estação.**
+    codigo: 'print("Diário salvo na estação.")'
+    dica: >-
+      Um `print` com o texto entre aspas.
+    explicacao: >-
+      O diário fica no arquivo: rodando de novo, as anotações de hoje seriam os registros
+      antigos de amanhã.

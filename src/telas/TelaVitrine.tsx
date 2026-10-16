@@ -8,6 +8,8 @@ import { ChipDoPython } from '../components/ChipDoPython';
 import { BlocoDeCodigo } from '../components/CodigoColorido';
 import { ConsoleDaObra } from '../components/ConsoleDaObra';
 import { Estrelas } from '../components/Estrelas';
+import { GugloAnimado, NOMES_DOS_CONJUNTOS, type AnimacaoDoGuglo } from '../components/GugloAnimado';
+import { FERRAMENTAS_DO_GUGLO, GugloComFerramenta } from '../components/GugloComFerramenta';
 import { GugloPixelado, type AcaoDoGuglo } from '../components/GugloPixelado';
 import { PecaDeEntulho, PecaQueCai, SilhuetaDaPeca } from '../components/PecaQueCai';
 import { Pinguim, type PoseDoPinguim } from '../components/Pinguim';
@@ -58,6 +60,7 @@ const FALAS: Fala[] = [
 
 const POSES: PoseDoPinguim[] = ['parado', 'andando', 'carregando', 'comemorando', 'pensando', 'ops'];
 const ACOES_DO_GUGLO_PIXELADO: AcaoDoGuglo[] = ['parado', 'andando', 'acenando', 'comemorando'];
+const ANIMACOES_DO_GUGLO: AnimacaoDoGuglo[] = ['parado', 'trabalhando', 'pensando', 'comemorando'];
 
 const LINHA_DE_EXEMPLO = { texto: 'for i in range(3):', obra: 'Fábrica' };
 const COPIAR = criarPeca(1, LINHA_DE_EXEMPLO, 1);
@@ -164,6 +167,28 @@ export default function TelaVitrine() {
             </div>
           </Amostra>
         ))}
+      </Secao>
+
+      <Secao titulo="Guglo com ferramenta (janelas dos modos)">
+        {FERRAMENTAS_DO_GUGLO.map((ferramenta) => (
+          <Amostra key={ferramenta} rotulo={ferramenta}>
+            <div className={styles.pinguim}>
+              <GugloComFerramenta ferramenta={ferramenta} />
+            </div>
+          </Amostra>
+        ))}
+      </Secao>
+
+      <Secao titulo="Guglo animado (conjuntos por tema)">
+        {NOMES_DOS_CONJUNTOS.flatMap((conjunto) =>
+          ANIMACOES_DO_GUGLO.map((animacao) => (
+            <Amostra key={`${conjunto}-${animacao}`} rotulo={`${conjunto} · ${animacao}`}>
+              <div className={styles.pinguim}>
+                <GugloAnimado conjunto={conjunto} animacao={animacao} />
+              </div>
+            </Amostra>
+          )),
+        )}
       </Secao>
 
       <Secao titulo="Peças do Guglo Wars">

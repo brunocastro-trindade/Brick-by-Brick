@@ -1,0 +1,133 @@
+id: viveiro
+ordem: 14
+mapa: serra-verde
+nome: Viveiro
+conceito: Conjuntos
+nivel: basico
+modelo: mercado
+aula:
+  titulo: Conjunto não repete
+  texto: |
+    Um **conjunto** (`set`) guarda itens sem repetir. Transformar uma lista em conjunto com `set(lista)` joga fora as repetições.
+
+    Para pôr um item, use `.add()`. Para perguntar se ele está lá, use `in`, que no conjunto responde rápido mesmo com milhares de itens.
+
+    Conjunto **não tem ordem**: o Python pode mostrar os itens em qualquer sequência. Para mostrar em ordem, use `sorted()`, que devolve uma lista ordenada.
+  exemplo: |
+    cores = set(["azul", "verde", "azul"])
+    print(len(cores))
+  saida: |
+    2
+inicial: |
+  mudas = ["ipê", "araucária", "ipê", "pinho", "araucária", "ipê"]
+desafios:
+  - tipo: montar
+    titulo: Espécies sem repetir
+    contexto: >-
+      O viveiro anotou cada muda que chegou, com repetição. Guarde em `especies` só as
+      espécies diferentes, transformando a lista em conjunto.
+    linha: 'especies = `set(mudas)`'
+    extras:
+      - texto: 'list(mudas)'
+        porque: >-
+          `list` faz uma cópia da lista, com as repetições e tudo. Quem descarta repetidos é
+          o `set`.
+      - texto: '{mudas}'
+        porque: >-
+          Chaves com a lista dentro tentam criar um conjunto que tem a lista como item, e
+          lista não pode ser item de conjunto: dá TypeError (unhashable). Use `set(mudas)`.
+    dica: >-
+      A função que cria um conjunto tem o nome dele em inglês.
+    explicacao: >-
+      `set(mudas)` passa pela lista e guarda cada espécie uma vez só: sobram ipê, araucária e
+      pinho.
+
+  - tipo: montar
+    titulo: Quantas espécies?
+    contexto: >-
+      Mostre quantas espécies diferentes o viveiro tem.
+    linha: 'print(`len(especies)`)'
+    extras:
+      - texto: 'len(mudas)'
+        porque: >-
+          `mudas` é a lista com repetições: contaria 6 mudas, não 3 espécies.
+      - texto: 'especies.size()'
+        porque: >-
+          Conjunto não tem método `size`: dá AttributeError. O tamanho se mede com `len()`,
+          como na lista.
+    dica: >-
+      A mesma função que mede o tamanho de texto e de lista.
+    explicacao: >-
+      `len(especies)` conta os itens do conjunto: 3. As repetições já tinham ficado de fora
+      no `set`.
+
+  - tipo: montar
+    titulo: Chegou cedro
+    contexto: >-
+      Chegou uma muda de **cedro**. Ponha a espécie no conjunto.
+    linha: 'especies.`add`("cedro")'
+    extras:
+      - texto: 'append'
+        porque: >-
+          `append` é da lista. O conjunto não tem esse método (AttributeError): para pôr um
+          item nele, use `add`.
+      - texto: 'insert'
+        porque: >-
+          `insert` põe item numa posição da lista, e conjunto não tem posição: dá
+          AttributeError. Use `add`.
+    dica: >-
+      "Adicionar" em inglês.
+    explicacao: >-
+      `add("cedro")` põe o cedro no conjunto. Se ele já estivesse lá, nada mudaria: conjunto
+      não repete.
+
+  - tipo: montar
+    titulo: Tem pinho?
+    contexto: >-
+      Pergunte ao conjunto se o viveiro tem **pinho**. A resposta deve ser `True` ou
+      `False`.
+    linha: 'print(`"pinho" in especies`)'
+    extras:
+      - texto: 'especies["pinho"]'
+        porque: >-
+          Conjunto não tem posição nem chave para ler com colchetes: dá TypeError. Para
+          perguntar se o item está lá, use `in`.
+      - texto: '"pinho" == especies'
+        porque: >-
+          `==` compara o texto com o conjunto inteiro, e um texto nunca é igual a um conjunto:
+          sairia sempre `False`.
+    dica: >-
+      A mesma palavra que pergunta se uma chave está no dicionário.
+    explicacao: >-
+      `"pinho" in especies` responde `True`. No conjunto, o `in` é rápido mesmo com muitos
+      itens, porque ele não precisa olhar um por um.
+
+  - tipo: empilhar
+    titulo: O que os dois viveiros têm
+    contexto: >-
+      O viveiro vizinho tem cedro, jacarandá e ipê. Mostre, em ordem, as espécies que os dois
+      viveiros têm em comum.
+    codigo: |
+      vizinho = {"cedro", "jacarandá", "ipê"}
+      print(sorted(especies & vizinho))
+    extras:
+      - texto: 'print(sorted(especies | vizinho))'
+        porque: >-
+          `|` é a união: junta tudo o que está em qualquer um dos dois. O que os dois têm em
+          comum é a interseção, `&`.
+    dica: >-
+      O `&` (e) fica com o que está nos dois.
+    explicacao: >-
+      `especies & vizinho` é a interseção: cedro e ipê. O `sorted()` devolve uma lista em
+      ordem alfabética, então a saída é sempre a mesma.
+
+  - tipo: digitar
+    titulo: Catálogo em ordem
+    contexto: >-
+      Mostre todas as espécies do viveiro em ordem alfabética.
+    codigo: 'print(sorted(especies))'
+    dica: >-
+      `sorted()` recebe o conjunto e devolve uma lista ordenada.
+    explicacao: >-
+      Sem `sorted`, a ordem do conjunto pode mudar de uma vez para outra. Com ele, sai sempre
+      araucária, cedro, ipê e pinho.

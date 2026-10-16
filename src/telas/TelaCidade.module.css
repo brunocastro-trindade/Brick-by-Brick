@@ -87,6 +87,49 @@
   align-items: start;
 }
 
+.cidadePronta {
+  display: grid;
+  gap: var(--espaco-5);
+  font-size: var(--tipo-destaque-tamanho);
+}
+
+/* Seletor de mapas (ADR-0021): o atual fica marcado; o fechado mostra o cadeado e explica ao clicar. */
+.mapas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-3);
+}
+
+.mapaBotao {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espaco-2);
+  min-height: var(--espaco-8);
+  padding: var(--espaco-2) var(--espaco-5);
+  border: var(--borda-grossa) solid var(--cor-contorno);
+  border-radius: var(--raio-grande);
+  background: var(--cor-superficie);
+  color: var(--cor-texto);
+  font-family: var(--fonte-titulo);
+  font-weight: var(--peso-titulo);
+}
+
+.mapaBotao:hover {
+  background: var(--cor-fundo-alternativo);
+}
+
+.mapaBotao:focus-visible {
+  outline: var(--borda-grossa) solid var(--cor-foco);
+  outline-offset: var(--espaco-1);
+}
+
+.mapaBotao[aria-current='page'] {
+  background: var(--cor-acento);
+  color: var(--cor-texto-sobre-acento);
+  box-shadow: var(--sombra-baixa);
+  cursor: default;
+}
+
 .mapa {
   display: grid;
   gap: var(--espaco-3);

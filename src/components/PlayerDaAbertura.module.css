@@ -1,0 +1,53 @@
+/* Canto de baixo, à direita: ali ficam só as últimas obras da lista; a obra 1 e o Guglo, no canto esquerdo do mapa, ficam livres. */
+.player {
+  position: fixed;
+  right: var(--espaco-6);
+  bottom: var(--espaco-6);
+  z-index: var(--camada-flutuante);
+  display: grid;
+  gap: var(--espaco-3);
+  width: min(22rem, calc(100vw - 2 * var(--espaco-4)));
+  padding: var(--espaco-3) var(--espaco-4) var(--espaco-4);
+  border: var(--borda-grossa) solid var(--cor-contorno);
+  border-radius: var(--raio-grande);
+  background: var(--cor-superficie);
+  box-shadow: var(--sombra-alta);
+}
+
+.topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espaco-3);
+}
+
+.titulo {
+  font-size: var(--tipo-destaque-tamanho);
+}
+
+.fechar {
+  display: grid;
+  place-items: center;
+  width: var(--espaco-8);
+  height: var(--espaco-8);
+  border: var(--borda-fina) solid var(--cor-contorno);
+  border-radius: var(--raio-medio);
+  background: var(--cor-fundo);
+  color: inherit;
+}
+
+.fechar:hover {
+  background: var(--cor-fundo-alternativo);
+}
+
+.fechar:focus-visible {
+  outline: var(--borda-grossa) solid var(--cor-foco);
+  outline-offset: var(--espaco-1);
+}
+
+@media (max-width: 860px) /* fora-da-escala: breakpoint */ {
+  .player {
+    right: var(--espaco-4);
+    bottom: var(--espaco-4);
+  }
+}

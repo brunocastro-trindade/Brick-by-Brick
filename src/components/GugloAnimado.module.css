@@ -1,0 +1,6 @@
+/* Ocupa a caixa de quem chama; o viewBox recorta um quadro da folha. */
+.guglo {
+  display: block;
+  width: 100%;
+  height: 100%;
+}

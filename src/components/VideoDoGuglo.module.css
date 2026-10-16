@@ -1,0 +1,19 @@
+.video {
+  position: relative;
+}
+
+/* Pixel art: o vídeo cresce sem borrão. 16:9 já reserva o espaço antes de carregar. */
+.tela {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--raio-medio);
+  background: var(--cor-editor-fundo);
+  image-rendering: pixelated;
+}
+
+.som {
+  position: absolute;
+  top: var(--espaco-3);
+  right: var(--espaco-3);
+}

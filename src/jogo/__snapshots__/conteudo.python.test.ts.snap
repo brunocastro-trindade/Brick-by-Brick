@@ -1,5 +1,17 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`obra Almoxarifado > a obra completa mostra a saída esperada 1`] = `
+"pregos
+tábuas
+telhas
+
+- pregos
+- tábuas
+- telhas
+3 itens no estoque
+"
+`;
+
 exports[`obra Armazém > a obra completa mostra a saída esperada 1`] = `
 "tijolo
 120
@@ -15,6 +27,17 @@ exports[`obra Biblioteca > a obra completa mostra a saída esperada 1`] = `
 - O Pinguim
 - Laços Infinitos
 Laços Infinitos
+"
+`;
+
+exports[`obra Chalé > a obra completa mostra a saída esperada 1`] = `
+"CHALÉ DA SERRA
+cabana da serra
+14
+Chalé
+Da
+Serra
+3
 "
 `;
 
@@ -50,6 +73,14 @@ Tijolo por tijolo
 "
 `;
 
+exports[`obra Estação > a obra completa mostra a saída esperada 1`] = `
+"Registros antigos: 0
+O que aconteceu hoje? Choveu na serra
+1. Choveu na serra
+Diário salvo na estação.
+"
+`;
+
 exports[`obra Fábrica > a obra completa mostra a saída esperada 1`] = `
 "Tijolo 1 pronto
 Tijolo 2 pronto
@@ -68,11 +99,45 @@ exports[`obra Mercado > a obra completa mostra a saída esperada 1`] = `
 "
 `;
 
+exports[`obra Mirante > a obra completa mostra a saída esperada 1`] = `
+"Quantos ingressos para o mirante? 5
+Ingressos: 5
+Bilheteria fechada.
+Cada um vê 240 m de serra
+2
+"
+`;
+
+exports[`obra Observatório > a obra completa mostra a saída esperada 1`] = `
+"12.0
+28.27
+29
+5.0
+"
+`;
+
 exports[`obra Oficina > a obra completa mostra a saída esperada 1`] = `
 "Olá, Ana
 Olá, Beto
 A parede tem 12 m²
 10
+"
+`;
+
+exports[`obra Pesqueiro > a obra completa mostra a saída esperada 1`] = `
+"Lance 1 -> 4
+Lance 2 -> 6
+Lance 3 -> 1
+Isca de hoje: minhoca
+"
+`;
+
+exports[`obra Ponte > a obra completa mostra a saída esperada 1`] = `
+"Quantas tábuas faltam? 12
+Quantas pessoas na equipe? 3
+Faltam 12 tábuas
+Cada pessoa leva 4 tábuas
+Ponte conferida!
 "
 `;
 
@@ -82,5 +147,34 @@ Boas-vindas, Ana!
 Quantos anos você tem? 12
 Daqui a 10 anos você terá 22
 Até logo, Ana!
+"
+`;
+
+exports[`obra Serraria > a obra completa mostra a saída esperada 1`] = `
+"Preço da tábua: R$ 12.50
+8 tábuas custam R$ 100.00
+     pinho|
+1 m de tábua: R$ 12.50
+2 m de tábua: R$ 25.00
+3 m de tábua: R$ 37.50
+Desconto: 10%
+"
+`;
+
+exports[`obra Trilha > a obra completa mostra a saída esperada 1`] = `
+"3
+Coluna 3 linha 7
+Marco em 3, 7
+Marco em 5, 2
+Marco em 8, 9
+(4, 7)
+"
+`;
+
+exports[`obra Viveiro > a obra completa mostra a saída esperada 1`] = `
+"3
+True
+['cedro', 'ipê']
+['araucária', 'cedro', 'ipê', 'pinho']
 "
 `;

@@ -1,0 +1,129 @@
+id: pesqueiro
+ordem: 16
+mapa: serra-verde
+nome: Pesqueiro
+conceito: import random
+nivel: intermediario
+modelo: armazem
+aula:
+  titulo: Sorteios com random
+  texto: |
+    O módulo `random` sorteia: `random.randint(1, 6)` dá um inteiro de 1 a 6, com as duas pontas valendo, e `random.choice(lista)` escolhe um item da lista.
+
+    O computador não sorteia de verdade: ele segue uma conta que parece sorteio. A `random.seed(7)` escolhe o ponto de partida dessa conta, e com a mesma semente o programa sorteia sempre a mesma sequência. Isso é útil para testar.
+
+    Aqui no jogo, todo programa roda com uma semente fixa, para dar para conferir a sua obra. No seu computador, sem `seed`, cada execução sorteia diferente.
+  exemplo: |
+    import random
+    random.seed(1)
+    print(random.randint(1, 10))
+  saida: |
+    3
+desafios:
+  - tipo: montar
+    titulo: A caixa dos sorteios
+    contexto: >-
+      O Pesqueiro sorteia peixes e iscas. Traga o módulo de sorteios para o programa.
+    linha: 'import `random`'
+    extras:
+      - texto: 'aleatorio'
+        porque: >-
+          Os módulos do Python têm nome em inglês: `aleatorio` não existe e dá
+          ModuleNotFoundError.
+      - texto: 'Random'
+        porque: >-
+          Com R maiúsculo o módulo não é achado (ModuleNotFoundError): nome de módulo é em
+          minúsculas.
+    dica: >-
+      "Aleatório", em inglês.
+    explicacao: >-
+      `import random` traz as ferramentas de sorteio. Cada uma se usa com `random.` na
+      frente.
+
+  - tipo: montar
+    titulo: Mesma pescaria, sempre
+    contexto: >-
+      Para o placar do campeonato dar para conferir, fixe a semente do sorteio em **7**.
+    linha: 'random.`seed`(7)'
+    extras:
+      - texto: 'semente'
+        porque: >-
+          O módulo `random` não tem nada chamado `semente`: dá AttributeError. A função da
+          semente é `seed`.
+      - texto: 'randint'
+        porque: >-
+          `randint` sorteia e precisa de dois números, o menor e o maior: com um só, dá
+          TypeError.
+    dica: >-
+      "Semente", em inglês.
+    explicacao: >-
+      `random.seed(7)` põe a conta do sorteio num ponto de partida fixo. Daqui em diante, os
+      sorteios saem sempre na mesma sequência.
+
+  - tipo: montar
+    titulo: Quantos peixes?
+    contexto: >-
+      Sorteie quantos peixes vieram no primeiro lance, de **1** a **6**, e guarde em
+      `peixes`.
+    linha: 'peixes = random.`randint`(1, 6)'
+    extras:
+      - texto: 'random'
+        porque: >-
+          `random.random()` sorteia um decimal entre 0 e 1 e não recebe números: com 1 e 6
+          dentro, dá TypeError.
+      - texto: 'choice'
+        porque: >-
+          `choice` escolhe um item de uma lista e recebe uma coisa só: com dois números, dá
+          TypeError.
+    dica: >-
+      "Inteiro aleatório": random integer.
+    explicacao: >-
+      `random.randint(1, 6)` sorteia um inteiro de 1 a 6, como um dado. Com a semente 7, o
+      sorteio cai sempre no mesmo número.
+
+  - tipo: montar
+    titulo: Isca do dia
+    contexto: >-
+      Sorteie a isca do dia entre **minhoca**, **milho** e **pão** e guarde em `isca`.
+    linha: 'isca = random.`choice`(["minhoca", "milho", "pão"])'
+    extras:
+      - texto: 'shuffle'
+        porque: >-
+          `shuffle` embaralha a lista e não devolve nada: `isca` ficaria valendo `None`. Para
+          escolher um item, use `choice`.
+      - texto: 'randint'
+        porque: >-
+          `randint` sorteia número entre dois limites e não recebe lista: dá TypeError.
+    dica: >-
+      "Escolha", em inglês.
+    explicacao: >-
+      `random.choice(lista)` escolhe um item da lista. Cada isca tem a mesma chance.
+
+  - tipo: empilhar
+    titulo: Três lances
+    contexto: >-
+      Mostre três lances do campeonato, cada um com um número de peixes sorteado de 1 a 6:
+      **Lance 1 -> 4**.
+    codigo: |
+      for lance in range(3):
+          print("Lance", lance + 1, "->", random.randint(1, 6))
+    extras:
+      - texto: 'for lance in range(1, 3):'
+        porque: >-
+          `range(1, 3)` dá só 1 e 2: seriam dois lances, e o número mostrado começaria do 2.
+          `range(3)` dá 0, 1 e 2: três voltas.
+    dica: >-
+      `range(3)` dá três voltas, começando do zero; por isso o `+ 1` no número do lance.
+    explicacao: >-
+      A cada volta, `randint` sorteia de novo. Com a semente fixa, os três lances saem sempre
+      iguais, e o placar dá para conferir.
+
+  - tipo: digitar
+    titulo: Anúncio da isca
+    contexto: >-
+      Mostre a isca sorteada numa f-string: **Isca de hoje: ...**.
+    codigo: 'print(f"Isca de hoje: {isca}")'
+    dica: >-
+      O `f` antes das aspas e o nome da variável entre chaves.
+    explicacao: >-
+      A f-string troca `{isca}` pela isca que o `choice` sorteou lá em cima.

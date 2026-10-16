@@ -1,15 +1,16 @@
-// "Modos de jogo" no cabeçalho da cidade: um botão que abre a lista dos modos (Guglo Wars, "Qual é a saída?").
+// "Modos de jogo" no cabeçalho da cidade: um botão que abre a lista dos modos (Guglo Wars, "Qual é a saída?", "Leia o erro").
 // Padrão de divulgação: o botão diz se a lista está aberta; Esc e clique fora fecham, e o foco volta ao botão.
-import { ChevronDown, Gamepad2, SquareTerminal, Swords } from 'lucide-react';
+import { Bug, ChevronDown, Gamepad2, SquareTerminal, Swords } from 'lucide-react';
 import { useEffect, useId, useRef, useState } from 'react';
 import styles from './MenuDosModos.module.css';
 
 export interface MenuDosModosProps {
   aoAbrirGugloWars: () => void;
   aoAbrirQualSaida: () => void;
+  aoAbrirLeiaOErro: () => void;
 }
 
-export function MenuDosModos({ aoAbrirGugloWars, aoAbrirQualSaida }: MenuDosModosProps) {
+export function MenuDosModos({ aoAbrirGugloWars, aoAbrirQualSaida, aoAbrirLeiaOErro }: MenuDosModosProps) {
   const [aberto, setAberto] = useState(false);
   const idDaLista = useId();
   const caixa = useRef<HTMLDivElement>(null);
@@ -41,6 +42,7 @@ export function MenuDosModos({ aoAbrirGugloWars, aoAbrirQualSaida }: MenuDosModo
   const modos = [
     { nome: 'Guglo Wars', frase: 'Digite o código antes de a peça cair.', Icone: Swords, abrir: aoAbrirGugloWars },
     { nome: 'Qual é a saída?', frase: 'Leia o código e preveja o que aparece na tela.', Icone: SquareTerminal, abrir: aoAbrirQualSaida },
+    { nome: 'Leia o erro', frase: 'Leia o erro do Python e escolha a correção.', Icone: Bug, abrir: aoAbrirLeiaOErro },
   ];
 
   return (

@@ -189,7 +189,8 @@ export function TelaObra({ obra, progresso, atualizarProgresso, proximaObra, aoV
   const redutor = useMemo(() => criarRedutor(obra), [obra]);
   const daObra = progressoDaObra(progresso, obra.id);
   const [estado, despachar] = useReducer(redutor, daObra.passo, (passo) => estadoDoPasso(obra, passo));
-  const [mostrarAula, setMostrarAula] = useState(!daObra.aulaVista && daObra.passo === 0);
+  // A aula abre toda vez que a obra começa ou é retomada; só a obra pronta (painel de conclusão) entra sem ela.
+  const [mostrarAula, setMostrarAula] = useState(daObra.passo < obra.desafios.length);
   const [mostrarPainel, setMostrarPainel] = useState(daObra.passo >= obra.desafios.length);
   const [recordeAnterior] = useState(daObra.concluida ? daObra.melhorPontuacao : null);
   const estadoDoPython = useEstadoDoPython();
@@ -346,6 +347,7 @@ export function TelaObra({ obra, progresso, atualizarProgresso, proximaObra, aoV
     atualizarProgresso((atual) => reiniciarObra(atual, obra.id));
     setMostrarPainel(false);
     despachar({ tipo: 'ir-para', passo: 0 });
+    setMostrarAula(true);
   };
 
   const fecharAula = () => {
@@ -618,7 +620,9 @@ export function TelaObra({ obra, progresso, atualizarProgresso, proximaObra, aoV
           )
         : null}
 
-      {mostrarAula ? <CartaoDaAula obra={obra} aoComecar={fecharAula} /> : null}
+      {mostrarAula ? (
+        <CartaoDaAula obra={obra} aoComecar={fecharAula} rotuloDoBotao={estado.passo === 0 ? 'Começar a obra' : 'Continuar a obra'} />
+      ) : null}
 
       {mostrarPainel ? (
         <PainelDeConclusao

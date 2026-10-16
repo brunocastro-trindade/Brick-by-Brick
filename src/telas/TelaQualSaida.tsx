@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Botao } from '../components/Botao';
 import { CabecalhoDoModo } from '../components/CabecalhoDoModo';
 import { CodigoColorido } from '../components/CodigoColorido';
+import { GugloComFerramenta } from '../components/GugloComFerramenta';
 import { GugloPixelado } from '../components/GugloPixelado';
 import { Modal } from '../components/Modal';
 import { LinhaDaPlanta, PlantaDaObra } from '../components/PlantaDaObra';
@@ -165,7 +166,7 @@ export function TelaQualSaida({ obras, progresso, atualizarProgresso, aoVoltar, 
         <main className={styles.inicio}>
           <section className={styles.convite}>
             <div className={styles.gugloDoConvite}>
-              <GugloPixelado acao="parado" />
+              <GugloComFerramenta ferramenta="caixa" />
             </div>
             <div className={styles.conviteTexto}>
               <h2 className={styles.conviteTitulo}>As perguntas saem dos programas que você já construiu</h2>
@@ -188,7 +189,7 @@ export function TelaQualSaida({ obras, progresso, atualizarProgresso, aoVoltar, 
         <main className={styles.inicio}>
           <section className={styles.convite}>
             <div className={styles.gugloDoConvite}>
-              <GugloPixelado acao="acenando" />
+              <GugloComFerramenta ferramenta="chave" />
             </div>
             <div className={styles.conviteTexto}>
               <h2 className={styles.conviteTitulo}>Leia o código e diga o que aparece na tela</h2>
