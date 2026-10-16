@@ -57,6 +57,14 @@ describe('executor.py', () => {
     expect(resultado.variaveis).toEqual({ nome: "'Ana'" });
   });
 
+  it('o que um programa troca em builtins ou no executor não vale para o próximo', async () => {
+    await rodar('import builtins\nbuiltins.len = lambda x: 0\nbuiltins.inventado = 1');
+    await rodar('import __main__\n__main__._descrever_erro = lambda *a: None');
+    const depois = await rodar('print(len([1, 2]))\nprint(inventado)');
+    expect(depois.saida).toBe('2\n');
+    expect(depois.erro).toMatchObject({ tipo: 'NameError', linha: 2 });
+  });
+
   it('para laço infinito pelo limite de passos', async () => {
     const resultado = await executor.executar({ codigo: 'while True:\n    pass', entradas: [], limitePassos: 5_000 });
     expect(resultado.erro?.tipo).toBe('LimiteDePassos');

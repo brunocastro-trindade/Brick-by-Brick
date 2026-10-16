@@ -19,7 +19,15 @@ describe('cabeçalhos do host (ADR-0014)', () => {
   it('a política em cabeçalho é a da meta mais frame-ancestors, que a meta não aceita', () => {
     expect(POLITICA_NA_META).toContain("default-src 'self'");
     expect(POLITICA_NA_META).not.toContain('frame-ancestors');
-    expect(CABECALHOS_DE_SEGURANCA['Content-Security-Policy']).toBe(`${POLITICA_NA_META}; frame-ancestors 'none'`);
+    // O documento fica sem eval (meta); o worker do Python, que só lê o cabeçalho, mantém o 'unsafe-eval'.
+    expect(POLITICA_NA_META).toContain("script-src 'self';");
+    expect(POLITICA_NA_META).not.toContain('unsafe-eval');
+    const emCabecalho = CABECALHOS_DE_SEGURANCA['Content-Security-Policy'] ?? '';
+    expect(emCabecalho).toContain("script-src 'self' 'unsafe-eval'");
+    expect(emCabecalho).toContain("frame-ancestors 'none'");
+    expect(emCabecalho.replace(" 'unsafe-eval'", '').replace("; frame-ancestors 'none'", '')).toBe(POLITICA_NA_META);
+    expect(CABECALHOS_DE_SEGURANCA['Cross-Origin-Opener-Policy']).toBe('same-origin');
+    expect(CABECALHOS_DE_SEGURANCA['Cross-Origin-Resource-Policy']).toBe('same-origin');
   });
 
   it('_headers põe a segurança em tudo e cache imutável só no que tem hash ou versão no nome', () => {

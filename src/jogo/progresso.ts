@@ -129,6 +129,8 @@ function sanearTema(dados: Record<string, unknown>): Tema {
   return dados.temaDoGugloWars === 'dracula' ? 'escuro' : 'aparelho';
 }
 
+const CHAVES_PROIBIDAS = new Set(['__proto__', 'constructor', 'prototype']);
+
 /** Progresso de fonte não confiável (navegador ou arquivo): versão errada vira null; campo estranho, padrão. */
 function sanearProgresso(bruto: unknown): Progresso | null {
   if (typeof bruto !== 'object' || bruto === null) return null;
@@ -136,6 +138,8 @@ function sanearProgresso(bruto: unknown): Progresso | null {
   if (dados.versao !== 1 || typeof dados.obras !== 'object' || dados.obras === null) return null;
   const obras: Record<string, ProgressoObra> = {};
   for (const [id, valor] of Object.entries(dados.obras)) {
+    // `obras["__proto__"] = …` trocaria o protótipo do objeto em vez de criar uma obra: chave assim não é obra.
+    if (CHAVES_PROIBIDAS.has(id)) continue;
     const saneada = sanearObra(valor);
     if (saneada) obras[id] = saneada;
   }

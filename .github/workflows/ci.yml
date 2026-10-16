@@ -1,0 +1,81 @@
+# CI do Brick by Brick (ADR-0022, HARNESS §5): roda em todo PR e em todo push na main. Não é obrigatório para o merge
+# enquanto a proteção da main não existir (configuração do autor no GitHub).
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# Só leitura: nenhum job precisa escrever no repositório.
+permissions:
+  contents: read
+
+# Push novo no mesmo PR cancela a rodada anterior.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      # Inclui as 20 obras rodando no Pyodide de verdade (INV-03).
+      - run: npm test -- --run
+      - run: npm run build
+      - name: Dependências sem vulnerabilidade alta ou crítica
+        run: npm audit --audit-level=high
+
+  fumaca:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Fumaça num Chromium real contra o vite preview
+        env:
+          CHROMIUM: /usr/bin/google-chrome
+        run: |
+          npx vite preview --port 4173 --strictPort &
+          for tentativa in $(seq 30); do curl -sf http://localhost:4173 > /dev/null && break; sleep 1; done
+          npm run fumaca
+      - name: Captura da fumaça
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fumaca
+          path: artefatos/
+          retention-days: 7
+
+  ancora:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      # Título e descrição do PR são texto de quem abriu o PR: entram como variável, nunca colados no comando
+      # (colar ${{ github.event.pull_request.title }} num run: deixaria um título malicioso virar comando).
+      - name: PR cita um ADR ou é [trivial]
+        env:
+          TITULO: ${{ github.event.pull_request.title }}
+          CORPO: ${{ github.event.pull_request.body }}
+        run: |
+          if printf '%s\n%s' "$TITULO" "$CORPO" | grep -qE 'ADR-[0-9]{4}|\[trivial\]'; then
+            echo "✓ PR com âncora de decisão"
+          else
+            echo "✗ PR sem ADR citado nem [trivial] (HARNESS §1.5)"
+            exit 1
+          fi
