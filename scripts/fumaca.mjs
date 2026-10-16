@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Teste de fumaça (HARNESS §5.5): abre o jogo num Chromium de verdade, espera o Python carregar
 // no navegador e joga o primeiro mini desafio do Correio — errando uma vez e acertando depois —
-// acerta uma peça do Guglo Wars (e liga o tema Drácula), passa na vistoria do Correio, responde um "Qual é a saída?", abre o Anuncie aqui e garante que nada veio de outro domínio (INV-09)
+// acerta uma peça do Guglo Wars, troca o tema do site, abre "Modos de jogo", passa na vistoria do Correio, responde um "Qual é a saída?", abre o Anuncie aqui e garante que nada veio de outro domínio (INV-09)
 // e que a política de segurança de conteúdo está no ar sem barrar o próprio jogo (ADR-0009). Por fim, tira
 // a rede e confere que o jogo abre do aparelho, com o Python saindo do service worker (ADR-0010).
 // Num celular de 360 px, confere que nenhuma tela rola para o lado e que o modal da aula cabe na tela.
@@ -118,25 +118,50 @@ await passo('Guglo Wars: Enter errado não deixa peça fantasma no poço', async
   const pecas = await pagina.locator('[data-peca="da-vez"]').count();
   if (pecas !== 1) throw new Error(`${pecas} peças da vez no poço`);
 });
-await passo('Guglo Wars: o botão Drácula liga o tema, que fica guardado e sai junto com a tela (ADR-0015)', async () => {
-  const botao = pagina.getByRole('button', { name: 'Tema Drácula' });
-  const tema = () => pagina.evaluate(() => globalThis.document.documentElement.dataset.tema ?? null);
-  await botao.click();
-  if ((await botao.getAttribute('aria-pressed')) !== 'true' || (await tema()) !== 'dracula') throw new Error('o tema não ligou');
-  await pagina.screenshot({ path: `${PASTA}/guglo-wars-dracula.png` });
-  await pagina.reload();
-  await pagina.getByRole('button', { name: 'Começar partida' }).waitFor({ timeout: 10_000 });
-  if ((await tema()) !== 'dracula') throw new Error('o tema não ficou guardado');
-  // O goto só troca o hash: a tela sai um instante depois, então a conferência espera.
-  const semTema = (motivo) =>
-    pagina.waitForFunction(() => !globalThis.document.documentElement.dataset.tema, null, { timeout: 5_000 }).catch(() => {
-      throw new Error(motivo);
-    });
+await passo('tema: Escuro nos Ajustes vale no site todo e fica guardado; o aparelho escuro manda sem escolha (ADR-0018)', async () => {
+  const fundo = (pagina) => pagina.evaluate(() => globalThis.getComputedStyle(globalThis.document.body).backgroundColor);
   await pagina.goto(`${URL_DO_JOGO}/#/cidade`);
-  await semTema('o tema vazou para a cidade');
+  const claro = await fundo(pagina);
+  await pagina.getByRole('button', { name: 'Ajustes' }).click();
+  await pagina.locator('label', { hasText: 'Escuro (Drácula)' }).click();
+  if (!(await pagina.getByRole('radio', { name: /Escuro/ }).isChecked())) throw new Error('o rádio Escuro não marcou');
+  await pagina.getByRole('button', { name: 'Fechar ajustes' }).click();
   await pagina.goto(`${URL_DO_JOGO}/#/guglo-wars`);
-  await botao.click();
-  await semTema('o tema não desligou');
+  await pagina.reload();
+  await pagina.getByRole('heading', { name: 'Guglo Wars' }).waitFor({ timeout: 10_000 });
+  const escuro = await fundo(pagina);
+  if (escuro === claro) throw new Error(`o fundo não mudou com o tema escuro (${escuro})`);
+  // Aparelho escuro, sem escolha: abre escuro. Com "Claro" escolhido: fica claro mesmo assim.
+  const aparelhoEscuro = await navegador.newPage({ colorScheme: 'dark' });
+  try {
+    await aparelhoEscuro.goto(`${URL_DO_JOGO}/#/`);
+    if ((await fundo(aparelhoEscuro)) !== escuro) throw new Error('com o aparelho escuro e sem escolha, o site não abriu escuro');
+    await aparelhoEscuro.evaluate(() => {
+      const chave = 'brick-by-brick:progresso:v1';
+      globalThis.localStorage.setItem(chave, JSON.stringify({ ...JSON.parse(globalThis.localStorage.getItem(chave) ?? '{}'), tema: 'claro' }));
+    });
+    await aparelhoEscuro.reload();
+    await aparelhoEscuro.getByRole('heading', { level: 1 }).first().waitFor({ timeout: 10_000 });
+    if ((await fundo(aparelhoEscuro)) !== claro) throw new Error('com "Claro" escolhido, o aparelho escuro venceu');
+  } finally {
+    await aparelhoEscuro.close();
+  }
+  await pagina.goto(`${URL_DO_JOGO}/#/cidade`);
+  await pagina.getByRole('button', { name: 'Ajustes' }).click();
+  await pagina.locator('label', { hasText: 'Claro' }).click();
+  const feedback = (await pagina.getByRole('link', { name: 'Mande seu feedback' }).getAttribute('href')) ?? '';
+  if (!feedback.startsWith('mailto:')) throw new Error(`feedback dos Ajustes sem e-mail: ${feedback.slice(0, 40)}`);
+  await pagina.getByRole('button', { name: 'Fechar ajustes' }).click();
+});
+await passo('"Modos de jogo" abre a lista e leva ao modo escolhido', async () => {
+  const menu = pagina.getByRole('button', { name: 'Modos de jogo' });
+  await menu.click();
+  if ((await menu.getAttribute('aria-expanded')) !== 'true') throw new Error('o menu não abriu');
+  await pagina.keyboard.press('Escape');
+  if ((await menu.getAttribute('aria-expanded')) !== 'false') throw new Error('Esc não fechou o menu');
+  await menu.click();
+  await pagina.getByRole('button', { name: /^Guglo Wars/ }).click();
+  await pagina.getByRole('heading', { name: 'Guglo Wars' }).waitFor({ timeout: 10_000 });
 });
 await passo('Vistoria: reescrever o Correio espiando as fiadas aprova e põe o selo na cidade (ADR-0016)', async () => {
   await pagina.goto(`${URL_DO_JOGO}/#/vistoria/correio`);

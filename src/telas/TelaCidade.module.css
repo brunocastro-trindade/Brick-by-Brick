@@ -71,37 +71,8 @@
   background: var(--cor-fundo);
 }
 
-/* Fora de .ferramentas só para trocar de linha no celular; no desktop, mesmo espaço dos outros botões. */
-.retorno {
-  margin-left: calc(var(--espaco-3) - var(--espaco-6));
-}
-
 .icone:hover {
   background: var(--cor-fundo-alternativo);
-}
-
-.modo {
-  display: inline-flex;
-  white-space: nowrap;
-  align-items: center;
-  gap: var(--espaco-2);
-  min-height: var(--espaco-8);
-  padding: 0 var(--espaco-5);
-  border: var(--borda-grossa) solid var(--cor-contorno);
-  border-radius: var(--raio-medio);
-  background: var(--cor-editor-fundo);
-  color: var(--cor-texto-sobre-escuro);
-  font-family: var(--fonte-titulo);
-  font-weight: var(--peso-titulo);
-  box-shadow: var(--sombra-baixa);
-}
-
-.modo svg {
-  color: var(--cor-codigo-palavra-chave);
-}
-
-.modo:hover {
-  background: var(--cor-editor-faixa);
 }
 
 .area {
@@ -244,8 +215,7 @@
 
 @media (max-width: 640px) /* fora-da-escala: breakpoint */ {
   /* No celular o cabeçalho rola junto (fixo, comeria um quarto da tela) e fica em duas linhas:
-     logo, placar e feedback; depois os botões de modo (Guglo Wars e "Qual é a saída?") repartindo o que sobra
-     com ajuda, som e ajustes, quebrando linha quando não cabem.
+     logo e placar; depois "Modos de jogo" ocupando o que sobra, ajuda, som e ajustes.
      O chip do Python sai daqui: ele importa na obra, onde continua. */
   .barra {
     position: static;
@@ -265,20 +235,11 @@
     padding: var(--espaco-1) var(--espaco-3);
   }
 
-  .retorno {
-    margin-left: auto;
-  }
-
   .ferramentas {
     order: 1;
     flex-basis: 100%;
     gap: var(--espaco-2);
     margin-left: 0;
-  }
-
-  .modo {
-    flex: 1;
-    justify-content: center;
   }
 
   .estadoDoPython {

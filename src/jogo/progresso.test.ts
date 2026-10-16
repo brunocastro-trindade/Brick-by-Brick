@@ -73,12 +73,16 @@ describe('progresso', () => {
     expect(carregarProgresso(null)).toEqual(progressoNovo());
   });
 
-  it('guarda o tema do Guglo Wars e devolve o padrão quando o valor é estranho (ADR-0015)', () => {
-    const comTema = (tema: unknown) =>
-      carregarProgresso(armazenamentoEmMemoria({ [CHAVE_DO_PROGRESSO]: JSON.stringify({ ...progressoNovo(), temaDoGugloWars: tema }) }));
-    expect(comTema('dracula').temaDoGugloWars).toBe('dracula');
-    expect(comTema('<script>').temaDoGugloWars).toBe('canteiro');
-    expect(comTema(undefined).temaDoGugloWars).toBe('canteiro');
+  it('guarda o tema do site; estranho volta a seguir o aparelho; o Drácula do Guglo Wars vira escuro (ADR-0018)', () => {
+    const com = (campos: Record<string, unknown>) =>
+      carregarProgresso(armazenamentoEmMemoria({ [CHAVE_DO_PROGRESSO]: JSON.stringify({ ...progressoNovo(), tema: undefined, ...campos }) })).tema;
+    expect(com({ tema: 'escuro' })).toBe('escuro');
+    expect(com({ tema: 'claro' })).toBe('claro');
+    expect(com({ tema: '<script>' })).toBe('aparelho');
+    expect(com({})).toBe('aparelho');
+    expect(com({ temaDoGugloWars: 'dracula' })).toBe('escuro');
+    expect(com({ temaDoGugloWars: 'canteiro' })).toBe('aparelho');
+    expect(com({ tema: 'claro', temaDoGugloWars: 'dracula' })).toBe('claro');
   });
 
   it('descarta só a obra com dado inválido', () => {

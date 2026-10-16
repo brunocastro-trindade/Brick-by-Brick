@@ -1,6 +1,7 @@
 {
-  "$comentario": "Tema Drácula, inspirado no Dracula do VS Code (ADR-0015). Só redefine papéis que já existem em tokens/semantico.json. O comentário oficial (#6272A4) não passa no AA: texto suave e comentário usam dracula-comentario-claro.",
+  "$comentario": "Tema Drácula, inspirado no Dracula do VS Code: o modo escuro do site (ADR-0015, ADR-0018). Só redefine papéis que já existem em tokens/semantico.json. O comentário oficial (#6272A4) não passa no AA: texto suave e comentário usam dracula-comentario-claro.",
   "$esquema": "dark",
+  "$aparelho": "dark",
   "cor": {
     "fundo": "{cor.dracula-fundo}",
     "fundo-alternativo": "{cor.dracula-noite}",
@@ -18,11 +19,11 @@
     "acento-hover": "{cor.dracula-rosa-claro}",
     "acento-forte": "{cor.dracula-roxo}",
     "sucesso": "{cor.dracula-verde}",
-    "sucesso-fundo": "{cor.dracula-verde-musgo}",
+    "sucesso-fundo": "{cor.dracula-verde-fundo}",
     "aviso": "{cor.dracula-amarelo}",
-    "aviso-fundo": "{cor.dracula-linha-atual}",
+    "aviso-fundo": "{cor.dracula-amarelo-fundo}",
     "problema": "{cor.dracula-vermelho}",
-    "problema-fundo": "{cor.dracula-vermelho-claro}",
+    "problema-fundo": "{cor.dracula-vermelho-fundo}",
     "foco": "{cor.dracula-roxo}",
     "foco-sobre-escuro": "{cor.dracula-amarelo}",
     "veu": "{cor.dracula-veu}",
@@ -43,6 +44,7 @@
     "codigo-simbolo": "{cor.dracula-frente}",
     "codigo-operador": "{cor.dracula-rosa}",
     "codigo-entrada": "{cor.dracula-verde}",
+    "codigo-problema": "{cor.dracula-vermelho-claro}",
     "codigo-assentado": "{cor.dracula-verde-musgo}"
   },
   "sombra": {

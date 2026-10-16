@@ -71,6 +71,49 @@
   width: 100%;
 }
 
+/* Tema: fieldset sem a moldura do navegador, com os rádios como botões lado a lado. */
+fieldset.bloco {
+  margin: 0;
+  min-width: 0;
+}
+
+.temas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-2);
+}
+
+.tema {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espaco-2);
+  min-height: var(--espaco-8);
+  padding: 0 var(--espaco-4);
+  border: var(--borda-fina) solid var(--cor-contorno-suave);
+  border-radius: var(--raio-medio);
+  background: var(--cor-fundo);
+  font-weight: var(--peso-medio);
+  cursor: pointer;
+}
+
+/* O rádio fica para o teclado e o leitor de tela; a borda e o fundo mostram a escolha. */
+.tema input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.tema:has(input:checked) {
+  border: var(--borda-grossa) solid var(--cor-contorno);
+  background: var(--cor-superficie-destaque);
+  font-weight: var(--peso-forte);
+}
+
+.tema:has(input:focus-visible) {
+  outline: var(--borda-grossa) solid var(--cor-foco);
+  outline-offset: var(--espaco-1);
+}
+
 .botoes {
   display: flex;
   flex-wrap: wrap;

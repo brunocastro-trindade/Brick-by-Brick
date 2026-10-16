@@ -37,7 +37,7 @@
 }
 
 .desconhecido {
-  color: var(--cor-problema-fundo);
+  color: var(--cor-codigo-problema);
   text-decoration: underline wavy;
 }
 

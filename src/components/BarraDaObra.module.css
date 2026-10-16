@@ -107,6 +107,7 @@
   border: var(--borda-fina) solid var(--cor-contorno);
   border-radius: var(--raio-grande);
   background: var(--cor-aviso);
+  color: var(--cor-texto-sobre-aviso);
   font-size: var(--tipo-legenda-tamanho);
   font-weight: var(--peso-forte);
   animation: aparecer var(--duracao-media) var(--curva-mola);

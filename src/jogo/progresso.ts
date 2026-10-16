@@ -34,11 +34,11 @@ export interface Progresso {
   gugloWars: RecordeDoGugloWars;
   /** Recorde do "Qual é a saída?" (ADR-0017). */
   qualSaida: RecordeDoGugloWars;
-  /** Tema da tela do Guglo Wars (ADR-0015). */
-  temaDoGugloWars: TemaDoGugloWars;
+  /** Tema do site (ADR-0018): claro (o canteiro), escuro (Drácula) ou o que o aparelho pedir. */
+  tema: Tema;
 }
 
-export type TemaDoGugloWars = 'canteiro' | 'dracula';
+export type Tema = 'claro' | 'escuro' | 'aparelho';
 
 export interface RecordeDoGugloWars {
   recorde: number;
@@ -53,7 +53,7 @@ export interface Armazenamento {
 export const CHAVE_DO_PROGRESSO = 'brick-by-brick:progresso:v1';
 
 export function progressoNovo(): Progresso {
-  return { versao: 1, obras: {}, som: true, modoLivre: false, ultimaObra: null, mecanicasVistas: [], gugloWars: { recorde: 0, partidas: 0 }, qualSaida: { recorde: 0, partidas: 0 }, temaDoGugloWars: 'canteiro' };
+  return { versao: 1, obras: {}, som: true, modoLivre: false, ultimaObra: null, mecanicasVistas: [], gugloWars: { recorde: 0, partidas: 0 }, qualSaida: { recorde: 0, partidas: 0 }, tema: 'aparelho' };
 }
 
 export function progressoDeObraNovo(): ProgressoObra {
@@ -115,6 +115,12 @@ function sanearRecorde(bruto: unknown): RecordeDoGugloWars {
   return { recorde: ehInteiro(c.recorde) ? c.recorde : 0, partidas: ehInteiro(c.partidas) ? c.partidas : 0 };
 }
 
+/** Tema estranho volta a seguir o aparelho; quem ligou o Drácula no Guglo Wars (ADR-0015) fica no escuro. */
+function sanearTema(dados: Record<string, unknown>): Tema {
+  if (dados.tema === 'claro' || dados.tema === 'escuro' || dados.tema === 'aparelho') return dados.tema;
+  return dados.temaDoGugloWars === 'dracula' ? 'escuro' : 'aparelho';
+}
+
 /** Progresso de fonte não confiável (navegador ou arquivo): versão errada vira null; campo estranho, padrão. */
 function sanearProgresso(bruto: unknown): Progresso | null {
   if (typeof bruto !== 'object' || bruto === null) return null;
@@ -135,7 +141,7 @@ function sanearProgresso(bruto: unknown): Progresso | null {
     mecanicasVistas: Array.isArray(dados.mecanicasVistas) ? tipos.filter((tipo) => (dados.mecanicasVistas as unknown[]).includes(tipo)) : [],
     gugloWars: sanearRecorde(dados.gugloWars),
     qualSaida: sanearRecorde(dados.qualSaida),
-    temaDoGugloWars: dados.temaDoGugloWars === 'dracula' ? 'dracula' : 'canteiro',
+    tema: sanearTema(dados),
   };
 }
 

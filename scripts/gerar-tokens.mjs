@@ -53,7 +53,7 @@ for (const arquivo of arquivosDeTema) {
   for (const [nome] of tokens) {
     if (!nomesSemanticos.has(nome)) throw new Error(`Tema "${nomeDoTema}" redefine "--${nome}", que não existe em semantico.json.`);
   }
-  temas.push({ nome: nomeDoTema, esquema: tema.$esquema, tokens });
+  temas.push({ nome: nomeDoTema, esquema: tema.$esquema, aparelho: tema.$aparelho, tokens });
 }
 
 const linhas = [
@@ -65,14 +65,23 @@ const linhas = [
   '  /* Semânticos — a única camada que componentes podem ler */',
   ...semanticos.map(([nome, valor]) => `  --${nome}: ${valor};`),
   '}',
-  ...temas.flatMap(({ nome, esquema, tokens }) => [
-    '',
-    `/* Tema ${nome} (tokens/temas/${nome}.json) */`,
-    `:root[data-tema="${nome}"] {`,
-    ...(esquema ? [`  color-scheme: ${esquema};`] : []),
-    ...tokens.map(([token, valor]) => `  --${token}: ${valor};`),
-    '}',
-  ]),
+  ...temas.flatMap(({ nome, esquema, aparelho, tokens }) => {
+    const corpo = (recuo) => [
+      ...(esquema ? [`${recuo}color-scheme: ${esquema};`] : []),
+      ...tokens.map(([token, valor]) => `${recuo}--${token}: ${valor};`),
+    ];
+    return [
+      '',
+      `/* Tema ${nome} (tokens/temas/${nome}.json) */`,
+      `:root[data-tema="${nome}"] {`,
+      ...corpo('  '),
+      '}',
+      // "$aparelho": o tema também vale quando o aparelho pede esse esquema e a pessoa não escolheu (ADR-0018).
+      ...(aparelho
+        ? ['', `@media (prefers-color-scheme: ${aparelho}) {`, '  :root:not([data-tema]) {', ...corpo('    '), '  }', '}']
+        : []),
+    ];
+  }),
   '',
 ];
 const css = linhas.join('\n');

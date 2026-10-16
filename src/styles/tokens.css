@@ -41,6 +41,9 @@
   --base-cor-dracula-roxo: #BD93F9;
   --base-cor-dracula-vermelho: #FF5555;
   --base-cor-dracula-vermelho-claro: #FF6E6E;
+  --base-cor-dracula-vermelho-fundo: #5A2E36;
+  --base-cor-dracula-verde-fundo: #2F5A3F;
+  --base-cor-dracula-amarelo-fundo: #3F3C2B;
   --base-cor-dracula-amarelo: #F1FA8C;
   --base-cor-dracula-brilho: rgba(248, 248, 242, 0.08);
   --base-cor-dracula-veu: rgba(25, 26, 33, 0.72);
@@ -137,6 +140,7 @@
   --cor-codigo-simbolo: var(--base-cor-creme-escuro);
   --cor-codigo-operador: var(--base-cor-creme-escuro);
   --cor-codigo-entrada: var(--base-cor-verde-petroleo-claro);
+  --cor-codigo-problema: var(--base-cor-laranja-tijolo-palido);
   --cor-codigo-assentado: var(--base-cor-verde-petroleo);
   --cor-tijolo-nome: var(--base-cor-laranja-tijolo);
   --cor-tijolo-funcao: var(--base-cor-laranja-tijolo-claro);
@@ -247,11 +251,11 @@
   --cor-acento-hover: var(--base-cor-dracula-rosa-claro);
   --cor-acento-forte: var(--base-cor-dracula-roxo);
   --cor-sucesso: var(--base-cor-dracula-verde);
-  --cor-sucesso-fundo: var(--base-cor-dracula-verde-musgo);
+  --cor-sucesso-fundo: var(--base-cor-dracula-verde-fundo);
   --cor-aviso: var(--base-cor-dracula-amarelo);
-  --cor-aviso-fundo: var(--base-cor-dracula-linha-atual);
+  --cor-aviso-fundo: var(--base-cor-dracula-amarelo-fundo);
   --cor-problema: var(--base-cor-dracula-vermelho);
-  --cor-problema-fundo: var(--base-cor-dracula-vermelho-claro);
+  --cor-problema-fundo: var(--base-cor-dracula-vermelho-fundo);
   --cor-foco: var(--base-cor-dracula-roxo);
   --cor-foco-sobre-escuro: var(--base-cor-dracula-amarelo);
   --cor-veu: var(--base-cor-dracula-veu);
@@ -271,8 +275,60 @@
   --cor-codigo-simbolo: var(--base-cor-dracula-frente);
   --cor-codigo-operador: var(--base-cor-dracula-rosa);
   --cor-codigo-entrada: var(--base-cor-dracula-verde);
+  --cor-codigo-problema: var(--base-cor-dracula-vermelho-claro);
   --cor-codigo-assentado: var(--base-cor-dracula-verde-musgo);
   --sombra-baixa: var(--base-sombra-dracula-baixa);
   --sombra-media: var(--base-sombra-dracula-media);
   --sombra-alta: var(--base-sombra-dracula-alta);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-tema]) {
+    color-scheme: dark;
+    --cor-fundo: var(--base-cor-dracula-fundo);
+    --cor-fundo-alternativo: var(--base-cor-dracula-noite);
+    --cor-superficie: var(--base-cor-dracula-superficie);
+    --cor-superficie-destaque: var(--base-cor-dracula-linha-atual);
+    --cor-texto: var(--base-cor-dracula-frente);
+    --cor-texto-suave: var(--base-cor-dracula-comentario-claro);
+    --cor-texto-sobre-acento: var(--base-cor-dracula-fundo);
+    --cor-texto-sobre-aviso: var(--base-cor-dracula-fundo);
+    --cor-texto-sobre-escuro: var(--base-cor-dracula-frente);
+    --cor-texto-sobre-escuro-suave: var(--base-cor-dracula-comentario-claro);
+    --cor-contorno: var(--base-cor-dracula-comentario);
+    --cor-contorno-suave: var(--base-cor-dracula-linha-atual);
+    --cor-acento: var(--base-cor-dracula-rosa);
+    --cor-acento-hover: var(--base-cor-dracula-rosa-claro);
+    --cor-acento-forte: var(--base-cor-dracula-roxo);
+    --cor-sucesso: var(--base-cor-dracula-verde);
+    --cor-sucesso-fundo: var(--base-cor-dracula-verde-fundo);
+    --cor-aviso: var(--base-cor-dracula-amarelo);
+    --cor-aviso-fundo: var(--base-cor-dracula-amarelo-fundo);
+    --cor-problema: var(--base-cor-dracula-vermelho);
+    --cor-problema-fundo: var(--base-cor-dracula-vermelho-fundo);
+    --cor-foco: var(--base-cor-dracula-roxo);
+    --cor-foco-sobre-escuro: var(--base-cor-dracula-amarelo);
+    --cor-veu: var(--base-cor-dracula-veu);
+    --cor-brilho: var(--base-cor-dracula-brilho);
+    --cor-sombra-difusa: var(--base-cor-dracula-sombra);
+    --cor-editor-fundo: var(--base-cor-dracula-fundo);
+    --cor-editor-faixa: var(--base-cor-dracula-linha-atual);
+    --cor-editor-texto: var(--base-cor-dracula-frente);
+    --cor-editor-texto-suave: var(--base-cor-dracula-comentario-claro);
+    --cor-codigo-padrao: var(--base-cor-dracula-frente);
+    --cor-codigo-nome: var(--base-cor-dracula-roxo);
+    --cor-codigo-palavra-chave: var(--base-cor-dracula-rosa);
+    --cor-codigo-funcao: var(--base-cor-dracula-verde);
+    --cor-codigo-texto: var(--base-cor-dracula-amarelo);
+    --cor-codigo-numero: var(--base-cor-dracula-roxo);
+    --cor-codigo-comentario: var(--base-cor-dracula-comentario-claro);
+    --cor-codigo-simbolo: var(--base-cor-dracula-frente);
+    --cor-codigo-operador: var(--base-cor-dracula-rosa);
+    --cor-codigo-entrada: var(--base-cor-dracula-verde);
+    --cor-codigo-problema: var(--base-cor-dracula-vermelho-claro);
+    --cor-codigo-assentado: var(--base-cor-dracula-verde-musgo);
+    --sombra-baixa: var(--base-sombra-dracula-baixa);
+    --sombra-media: var(--base-sombra-dracula-media);
+    --sombra-alta: var(--base-sombra-dracula-alta);
+  }
 }

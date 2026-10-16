@@ -89,6 +89,7 @@
 .selo-funciona_mas,
 .selo-dica {
   background: var(--cor-aviso);
+  color: var(--cor-texto-sobre-aviso);
 }
 
 .selo-problema {
