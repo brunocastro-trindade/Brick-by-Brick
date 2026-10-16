@@ -11,6 +11,12 @@ updates:
       dependencias:
         update-types: [minor, patch]
     ignore:
+      # TypeScript 7 ainda não entra: o typescript-eslint não o aceita, e o npm ci falha (PR #25). Rever quando aceitar.
+      - dependency-name: typescript
+        update-types: ['version-update:semver-major']
+      # Os tipos do Node acompanham o Node em que o jogo é testado e publicado (22, ver engines e CI), não o mais novo.
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
       # Versão nova do Pyodide muda o caminho /pyodide/<versão> e o cache offline (ADR-0002, ADR-0010): decisão manual.
       - dependency-name: pyodide
         update-types: ['version-update:semver-major', 'version-update:semver-minor']
