@@ -36,8 +36,8 @@ function reduzir(estado: EstadoDoGugloWars | null, acao: Acao): EstadoDoGugloWar
   return estado ? passoDoGugloWars(estado, acao) : null;
 }
 
-/** Posição de uma fileira no poço, lida pelo CSS. */
-const naFileira = (fileira: number) => ({ '--fileira': fileira }) as CSSProperties;
+/** Posição de uma fileira no poço e tamanho do texto dela (em caracteres), lidos pelo CSS. */
+const naFileira = (fileira: number, caracteres = 0) => ({ '--fileira': fileira, '--caracteres': caracteres }) as CSSProperties;
 
 function pedidoDaPeca(peca: Peca): string {
   return peca.modo === 'copiar' ? `Copie: ${peca.resposta}` : `Complete a lacuna: ${peca.antes} (lacuna) ${peca.depois}`;
@@ -235,11 +235,11 @@ export function TelaGugloWars({ obras, progresso, atualizarProgresso, aoVoltar, 
               deixava peças velhas no poço. */}
           <div className={styles.poco} style={{ '--fileiras': FILEIRAS } as CSSProperties} onClick={() => entrada.current?.focus()} aria-hidden="true">
             {estado.entulho.map((linha, indice) => (
-              <div key={`entulho-${indice}`} className={styles.fileira} style={naFileira(FILEIRAS - 1 - indice)} data-peca="entulho">
+              <div key={`entulho-${indice}`} className={styles.fileira} style={naFileira(FILEIRAS - 1 - indice, linha.texto.length)} data-peca="entulho">
                 <PecaDeEntulho texto={linha.texto} />
               </div>
             ))}
-            <div key={`peca-${peca.id}`} className={`${styles.fileira} ${styles.pecaDaVez}`} style={naFileira(peca.fileira)} data-peca="da-vez">
+            <div key={`peca-${peca.id}`} className={`${styles.fileira} ${styles.pecaDaVez}`} style={naFileira(peca.fileira, peca.linha.texto.length)} data-peca="da-vez">
               <PecaQueCai peca={peca} digitado={estado.digitado} />
             </div>
             {evento?.tipo === 'acertou' ? (

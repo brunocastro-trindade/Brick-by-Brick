@@ -1,0 +1,21 @@
+# Atualizações de dependências (ADR-0022). Só abre PR: nada entra sem revisão do autor.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 3
+    groups:
+      # Correções e versões menores juntas, num PR só por mês.
+      dependencias:
+        update-types: [minor, patch]
+    ignore:
+      # Versão nova do Pyodide muda o caminho /pyodide/<versão> e o cache offline (ADR-0002, ADR-0010): decisão manual.
+      - dependency-name: pyodide
+        update-types: ['version-update:semver-major', 'version-update:semver-minor']
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

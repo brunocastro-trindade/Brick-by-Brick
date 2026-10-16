@@ -4,6 +4,7 @@ import {
   arquivoDeProgresso,
   carregarProgresso,
   CHAVE_DO_PROGRESSO,
+  FORMATO_DO_ARQUIVO,
   lerArquivoDeProgresso,
   obraLiberada,
   progressoDaObra,
@@ -266,5 +267,16 @@ describe('vídeos que tocam uma vez (ADR-0020)', () => {
     expect(carregar(undefined)).toEqual([]);
     expect(carregar('abertura')).toEqual([]);
     expect(carregar(['abertura', 'constructor', 42])).toEqual(['abertura']);
+  });
+});
+
+describe('arquivo de progresso malicioso (INV-06)', () => {
+  it('chave __proto__ em obras não troca o protótipo nem vira obra', () => {
+    const obra = { passo: 1, resultados: [], combo: 0, melhorPontuacao: 0, estrelas: 0 };
+    const texto = `{"formato":"${FORMATO_DO_ARQUIVO}","progresso":{"versao":1,"obras":{"__proto__":${JSON.stringify(obra)},"constructor":${JSON.stringify(obra)},"correio":${JSON.stringify(obra)}}}}`;
+    const lido = lerArquivoDeProgresso(texto);
+    expect(lido).not.toBeNull();
+    expect(Object.getPrototypeOf(lido?.obras)).toBe(Object.prototype);
+    expect(Object.keys(lido?.obras ?? {})).toEqual(['correio']);
   });
 });

@@ -292,6 +292,23 @@ await passo('política de segurança de conteúdo na meta e no cabeçalho, sem b
   const emCabecalho = (await pagina.request.get(`${URL_DO_JOGO}/`)).headers()['content-security-policy'] ?? '';
   if (!emCabecalho.includes("frame-ancestors 'none'")) throw new Error(`política em cabeçalho ausente: ${emCabecalho}`);
   if (violacoes.length > 0) throw new Error(`a política barrou: ${violacoes.join(', ')}`);
+  // O documento não roda eval (a meta não permite); o Python, no worker, já rodou nos passos de cima com o cabeçalho.
+  if (politica.includes('unsafe-eval')) throw new Error('a meta ainda permite eval no documento');
+  const errosAntes = erros.length;
+  // O evaluate do Playwright entra pelo protocolo de depuração, que não obedece à política: a sonda é um setTimeout
+  // com texto, que a página compila do jeito dela, sujeita à política.
+  const evalBarrado = await pagina.evaluate(
+    () =>
+      new Promise((resolver) => {
+        globalThis.evalRodou = false;
+        setTimeout('globalThis.evalRodou = true', 0);
+        setTimeout(() => resolver(!globalThis.evalRodou), 200);
+      }),
+  );
+  if (!evalBarrado) throw new Error('o documento conseguiu rodar eval');
+  // A violação acima foi provocada de propósito: não conta como a política barrando o jogo, nem o aviso dela no console.
+  violacoes.length = 0;
+  erros.splice(errosAntes, erros.length - errosAntes, ...erros.slice(errosAntes).filter((texto) => !texto.includes('unsafe-eval')));
 });
 
 await pagina.screenshot({ path: `${PASTA}/fumaca.png`, fullPage: true });

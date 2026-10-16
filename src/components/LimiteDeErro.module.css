@@ -10,11 +10,9 @@
   text-align: center;
 }
 
-.retrato {
-  width: calc(var(--espaco-9) * 2);
-  height: auto;
-  border: var(--borda-grossa) solid var(--cor-contorno);
-  border-radius: 50%;
+.guglo {
+  width: calc(var(--espaco-9) * 2.5);
+  height: calc(var(--espaco-9) * 2.5);
 }
 
 .titulo {

@@ -114,6 +114,11 @@
   gap: var(--espaco-5);
 }
 
+/* Recebe o foco do "Ver os espaços" sem moldura no clique; no teclado, o contorno aparece. */
+.secao:focus:not(:focus-visible) {
+  outline: none;
+}
+
 .secaoTitulo {
   font-size: var(--tipo-titulo-tamanho);
 }
@@ -132,6 +137,11 @@
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+/* Cinco espaços: três por linha no computador (3 + 2), em vez de quatro e um cartão sozinho embaixo. */
+.cartoesLargos {
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
 }
 
 .cartao {

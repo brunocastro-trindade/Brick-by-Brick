@@ -1,7 +1,7 @@
 // Vitrine do design system (HARNESS §2.5): cada componente em todos os estados da matriz.
 // Rota #/design-system, só no modo de desenvolvimento. É também o alvo das capturas de tela.
 import { Hammer, Mail } from 'lucide-react';
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { BalaoDoPinguim, SeloDeClassificacao } from '../components/BalaoDoPinguim';
 import { Botao } from '../components/Botao';
 import { ChipDoPython } from '../components/ChipDoPython';
@@ -11,6 +11,7 @@ import { Estrelas } from '../components/Estrelas';
 import { GugloAnimado, NOMES_DOS_CONJUNTOS, type AnimacaoDoGuglo } from '../components/GugloAnimado';
 import { FERRAMENTAS_DO_GUGLO, GugloComFerramenta } from '../components/GugloComFerramenta';
 import { GugloPixelado, type AcaoDoGuglo } from '../components/GugloPixelado';
+import { LimiteDeErro } from '../components/LimiteDeErro';
 import { PecaDeEntulho, PecaQueCai, SilhuetaDaPeca } from '../components/PecaQueCai';
 import { Pinguim, type PoseDoPinguim } from '../components/Pinguim';
 import { MEDIDAS, PredioDaCidade, type SituacaoDoPredio } from '../components/PredioDaCidade';
@@ -77,6 +78,25 @@ const PECAS: Array<{ rotulo: string; conteudo: ReactNode }> = [
 ];
 const ESTADOS_DO_TIJOLO: EstadoDoTijolo[] = ['solto', 'encaixado', 'problema', 'fantasma'];
 const SITUACOES: SituacaoDoPredio[] = ['bloqueado', 'disponivel', 'em-obra', 'concluido'];
+
+/** Lança um erro ao renderizar: mostra a tela "O canteiro parou" do LimiteDeErro na vitrine. */
+function Quebra(): ReactNode {
+  throw new Error('Erro de exemplo da vitrine');
+}
+
+/** A tela de erro (ADR-0012) só aparece quando algo quebra: aqui ela abre num botão, para revisar. */
+function ExemploDaTelaDeErro() {
+  const [aberta, setAberta] = useState(false);
+  return aberta ? (
+    <LimiteDeErro>
+      <Quebra />
+    </LimiteDeErro>
+  ) : (
+    <Botao variante="secundario" aoClicar={() => setAberta(true)}>
+      Mostrar a tela de erro
+    </Botao>
+  );
+}
 
 export default function TelaVitrine() {
   return (
@@ -190,6 +210,11 @@ export default function TelaVitrine() {
           )),
         )}
       </Secao>
+
+      <section className={styles.secao}>
+        <h2 className={styles.titulo}>Tela de erro (O canteiro parou)</h2>
+        <ExemploDaTelaDeErro />
+      </section>
 
       <Secao titulo="Peças do Guglo Wars">
         {PECAS.map(({ rotulo, conteudo }) => (

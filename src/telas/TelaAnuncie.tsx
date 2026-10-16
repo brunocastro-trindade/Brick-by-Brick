@@ -1,19 +1,21 @@
 // Anuncie aqui (ADR-0008): como marcas ajudam a financiar o Brick by Brick, e o que o projeto promete
-// a quem estuda. Os espaços ainda não existem; a página os apresenta como "em breve".
+// a quem estuda. Os espaços ainda não existem; a página os apresenta como "em breve". Eles acompanham o jogo: dois
+// mapas (ADR-0021), vinte obras e três modos de jogo com pausa natural (ADR-0007, ADR-0017, ADR-0019).
 import {
   ArrowLeft,
   BadgeCheck,
   CirclePause,
   Code,
   EyeOff,
+  Gamepad2,
   GraduationCap,
   Hammer,
   Hourglass,
   Mail,
   Map as Mapa,
+  Mountain,
   RefreshCw,
   ShieldCheck,
-  Swords,
   type LucideIcon,
 } from 'lucide-react';
 import { useRef } from 'react';
@@ -53,13 +55,18 @@ const POLITICA: Item[] = [
 const ESPACOS: Item[] = [
   {
     icone: Mapa,
-    titulo: 'Outdoor na cidade',
-    texto: 'Uma placa dentro do mapa em pixel da Vila, à vista de todo mundo que passa pela cidade para escolher a próxima obra.',
+    titulo: 'Outdoor nos mapas',
+    texto: 'Uma placa dentro dos mapas em pixel, na Vila e na Serra Verde, à vista de quem passa para escolher a próxima obra.',
+  },
+  {
+    icone: Mountain,
+    titulo: 'Patrocínio de mapa',
+    texto: '“A Serra Verde é oferecida por…” na entrada do mapa e no vídeo que festeja a cidade pronta: sua marca ligada a dez aulas de uma vez.',
   },
   {
     icone: Hammer,
     titulo: 'Patrocínio de obra',
-    texto: '“Esta obra é oferecida por…” na placa da obra e no painel de obra concluída: sua marca ligada a uma aula inteira.',
+    texto: '“Esta obra é oferecida por…” na placa da obra e no painel de obra concluída: sua marca ligada a uma das 20 aulas, do print() aos arquivos.',
   },
   {
     icone: Hourglass,
@@ -67,9 +74,9 @@ const ESPACOS: Item[] = [
     texto: 'Os segundos em que o Python carrega no navegador, na primeira visita. Uma espera que já existe, sem atrapalhar ninguém.',
   },
   {
-    icone: Swords,
-    titulo: 'Guglo Wars',
-    texto: 'Na tela inicial e no fim de cada partida do modo de digitação. Nunca durante a queda das peças.',
+    icone: Gamepad2,
+    titulo: 'Modos de jogo',
+    texto: 'Guglo Wars, “Qual é a saída?” e “Leia o erro”: no convite antes de começar e no fim de cada partida ou rodada. Nunca durante uma pergunta ou a queda das peças.',
   },
 ];
 
@@ -96,9 +103,9 @@ const COMPROMISSOS: Item[] = [
   },
 ];
 
-function Cartoes({ itens, emBreve = false }: { itens: Item[]; emBreve?: boolean }) {
+function Cartoes({ itens, emBreve = false, largos = false }: { itens: Item[]; emBreve?: boolean; largos?: boolean }) {
   return (
-    <ul className={styles.cartoes}>
+    <ul className={`${styles.cartoes} ${largos ? styles.cartoesLargos : ''}`}>
       {itens.map(({ icone: Icone, titulo, texto }) => (
         <li key={titulo} className={styles.cartao}>
           <div className={styles.cartaoTopo}>
@@ -155,7 +162,10 @@ export function TelaAnuncie({ aoIrParaInicio, aoIrParaCidade }: TelaAnuncieProps
               <Botao tamanho="grande" href={MAILTO} icone={<Mail size={20} aria-hidden="true" />}>
                 Enviar e-mail
               </Botao>
-              <Botao tamanho="grande" variante="secundario" aoClicar={() => espacos.current?.scrollIntoView({ behavior: prefereMenosMovimento() ? 'auto' : 'smooth' })}>
+              <Botao tamanho="grande" variante="secundario" aoClicar={() => {
+                  espacos.current?.scrollIntoView({ behavior: prefereMenosMovimento() ? 'auto' : 'smooth' });
+                  espacos.current?.focus({ preventScroll: true });
+                }}>
                 Ver os espaços
               </Botao>
             </div>
@@ -175,7 +185,8 @@ export function TelaAnuncie({ aoIrParaInicio, aoIrParaCidade }: TelaAnuncieProps
           <Cartoes itens={POLITICA} />
         </section>
 
-        <section ref={espacos} className={styles.secao} aria-labelledby="titulo-espacos">
+        {/* tabIndex -1: o "Ver os espaços" leva o foco junto com a rolagem, para quem navega pelo teclado. */}
+        <section ref={espacos} className={styles.secao} aria-labelledby="titulo-espacos" tabIndex={-1}>
           <h2 id="titulo-espacos" className={styles.secaoTitulo}>
             Espaços para anunciar
           </h2>
@@ -183,7 +194,7 @@ export function TelaAnuncie({ aoIrParaInicio, aoIrParaCidade }: TelaAnuncieProps
             Os espaços abrem aos poucos, junto com as atualizações do jogo. Todas as opções são negociadas previamente: formato, período e
             valor combinados caso a caso.
           </p>
-          <Cartoes itens={ESPACOS} emBreve />
+          <Cartoes itens={ESPACOS} emBreve largos />
         </section>
 
         <section className={styles.secao} aria-labelledby="titulo-compromissos">

@@ -42,7 +42,7 @@ export function TelaInicial({ temProgresso, aoComecar }: { temProgresso: boolean
       </main>
       <footer className={styles.rodape}>
         <ChipDoPython />
-        <span>Do básico às classes · Código aberto (AGPL-3.0)</span>
+        <span>Do print() aos arquivos, em dois mapas · Código aberto (AGPL-3.0)</span>
         <a className={styles.anuncie} href="#/anuncie">
           <Megaphone size={16} aria-hidden="true" />
           Anuncie aqui

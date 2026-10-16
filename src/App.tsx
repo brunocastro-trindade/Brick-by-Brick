@@ -70,7 +70,7 @@ export function App() {
   let tela;
   switch (exibida.tela) {
     case 'inicio':
-      tela = <TelaInicial temProgresso={Object.keys(progresso.obras).length > 0} aoComecar={() => navegar({ tela: 'cidade' })} />;
+      tela = <TelaInicial temProgresso={Object.keys(progresso.obras).length > 0} aoComecar={() => navegar({ tela: 'cidade', mapa: obraPorId(progresso.ultimaObra ?? '')?.mapa })} />;
       break;
     case 'cidade':
       tela = (

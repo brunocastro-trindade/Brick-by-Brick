@@ -1,10 +1,9 @@
 // Cabeçalhos de segurança e de cache (ADR-0009, ADR-0010, ADR-0014). Fonte única para a meta do index.html, o
 // _headers que o Cloudflare lê e o vite preview da fumaça: nenhum cabeçalho é escrito à mão em outro lugar.
 
-/** Só o próprio site (INV-09). 'unsafe-eval' é do Pyodide no worker: o Emscripten usa eval. */
+/** Só o próprio site (INV-09). O script-src muda entre o documento e o worker (abaixo). */
 const DIRETIVAS = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-eval'",
   "style-src 'self'",
   "img-src 'self' data:",
   "font-src 'self' data:",
@@ -15,15 +14,24 @@ const DIRETIVAS = [
   "form-action 'none'",
 ];
 
-/** Para a meta do index.html, que vale em qualquer host. frame-ancestors é ignorado em meta. */
-export const POLITICA_NA_META = DIRETIVAS.join('; ');
+/**
+ * Para a meta do index.html, que vale em qualquer host. Sem 'unsafe-eval': o documento não precisa de eval. A meta
+ * vale só para o documento, e o navegador aplica ao documento as duas políticas juntas (meta e cabeçalho): o eval
+ * fica barrado nele mesmo com o cabeçalho permitindo. frame-ancestors é ignorado em meta.
+ */
+export const POLITICA_NA_META = ["default-src 'self'", "script-src 'self'", ...DIRETIVAS.slice(1)].join('; ');
 
 /**
- * Em cabeçalho, a política vale também para o worker do Python (que só obedece ao cabeçalho da própria resposta)
- * e ganha frame-ancestors: ninguém põe o jogo dentro de um iframe.
+ * Em cabeçalho, a política vale também para o worker do Python, que só obedece ao cabeçalho da própria resposta e
+ * precisa de 'unsafe-eval' (o Emscripten do Pyodide usa eval). Ganha frame-ancestors: ninguém põe o jogo num iframe.
  */
+const POLITICA_EM_CABECALHO = ["default-src 'self'", "script-src 'self' 'unsafe-eval'", ...DIRETIVAS.slice(1), "frame-ancestors 'none'"].join('; ');
+
 export const CABECALHOS_DE_SEGURANCA: Record<string, string> = {
-  'Content-Security-Policy': `${POLITICA_NA_META}; frame-ancestors 'none'`,
+  'Content-Security-Policy': POLITICA_EM_CABECALHO,
+  // Outra janela aberta pelo jogo, ou que abriu o jogo, não alcança esta; e nenhum site carrega arquivo daqui.
+  'Cross-Origin-Opener-Policy': 'same-origin',
+  'Cross-Origin-Resource-Policy': 'same-origin',
   'X-Content-Type-Options': 'nosniff',
   'Referrer-Policy': 'strict-origin-when-cross-origin',
   'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=(), usb=()',

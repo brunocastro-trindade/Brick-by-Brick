@@ -118,6 +118,18 @@ def executar(codigo, verificacao="", entradas=(), limite_passos=200_000):
     finally:
         os.chdir(anterior)
         shutil.rmtree(pasta, ignore_errors=True)
+        _restaurar_o_ambiente()
+
+
+def _restaurar_o_ambiente():
+    """Desfaz o que o programa mexeu fora do escopo dele: `builtins` (trocar `len` ou `print`) e as funções deste
+    executor (por `import __main__`). Sem isso, a mudança valeria para as execuções seguintes, e a correção de
+    outra obra ou modo erraria até recarregar a página. Não é uma caixa de areia: só a limpeza entre execuções."""
+    nativos = vars(builtins)
+    for nome in [nome for nome in nativos if nome not in _BUILTINS_ORIGINAIS]:
+        del nativos[nome]
+    nativos.update(_BUILTINS_ORIGINAIS)
+    globals().update(_GLOBAIS_DO_EXECUTOR)
 
 
 def _executar_na_pasta(codigo, verificacao, entradas, limite_passos):
@@ -156,3 +168,8 @@ def _executar_na_pasta(codigo, verificacao, entradas, limite_passos):
         if erro:
             resultado["erro"] = _descrever_erro(erro, "verificacao", ARQUIVO_VERIFICACAO)
     return json.dumps(resultado, ensure_ascii=False)
+
+
+# Retratos tirados depois de tudo definido: o que _restaurar_o_ambiente devolve ao fim de cada execução.
+_BUILTINS_ORIGINAIS = dict(vars(builtins))
+_GLOBAIS_DO_EXECUTOR = {nome: valor for nome, valor in globals().items() if not nome.startswith("__")}
