@@ -81,8 +81,9 @@
   background: var(--cor-editor-faixa);
 }
 
+/* Texto do editor, não a cor da palavra-chave: o rosa do Drácula sobre a faixa fica abaixo de 4,5:1. */
 .atual .numero {
-  color: var(--cor-codigo-palavra-chave);
+  color: var(--cor-editor-texto);
   font-weight: var(--peso-forte);
 }
 

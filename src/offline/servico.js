@@ -43,5 +43,7 @@ async function arquivo(pedido) {
 self.addEventListener('fetch', (evento) => {
   const pedido = evento.request;
   if (pedido.method !== 'GET' || new URL(pedido.url).origin !== self.location.origin) return;
+  // Vídeo (ADR-0020) não está no cache e chega em pedidos parciais (Range): vai direto para a rede.
+  if (pedido.destination === 'video' || pedido.headers.has('range')) return;
   evento.respondWith(pedido.mode === 'navigate' ? pagina(pedido) : arquivo(pedido));
 });

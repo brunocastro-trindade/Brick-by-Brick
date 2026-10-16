@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { analisarLinhaMontar, ErroDeConteudo, linhasDoBloco, processarObra } from './conteudo';
+import { analisarLinhaMontar, ErroDeConteudo, linhasDoBloco, processarCidade, processarObra } from './conteudo';
 import { OBRAS } from './obras';
 import { abreBloco, fecharBlocoAberto, linhasAntesDoPasso, textoDoPrograma } from './programa';
 
@@ -107,8 +107,19 @@ describe('programa', () => {
 });
 
 describe('obras da cidade', () => {
-  it('carrega as dez obras em ordem, sem erro de autoria', () => {
-    expect(OBRAS.map((obra) => obra.ordem)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+  it('carrega as vinte obras em ordem, sem erro de autoria: dez da Vila e dez da Serra Verde (ADR-0021)', () => {
+    expect(OBRAS.map((obra) => obra.ordem)).toEqual(Array.from({ length: 20 }, (_, indice) => indice + 1));
+    expect(OBRAS.map((obra) => obra.mapa)).toEqual([...Array<string>(10).fill('vila'), ...Array<string>(10).fill('serra-verde')]);
+  });
+
+  it('mapa desconhecido, ou fora da ordem dos mapas, é erro de autoria (ADR-0021)', () => {
+    expect(() => processarCidade([{ origem: 'x.yaml', dados: { ...obraMinima, mapa: 'lua' } }])).toThrow(/mapa/);
+    expect(() =>
+      processarCidade([
+        { origem: 'a.yaml', dados: { ...obraMinima, id: 'a', ordem: 1, mapa: 'serra-verde' } },
+        { origem: 'b.yaml', dados: { ...obraMinima, id: 'b', ordem: 2 } },
+      ]),
+    ).toThrow(/ajuste a ordem/);
   });
 
   it('todo desafio tem dica, e todo tijolo extra tem porquê', () => {

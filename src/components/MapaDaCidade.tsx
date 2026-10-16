@@ -1,27 +1,14 @@
-// O mapa da cidade: a arte em pixel da Vila (ADR-0006) com o estado de cada obra desenhado por cima.
+// O mapa: a arte em pixel de um mapa (ADR-0006, ADR-0021) com o estado de cada obra desenhado por cima.
 // O Guglo pixelado caminha pela estrada até a obra escolhida, como no Club Penguin.
 import { useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent } from 'react';
 import { prefereMenosMovimento } from '../estado/usePython';
 import type { Obra } from '../jogo/tipos';
-import arteDoMapa from '../assets/mapa-da-cidade.webp';
 import outdoorAnuncie from '../assets/outdoor-anuncie.png';
 import { CADENCIA_DO_GUGLO_MS, COMEMORACAO_COMPLETA, GugloPixeladoNoMapa, QUADROS_DO_GUGLO } from './GugloPixelado';
 import type { SituacaoDoPredio } from './PredioDaCidade';
+import type { ArteDoMapa, Lugar } from './artesDosMapas';
 import styles from './MapaDaCidade.module.css';
 
-/** Tamanho da arte; o viewBox usa os pixels dela, então as coordenadas abaixo são medidas na própria imagem. */
-const LARGURA = 1619;
-const ALTURA = 971;
-
-/** Linha central da estrada, da placa da Vila do Alicerce até o fim do Alto da Colina. */
-const ESTRADA =
-  'M150 752 C164 758 205 780 235 788 C265 796 302 796 330 797 C358 798 388 797 400 797 H1370 ' +
-  'C1380 797 1410 799 1430 797 C1450 795 1471 795 1488 786 C1505 777 1523 760 1532 744 ' +
-  'C1541 728 1542 708 1540 690 C1538 672 1529 649 1519 634 C1509 619 1495 608 1480 598 ' +
-  'C1465 588 1448 580 1430 576 C1412 572 1380 574 1370 573 H400 ' +
-  'C388 572 352 572 330 570 C308 568 290 567 270 558 C250 549 226 533 208 517 ' +
-  'C190 501 174 480 165 460 C156 440 153 420 157 400 C161 380 174 355 190 343 ' +
-  'C206 331 227 328 250 328 C273 328 305 340 330 345 C355 350 388 357 400 359 H1520';
 const VELOCIDADE = 620;
 const DURACAO_MAXIMA = 2.4;
 
@@ -37,41 +24,6 @@ const CHEGADAS = {
   },
 };
 
-interface Lugar {
-  /** Terreno na arte: canto superior esquerdo e tamanho. Também é a área de toque. */
-  x: number;
-  y: number;
-  largura: number;
-  altura: number;
-  /** Selo com o número, por cima do número impresso na arte. */
-  selo: [number, number];
-  /** Onde o Guglo para, na estrada em frente ao terreno. */
-  parada: [number, number];
-}
-
-/**
- * Terrenos na ordem da estrada: Vila do Alicerce (1–4), Centro (5–7, da direita para a esquerda) e
- * Alto da Colina (8–10). A arte não tem o 5: o terreno marcado "6" é a obra 5 e as lojas são a 6.
- */
-export const LUGARES: Lugar[] = [
-  { x: 560, y: 640, largura: 165, altura: 120, selo: [587, 746], parada: [642, 797] },
-  { x: 770, y: 605, largura: 185, altura: 155, selo: [790, 735], parada: [862, 797] },
-  { x: 1010, y: 620, largura: 195, altura: 140, selo: [1033, 741], parada: [1107, 797] },
-  { x: 1265, y: 600, largura: 200, altura: 155, selo: [1292, 743], parada: [1368, 797] },
-  { x: 1180, y: 390, largura: 150, altura: 140, selo: [1203, 515], parada: [1255, 573] },
-  { x: 845, y: 372, largura: 205, altura: 156, selo: [866, 512], parada: [948, 573] },
-  { x: 270, y: 395, largura: 185, altura: 135, selo: [299, 516], parada: [362, 572] },
-  { x: 340, y: 185, largura: 210, altura: 137, selo: [360, 308], parada: [445, 360] },
-  { x: 605, y: 195, largura: 210, altura: 135, selo: [627, 312], parada: [710, 359] },
-  { x: 910, y: 150, largura: 225, altura: 175, selo: [944, 314], parada: [1022, 359] },
-];
-
-/** A casa no fim do Alto da Colina guarda o lugar das próximas obras. */
-const EM_BREVE: [number, number] = [1365, 330];
-
-/** Outdoor da própria Vila (ADR-0008): o Guglo com a placa, na beira da estrada do Alto da Colina; pés em (x, y). */
-const OUTDOOR = { x: 1205, y: 330, lado: 116 };
-
 const RAIO_DO_SELO = 21;
 
 export interface ObraNoMapa {
@@ -82,8 +34,8 @@ export interface ObraNoMapa {
   vistoriada: boolean;
 }
 
-/** A estrada e os terrenos são fixos: as paradas se calculam uma vez por sessão. */
-let paradasDaSessao: number[] | null = null;
+/** A estrada e os terrenos de cada arte são fixos: as paradas se calculam uma vez por sessão, por mapa. */
+const paradasDaSessao = new WeakMap<ArteDoMapa, number[]>();
 const PASSO_DA_BUSCA = 8;
 
 /**
@@ -91,24 +43,26 @@ const PASSO_DA_BUSCA = 8;
  * (dezenas de microssegundos a cada chamada): uma passada só, para todos os terrenos, de 8 em 8, e um refino
  * de 1 em 1 em volta de cada achado. Antes eram 10 passadas de 4 em 4, uns 1,3 s travando a tela a cada visita.
  */
-function paradasNaEstrada(caminho: SVGPathElement): number[] {
-  if (paradasDaSessao) return paradasDaSessao;
+function paradasNaEstrada(caminho: SVGPathElement, arte: ArteDoMapa): number[] {
+  const guardadas = paradasDaSessao.get(arte);
+  if (guardadas) return guardadas;
+  const { lugares } = arte;
   const total = caminho.getTotalLength();
   const distancia = (s: number, [x, y]: [number, number]) => {
     const ponto = caminho.getPointAtLength(s);
     return Math.hypot(ponto.x - x, ponto.y - y);
   };
-  const achados = LUGARES.map(() => ({ s: 0, distancia: Infinity }));
+  const achados = lugares.map(() => ({ s: 0, distancia: Infinity }));
   for (let s = 0; s <= total; s += PASSO_DA_BUSCA) {
     const ponto = caminho.getPointAtLength(s);
-    LUGARES.forEach(({ parada: [x, y] }, indice) => {
+    lugares.forEach(({ parada: [x, y] }, indice) => {
       const d = Math.hypot(ponto.x - x, ponto.y - y);
       const achado = achados[indice];
       if (achado && d < achado.distancia) achados[indice] = { s, distancia: d };
     });
   }
-  paradasDaSessao = achados.map(({ s: perto }, indice) => {
-    const parada = LUGARES[indice]?.parada ?? [0, 0];
+  const paradas = achados.map(({ s: perto }, indice) => {
+    const parada = lugares[indice]?.parada ?? [0, 0];
     let melhor = perto;
     let menor = Infinity;
     for (let s = Math.max(0, perto - PASSO_DA_BUSCA); s <= Math.min(total, perto + PASSO_DA_BUSCA); s += 1) {
@@ -120,7 +74,8 @@ function paradasNaEstrada(caminho: SVGPathElement): number[] {
     }
     return melhor;
   });
-  return paradasDaSessao;
+  paradasDaSessao.set(arte, paradas);
+  return paradas;
 }
 
 interface Posicao {
@@ -146,7 +101,7 @@ function Selo({ item, lugar }: { item: ObraNoMapa; lugar: Lugar }) {
         />
       ) : null}
       <text className={styles.numero} textAnchor="middle" dominantBaseline="central">
-        {obra.ordem}
+        {obra.numero}
       </text>
       {situacao === 'bloqueado' ? (
         <g className={styles.cadeado} transform="translate(15 -15)">
@@ -169,7 +124,54 @@ function Selo({ item, lugar }: { item: ObraNoMapa; lugar: Lugar }) {
   );
 }
 
+/** A placa que leva ao mapa seguinte: um botão no próprio mapa, com cadeado enquanto ele está fechado. */
+function PlacaDoMapaSeguinte({ placa, posicao: [x, y] }: { placa: PlacaDoFim; posicao: [number, number] }) {
+  const largura = 28 + placa.nome.length * 15 + (placa.liberado ? 34 : 48);
+  const aoTeclar = (evento: KeyboardEvent<SVGGElement>) => {
+    if (evento.key !== 'Enter' && evento.key !== ' ') return;
+    evento.preventDefault();
+    placa.aoAbrir();
+  };
+  return (
+    <g
+      className={`${styles.placaDoFim} ${placa.liberado ? '' : styles.placaFechada}`}
+      transform={`translate(${x} ${y})`}
+      role="button"
+      tabIndex={0}
+      aria-label={placa.liberado ? `Ir para ${placa.nome}` : `${placa.nome}: fechada até a cidade ficar pronta`}
+      onClick={placa.aoAbrir}
+      onKeyDown={aoTeclar}
+    >
+      <rect x={-largura / 2} y={-25} width={largura} height={50} rx={25} />
+      <text x={placa.liberado ? -14 : 12} textAnchor="middle" dominantBaseline="central">
+        {placa.nome}
+      </text>
+      {placa.liberado ? (
+        <path d={`M${largura / 2 - 34} -8 L${largura / 2 - 22} 0 L${largura / 2 - 34} 8`} fill="none" />
+      ) : (
+        <g className={styles.cadeado} transform={`translate(${-largura / 2 + 28} 0) scale(1.3)`}>
+          <circle r={10} />
+          <path d="M-4 -1 V-4 A4 4 0 0 1 4 -4 V-1" fill="none" />
+          <rect x={-6} y={-1} width={12} height={8} rx={2} />
+        </g>
+      )}
+    </g>
+  );
+}
+
+/** A placa do fim do mapa (ADR-0021): o caminho para o mapa seguinte, com cadeado enquanto ele está fechado. */
+export interface PlacaDoFim {
+  nome: string;
+  liberado: boolean;
+  aoAbrir: () => void;
+}
+
 export interface MapaDaCidadeProps {
+  arte: ArteDoMapa;
+  /** Nome do mapa, para quem usa leitor de tela. */
+  nome: string;
+  /** Sem mapa seguinte, a placa diz "em breve". */
+  placaDoFim: PlacaDoFim | null;
   obras: ObraNoMapa[];
   selecionada: string | null;
   proximaAConstruir: string | null;
@@ -177,19 +179,20 @@ export interface MapaDaCidadeProps {
   aoEntrar: (obra: Obra) => void;
 }
 
-export function MapaDaCidade({ obras, selecionada, proximaAConstruir, aoSelecionar, aoEntrar }: MapaDaCidadeProps) {
+export function MapaDaCidade({ arte, nome, placaDoFim, obras, selecionada, proximaAConstruir, aoSelecionar, aoEntrar }: MapaDaCidadeProps) {
+  const { imagem, largura, altura, lugares, outdoor } = arte;
   const estrada = useRef<SVGPathElement>(null);
   const paradas = useRef<number[]>([]);
   const atual = useRef(0);
   const direcao = useRef<'direita' | 'esquerda'>('direita');
-  const [posicao, setPosicao] = useState<Posicao>({ x: 150, y: 752, olhandoPara: 'direita', quadro: PARADO });
+  const [posicao, setPosicao] = useState<Posicao>({ x: arte.inicioDoGuglo[0], y: arte.inicioDoGuglo[1], olhandoPara: 'direita', quadro: PARADO });
   const indiceSelecionado = obras.findIndex((item) => item.obra.id === selecionada);
 
   // Onde cada terreno encosta na estrada (comprimento ao longo do caminho).
   useLayoutEffect(() => {
     const caminho = estrada.current;
-    if (caminho) paradas.current = paradasNaEstrada(caminho);
-  }, []);
+    if (caminho) paradas.current = paradasNaEstrada(caminho, arte);
+  }, [arte]);
 
   const destinoConcluido = obras[indiceSelecionado]?.situacao === 'concluido';
 
@@ -243,55 +246,51 @@ export function MapaDaCidade({ obras, selecionada, proximaAConstruir, aoSelecion
   };
 
   const proxima = obras.find((item) => item.obra.id === proximaAConstruir);
-  const lugarDaProxima = proxima ? LUGARES[obras.indexOf(proxima)] : undefined;
+  const lugarDaProxima = proxima ? lugares[obras.indexOf(proxima)] : undefined;
 
   return (
-    <svg className={styles.mapa} viewBox={`0 0 ${LARGURA} ${ALTURA}`} role="group" aria-label="Mapa da cidade">
+    <svg className={styles.mapa} viewBox={`0 0 ${largura} ${altura}`} role="group" aria-label={`Mapa: ${nome}`}>
       <defs>
         <filter id="terreno-bloqueado">
           <feColorMatrix type="saturate" values="0.15" />
         </filter>
-        {LUGARES.map((lugar, indice) => (
+        {lugares.map((lugar, indice) => (
           <clipPath key={indice} id={`terreno-${indice}`}>
             <rect x={lugar.x} y={lugar.y} width={lugar.largura} height={lugar.altura} rx={14} />
           </clipPath>
         ))}
       </defs>
-      <image href={arteDoMapa} width={LARGURA} height={ALTURA} />
-      <path ref={estrada} d={ESTRADA} fill="none" stroke="none" />
+      <image href={imagem} width={largura} height={altura} />
+      <path ref={estrada} d={arte.estrada} fill="none" stroke="none" />
 
       {/* Terreno bloqueado: a própria arte, sem cor. */}
       {obras.map((item, indice) =>
-        item.situacao === 'bloqueado' && LUGARES[indice] ? (
+        item.situacao === 'bloqueado' && lugares[indice] ? (
           <g key={item.obra.id} aria-hidden="true">
-            <image
-              href={arteDoMapa}
-              width={LARGURA}
-              height={ALTURA}
-              clipPath={`url(#terreno-${indice})`}
-              filter="url(#terreno-bloqueado)"
-            />
+            <image href={imagem} width={largura} height={altura} clipPath={`url(#terreno-${indice})`} filter="url(#terreno-bloqueado)" />
             <rect
               className={styles.veu}
-              x={LUGARES[indice].x}
-              y={LUGARES[indice].y}
-              width={LUGARES[indice].largura}
-              height={LUGARES[indice].altura}
+              x={lugares[indice].x}
+              y={lugares[indice].y}
+              width={lugares[indice].largura}
+              height={lugares[indice].altura}
               rx={14}
             />
           </g>
         ) : null,
       )}
 
-      <g className={styles.emBreve} transform={`translate(${EM_BREVE[0]} ${EM_BREVE[1]})`} aria-hidden="true">
-        <rect x={-48} y={-15} width={96} height={30} rx={15} />
-        <text textAnchor="middle" dominantBaseline="central">
-          em breve
-        </text>
-      </g>
+      {placaDoFim ? null : (
+        <g className={styles.emBreve} transform={`translate(${arte.placaDoFim[0]} ${arte.placaDoFim[1]})`} aria-hidden="true">
+          <rect x={-48} y={-15} width={96} height={30} rx={15} />
+          <text textAnchor="middle" dominantBaseline="central">
+            em breve
+          </text>
+        </g>
+      )}
 
       {obras.map((item, indice) => {
-        const lugar = LUGARES[indice];
+        const lugar = lugares[indice];
         if (!lugar) return null;
         const { obra, situacao } = item;
         const escolhida = obra.id === selecionada;
@@ -307,7 +306,7 @@ export function MapaDaCidade({ obras, selecionada, proximaAConstruir, aoSelecion
             className={`${styles.lugar} ${escolhida ? styles.escolhido : ''}`}
             role="button"
             tabIndex={0}
-            aria-label={`${obra.ordem}. ${obra.nome}: ${obra.conceito}, ${rotuloDaSituacao}`}
+            aria-label={`${obra.numero}. ${obra.nome}: ${obra.conceito}, ${rotuloDaSituacao}`}
             aria-pressed={escolhida}
             onClick={() => (escolhida && situacao !== 'bloqueado' ? aoEntrar(obra) : aoSelecionar(obra))}
             onKeyDown={(evento) => aoTeclar(evento, item)}
@@ -319,17 +318,21 @@ export function MapaDaCidade({ obras, selecionada, proximaAConstruir, aoSelecion
       })}
 
       {/* Depois das obras: no Tab, quem usa teclado chega primeiro nelas. */}
-      <a href="#/anuncie" className={styles.outdoor} aria-label="Anuncie aqui: espaços para marcas no Brick by Brick">
-        <rect
-          className={styles.realceDoOutdoor}
-          x={OUTDOOR.x - OUTDOOR.lado / 2 - 6}
-          y={OUTDOOR.y - OUTDOOR.lado - 6}
-          width={OUTDOOR.lado + 12}
-          height={OUTDOOR.lado + 12}
-          rx={14}
-        />
-        <image href={outdoorAnuncie} x={OUTDOOR.x - OUTDOOR.lado / 2} y={OUTDOOR.y - OUTDOOR.lado} width={OUTDOOR.lado} height={OUTDOOR.lado} />
-      </a>
+      {placaDoFim ? <PlacaDoMapaSeguinte placa={placaDoFim} posicao={arte.placaDoFim} /> : null}
+
+      {outdoor ? (
+        <a href="#/anuncie" className={styles.outdoor} aria-label="Anuncie aqui: espaços para marcas no Brick by Brick">
+          <rect
+            className={styles.realceDoOutdoor}
+            x={outdoor.x - outdoor.lado / 2 - 6}
+            y={outdoor.y - outdoor.lado - 6}
+            width={outdoor.lado + 12}
+            height={outdoor.lado + 12}
+            rx={14}
+          />
+          <image href={outdoorAnuncie} x={outdoor.x - outdoor.lado / 2} y={outdoor.y - outdoor.lado} width={outdoor.lado} height={outdoor.lado} />
+        </a>
+      ) : null}
 
       {lugarDaProxima ? (
         <g transform={`translate(${lugarDaProxima.x + lugarDaProxima.largura / 2} ${lugarDaProxima.y - 6})`} aria-hidden="true">

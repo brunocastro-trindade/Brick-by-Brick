@@ -1,0 +1,135 @@
+id: chale
+ordem: 11
+mapa: serra-verde
+nome: Chalé
+conceito: Métodos de texto
+nivel: basico
+modelo: casa
+aula:
+  titulo: Texto também tem ferramentas
+  texto: |
+    Todo texto em Python vem com **métodos**: funções que você chama com um ponto depois do texto, como `placa.upper()`.
+
+    `upper()` deixa tudo em maiúsculas e `lower()` em minúsculas. `strip()` tira os espaços das pontas, e `replace("a", "b")` troca um pedaço por outro.
+
+    Os métodos não mudam o texto original: eles devolvem um texto novo. Para guardar o resultado, use `=`.
+  exemplo: |
+    letreiro = "  serra verde  "
+    print(letreiro.strip().upper())
+  saida: |
+    SERRA VERDE
+inicial: |
+  letreiro = "  chalé da serra  "
+desafios:
+  - tipo: montar
+    titulo: Letreiro sem sobras
+    contexto: >-
+      O letreiro do Chalé chegou com espaços sobrando nas pontas. Guarde em `placa` o mesmo
+      texto, sem esses espaços.
+    linha: 'placa = letreiro`.strip()`'
+    extras:
+      - texto: '.trim()'
+        porque: >-
+          `trim()` é o nome em outras linguagens, como JavaScript. Em Python ele não existe e
+          dá AttributeError. O método que tira os espaços das pontas é `strip()`.
+      - texto: '.upper()'
+        porque: >-
+          `upper()` deixa o texto em maiúsculas, mas os espaços das pontas continuam lá.
+    dica: >-
+      O método que você procura "descasca" o texto: em inglês, strip.
+    explicacao: >-
+      `letreiro.strip()` devolve um texto novo, sem os espaços do começo e do fim: "chalé da
+      serra". O `letreiro` continua como era; o resultado fica guardado em `placa`.
+
+  - tipo: montar
+    titulo: Placa em maiúsculas
+    contexto: >-
+      Placa de estrada vai em maiúsculas. Mostre a `placa` com todas as letras grandes.
+    linha: 'print(placa`.upper()`)'
+    extras:
+      - texto: '.upper'
+        porque: >-
+          Sem os parênteses, o método não roda: o `print` mostraria o próprio método, algo
+          como `<built-in method upper ...>`. Para chamar, ponha `()`.
+      - texto: '.capitalize()'
+        porque: >-
+          `capitalize()` deixa maiúscula só a primeira letra do texto todo: sairia "Chalé da
+          serra".
+    dica: >-
+      Maiúsculas, em inglês, é "upper case".
+    explicacao: >-
+      `placa.upper()` devolve CHALÉ DA SERRA, com acento e tudo. A `placa` em si não muda:
+      o `print` mostra o texto novo que o método devolveu.
+
+  - tipo: montar
+    titulo: Troca de nome
+    contexto: >-
+      O dono resolveu chamar o lugar de cabana. Mostre a `placa` com **chalé** trocado por
+      **cabana**.
+    linha: 'print(placa`.replace("chalé", "cabana")`)'
+    extras:
+      - texto: '.replace("cabana", "chalé")'
+        porque: >-
+          No `replace`, primeiro vem o pedaço que sai e depois o que entra. Assim, ele procura
+          "cabana", não acha, e o texto fica igual.
+      - texto: '.swap("chalé", "cabana")'
+        porque: >-
+          Texto não tem método `swap`: dá AttributeError. Para trocar um pedaço por outro, use
+          `replace`.
+    dica: >-
+      Primeiro o que sai, depois o que entra.
+    explicacao: >-
+      `replace("chalé", "cabana")` procura todo "chalé" no texto e troca por "cabana": sai
+      "cabana da serra". O que não for achado fica como está.
+
+  - tipo: montar
+    titulo: Quantas letras?
+    contexto: >-
+      O pintor cobra por letra, contando os espaços. Mostre quantos caracteres a `placa`
+      tem.
+    linha: 'print(`len(placa)`)'
+    extras:
+      - texto: 'placa.length'
+        porque: >-
+          `length` é de outras linguagens. Em Python, texto não tem esse atributo
+          (AttributeError): o tamanho se mede com a função `len()`.
+      - texto: 'len(letreiro)'
+        porque: >-
+          O `letreiro` ainda tem os espaços das pontas: contaria 4 caracteres a mais que a
+          placa limpa.
+    dica: >-
+      O tamanho de texto e de lista se mede com a mesma função.
+    explicacao: >-
+      `len(placa)` conta todos os caracteres, espaços do meio incluídos: 14. O `é` conta como
+      um caractere só.
+
+  - tipo: empilhar
+    titulo: Palavra por palavra
+    contexto: >-
+      Mostre cada palavra da `placa` numa linha, com a primeira letra maiúscula.
+    codigo: |
+      palavras = placa.split()
+      for palavra in palavras:
+          print(palavra.capitalize())
+    extras:
+      - texto: 'palavras = placa.split(",")'
+        porque: >-
+          Com `","`, o `split` só corta onde houver vírgula, e a placa não tem nenhuma: sairia
+          uma palavra só, a frase inteira. Sem nada nos parênteses, ele corta nos espaços.
+    dica: >-
+      Primeiro corte o texto em pedaços; depois percorra os pedaços com um `for`.
+    explicacao: >-
+      `split()` corta o texto nos espaços e devolve uma lista: ["chalé", "da", "serra"]. O
+      `for` passa por cada palavra, e `capitalize()` deixa maiúscula a primeira letra.
+
+  - tipo: digitar
+    titulo: Quantos "a"?
+    contexto: >-
+      Para encomendar as letras de madeira, mostre quantas vezes a letra **a** aparece na
+      `placa`.
+    codigo: 'print(placa.count("a"))'
+    dica: >-
+      O método que conta se chama `count` e recebe o pedaço a procurar.
+    explicacao: >-
+      `count("a")` conta quantas vezes "a" aparece: 3. O "é" de chalé é outra letra, então
+      não entra na conta.

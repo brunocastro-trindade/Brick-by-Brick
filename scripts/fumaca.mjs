@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 // Teste de fumaça (HARNESS §5.5): abre o jogo num Chromium de verdade, espera o Python carregar
 // no navegador e joga o primeiro mini desafio do Correio — errando uma vez e acertando depois —
-// acerta uma peça do Guglo Wars, troca o tema do site, abre "Modos de jogo", passa na vistoria do Correio, responde um "Qual é a saída?", abre o Anuncie aqui e garante que nada veio de outro domínio (INV-09)
+// acerta uma peça do Guglo Wars, troca o tema do site, abre "Modos de jogo", passa na vistoria do Correio, responde um "Qual é a saída?" e um "Leia o erro", abre o Anuncie aqui e garante que nada veio de outro domínio (INV-09)
 // e que a política de segurança de conteúdo está no ar sem barrar o próprio jogo (ADR-0009). Por fim, tira
 // a rede e confere que o jogo abre do aparelho, com o Python saindo do service worker (ADR-0010).
+// Na primeira entrada na cidade, o vídeo de abertura aparece uma vez só (ADR-0020); a Serra Verde começa fechada (ADR-0021).
 // Num celular de 360 px, confere que nenhuma tela rola para o lado e que o modal da aula cabe na tela.
 //
 // Uso:  npm run build && npx vite preview --port 4173   (em outro terminal)
@@ -67,6 +68,26 @@ await passo('a home tem o link "Mande seu feedback", com diagnóstico (ADR-0012)
 await passo('abre a tela inicial', async () => {
   await pagina.goto(`${URL_DO_JOGO}/#/`);
   await pagina.getByRole('button', { name: /Começar a construir/ }).click();
+});
+await passo('a primeira entrada na cidade toca a abertura num player pequeno, uma vez só (ADR-0020)', async () => {
+  const player = () => pagina.getByRole('region', { name: 'Bem-vindo à Vila!' });
+  await player().waitFor({ timeout: 10_000 });
+  const fonte = (await player().locator('video').getAttribute('src')) ?? '';
+  if (new URL(fonte, pagina.url()).origin !== new URL(URL_DO_JOGO).origin) throw new Error(`vídeo de fora do site: ${fonte}`);
+  await pagina.reload();
+  await pagina.getByRole('button', { name: 'Entrar na obra' }).waitFor({ timeout: 10_000 });
+  if ((await player().count()) > 0) throw new Error('a abertura tocou de novo');
+});
+await passo('a Serra Verde aparece fechada num jogo novo, e a placa diz o que falta (ADR-0021)', async () => {
+  const serra = pagina.getByRole('navigation', { name: 'Mapas' }).getByRole('button', { name: /Serra Verde/ });
+  await serra.click();
+  await pagina.getByText(/A Serra Verde abre quando as obras da Vila estiverem todas prontas/).waitFor({ timeout: 5_000 });
+  await pagina.goto(`${URL_DO_JOGO}/#/serra-verde`);
+  await pagina.getByText('Conclua as obras da Vila para abrir a Serra Verde.').waitFor({ timeout: 10_000 });
+  await pagina.getByRole('group', { name: 'Mapa: Serra Verde' }).getByRole('button', { name: /^1\. Chalé: .*bloqueada$/ }).waitFor();
+  await pagina.goto(`${URL_DO_JOGO}/#/obra/chale`);
+  await pagina.getByRole('heading', { name: 'Essa obra ainda está fechada' }).waitFor({ timeout: 10_000 });
+  await pagina.goto(`${URL_DO_JOGO}/#/cidade`);
 });
 await passo('entra no Correio pela cidade', async () => {
   await pagina.getByRole('button', { name: 'Entrar na obra' }).click();
@@ -165,6 +186,8 @@ await passo('"Modos de jogo" abre a lista e leva ao modo escolhido', async () =>
 });
 await passo('Vistoria: reescrever o Correio espiando as fiadas aprova e põe o selo na cidade (ADR-0016)', async () => {
   await pagina.goto(`${URL_DO_JOGO}/#/vistoria/correio`);
+  await pagina.getByRole('dialog', { name: 'Reescreva o programa de memória' }).waitFor({ timeout: 10_000 });
+  await pagina.getByRole('button', { name: 'Começar a vistoria' }).click();
   await pagina.getByRole('heading', { name: 'Reescreva correio.py de memória' }).waitFor({ timeout: 10_000 });
   const fiadas = pagina.locator('input[aria-label^="Fiada "]');
   const total = await fiadas.count();
@@ -188,9 +211,21 @@ await passo('"Qual é a saída?": responder uma pergunta mostra a certa e leva �
   await enunciado.waitFor({ timeout: 30_000 });
   await pagina.getByRole('button', { name: /^Alternativa A/ }).click();
   await pagina.getByText(/^(Isso! Mais \d+ pontos\.|Não era essa\.)/).waitFor({ timeout: 5_000 });
-  await pagina.getByRole('button', { name: /, a certa$/ }).waitFor({ timeout: 5_000 });
+  await pagina.getByRole('button', { name: /, a certa(, a sua escolha)?$/ }).waitFor({ timeout: 5_000 });
   await pagina.getByRole('button', { name: 'Próxima pergunta' }).click();
   await pagina.getByRole('button', { name: /^Alternativa A$/ }).waitFor({ timeout: 30_000 });
+});
+await passo('"Leia o erro": o erro real do Python aparece e escolher a correção mostra a certa (ADR-0019)', async () => {
+  await pagina.goto(`${URL_DO_JOGO}/#/leia-o-erro`);
+  await pagina.getByRole('button', { name: 'Começar rodada' }).click({ timeout: 60_000 });
+  await pagina.getByRole('heading', { name: 'O Python deu este erro. Qual correção resolve?' }).waitFor({ timeout: 30_000 });
+  const erro = (await pagina.getByRole('region', { name: 'Erro do Python' }).textContent()) ?? '';
+  if (!/File ".+\.py", line \d+/.test(erro) || !/[A-Za-z]+Error: /.test(erro)) throw new Error(`erro fora do formato do Python: ${erro.slice(0, 160)}`);
+  await pagina.getByRole('button', { name: /^Alternativa A: / }).click();
+  await pagina.getByText(/^(Isso! Mais \d+ pontos\.|Não era essa\.)/).waitFor({ timeout: 5_000 });
+  await pagina.getByRole('button', { name: /, a certa(, a sua escolha)?$/ }).waitFor({ timeout: 5_000 });
+  await pagina.getByRole('button', { name: 'Próxima pergunta' }).click();
+  await pagina.getByRole('button', { name: /^Alternativa A: (?!.*(a certa|a sua escolha)$)/ }).waitFor({ timeout: 30_000 });
 });
 
 await passo('progresso vai para um arquivo e volta pelos Ajustes (ADR-0011)', async () => {
@@ -233,7 +268,7 @@ await passo('sem internet, o jogo abre do aparelho e o Python carrega (ADR-0010)
 await passo('no celular (360 px), nada passa da largura da tela, nem o modal da aula', async () => {
   const celular = await navegador.newPage({ viewport: { width: 360, height: 756 }, isMobile: true, hasTouch: true });
   try {
-    for (const hash of ['#/', '#/cidade', '#/obra/correio', '#/vistoria/correio', '#/guglo-wars', '#/qual-e-a-saida', '#/anuncie']) {
+    for (const hash of ['#/', '#/cidade', '#/obra/correio', '#/vistoria/correio', '#/guglo-wars', '#/qual-e-a-saida', '#/leia-o-erro', '#/serra-verde', '#/anuncie']) {
       await celular.goto(`${URL_DO_JOGO}/${hash}`);
       await celular.waitForTimeout(800);
       const sobra = await celular.evaluate(() => {

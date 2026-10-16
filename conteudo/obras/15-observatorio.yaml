@@ -1,0 +1,110 @@
+id: observatorio
+ordem: 15
+mapa: serra-verde
+nome: Observatório
+conceito: import math
+nivel: basico
+modelo: torre
+aula:
+  titulo: Pegando ferramentas emprestadas
+  texto: |
+    O Python vem com **módulos**: caixas de ferramentas prontas. `import math` traz as de matemática para o seu programa.
+
+    Depois do `import`, cada ferramenta se usa com o nome do módulo e um ponto: `math.sqrt(16)` é a raiz quadrada, `math.pi` é o número pi.
+
+    `math.ceil()` arredonda para cima e `math.floor()` para baixo, sem casas decimais.
+  exemplo: |
+    import math
+    print(math.sqrt(81))
+  saida: |
+    9.0
+desafios:
+  - tipo: montar
+    titulo: Abrindo a caixa de ferramentas
+    contexto: >-
+      O Observatório faz contas com círculos e raízes. Traga o módulo `math` para o programa.
+    linha: '`import` math'
+    extras:
+      - texto: 'include'
+        porque: >-
+          `include` é de outras linguagens, como C. Em Python, o comando que traz um módulo é
+          `import`; o resto dá erro de sintaxe.
+      - texto: 'using'
+        porque: >-
+          `using` vem do C#. O Python não conhece essa palavra aqui: dá erro de sintaxe.
+    dica: >-
+      "Importar", em inglês.
+    explicacao: >-
+      `import math` carrega o módulo uma vez, no começo do programa. Daqui para a frente,
+      tudo dele fica disponível como `math.alguma_coisa`.
+
+  - tipo: montar
+    titulo: Raiz da cúpula
+    contexto: >-
+      A cúpula tem 144 m² de área quadrada. Mostre o tamanho do lado, que é a raiz quadrada de
+      144.
+    linha: 'print(math.`sqrt`(144))'
+    extras:
+      - texto: 'raiz'
+        porque: >-
+          As ferramentas do `math` têm nome em inglês: `math.raiz` não existe e dá
+          AttributeError. A raiz quadrada é `sqrt`, de square root.
+      - texto: 'pow'
+        porque: >-
+          `pow` é potência e pede dois números, a base e o expoente: com um só, dá TypeError.
+    dica: >-
+      Raiz quadrada, em inglês, é square root.
+    explicacao: >-
+      `math.sqrt(144)` devolve 12.0. O resultado vem com `.0` porque `sqrt` sempre devolve um
+      número decimal.
+
+  - tipo: empilhar
+    titulo: Área da lente
+    contexto: >-
+      A lente do telescópio é um círculo de raio **3**. Calcule a área (pi vezes o raio ao
+      quadrado) e mostre com duas casas.
+    codigo: |
+      raio = 3
+      area = math.pi * raio ** 2
+      print(round(area, 2))
+    extras:
+      - texto: 'area = math.pi * raio * 2'
+        porque: >-
+          `raio * 2` é o dobro do raio, não o raio ao quadrado: daria a metade do perímetro.
+          Ao quadrado é `raio ** 2`.
+    dica: >-
+      `**` é a potência: `raio ** 2` é o raio ao quadrado.
+    explicacao: >-
+      `math.pi` vale 3.14159…; vezes 9 dá 28.274…, e o `round(area, 2)` mostra 28.27.
+
+  - tipo: montar
+    titulo: Placas de vidro
+    contexto: >-
+      Cada placa de vidro cobre 1 m². Para cobrir a lente inteira, quantas placas são
+      precisas? Arredonde a `area` **para cima**.
+    linha: 'print(math.`ceil`(area))'
+    extras:
+      - texto: 'floor'
+        porque: >-
+          `floor` arredonda para baixo: 28 placas deixariam um pedaço da lente sem vidro.
+      - texto: 'round'
+        porque: >-
+          O `math` não tem `round` (AttributeError): `round` é função do próprio Python, sem
+          o `math.` na frente. E ele arredonda para o mais perto, não para cima.
+    dica: >-
+      "Teto" em inglês: o arredondamento que sobe.
+    explicacao: >-
+      `math.ceil(28.27)` dá 29: sempre o inteiro de cima. Quando falta um pedaço, a
+      encomenda arredonda para cima.
+
+  - tipo: digitar
+    titulo: Distância entre estrelas
+    contexto: >-
+      No mapa do céu, uma estrela está em (0, 0) e outra em (3, 4). Mostre a distância entre
+      elas com `math.dist`, que recebe os dois pontos como tuplas.
+    codigo: 'print(math.dist((0, 0), (3, 4)))'
+    dica: >-
+      Cada ponto é uma tupla com as duas coordenadas.
+    explicacao: >-
+      `math.dist` mede a distância em linha reta entre os dois pontos: 5.0. É o teorema de
+      Pitágoras pronto.

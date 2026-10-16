@@ -1,0 +1,135 @@
+id: mirante
+ordem: 18
+mapa: serra-verde
+nome: Mirante
+conceito: else, finally e raise
+nivel: avancado
+modelo: torre
+entradas:
+  - ["5"]
+  - ["-2"]
+  - ["abc"]
+aula:
+  titulo: O try completo
+  texto: |
+    O `try` tem mais duas partes. O `else:` roda só quando **não** houve erro, e o `finally:` roda **sempre**, com erro ou sem: bom para fechar e arrumar as coisas.
+
+    Você também pode levantar um erro de propósito com `raise`, quando um valor não serve: `raise ValueError("motivo")`. Quem chamou trata esse erro com o mesmo `except`.
+
+    Assim, a função avisa o problema, e quem usa a função decide o que fazer com ele.
+  exemplo: |
+    try:
+        raise ValueError("ponte fechada")
+    except ValueError as erro:
+        print("Aviso:", erro)
+    finally:
+        print("Fim da vistoria")
+  saida: |
+    Aviso: ponte fechada
+    Fim da vistoria
+inicial: |
+  pedido = input("Quantos ingressos para o mirante? ")
+  ingressos = 0
+desafios:
+  - tipo: empilhar
+    titulo: Conferência de ingressos
+    contexto: >-
+      Escreva a função `conferir(quantidade)`: se a quantidade for menor que 1, ela levanta
+      `ValueError` com a mensagem **pelo menos 1 ingresso**; se não, devolve a quantidade.
+    codigo: |
+      def conferir(quantidade):
+          if quantidade < 1:
+              raise ValueError("pelo menos 1 ingresso")
+          return quantidade
+    extras:
+      - texto: '        return ValueError("pelo menos 1 ingresso")'
+        porque: >-
+          `return` devolve o erro como um valor qualquer, sem parar nada: quem chamou recebe o
+          erro como se fosse a quantidade e segue em frente. Para avisar o problema, é `raise`.
+    dica: >-
+      `raise` levanta o erro; `return` só devolve um valor.
+    explicacao: >-
+      Com 0 ou menos, o `raise` interrompe a função e manda o ValueError para quem chamou. Com
+      1 ou mais, a função devolve a quantidade normalmente.
+    verificar: |
+      try:
+          conferir(0)
+          print("passou")
+      except ValueError as erro:
+          print("barrou:", erro)
+      print(conferir(3))
+
+  - tipo: empilhar
+    titulo: Pedido no guichê
+    contexto: >-
+      Converta o `pedido` e confira. Se der ValueError (letras ou quantidade menor que 1),
+      mostre **Pedido recusado:** e a mensagem. Se não deu erro, mostre **Ingressos:** e a
+      quantidade, num `else`.
+    codigo: |
+      try:
+          ingressos = conferir(int(pedido))
+      except ValueError as erro:
+          print("Pedido recusado:", erro)
+      else:
+          print("Ingressos:", ingressos)
+    extras:
+      - texto: 'finally:'
+        porque: >-
+          O `finally` roda sempre, inclusive depois do erro: mostraria "Ingressos: 0" também
+          para o pedido recusado. O que roda só sem erro é o `else`.
+    dica: >-
+      O `else` do `try` vem depois do `except` e só roda quando o `try` deu certo.
+    explicacao: >-
+      Com "5", o `try` dá certo e o `else` mostra os ingressos. Com "-2", o `raise` da
+      função cai no `except`; com "abc", é o `int` que dá ValueError e cai no mesmo `except`.
+
+  - tipo: empilhar
+    titulo: Vista por pessoa
+    contexto: >-
+      O mirante tem 1200 m de vista para dividir entre os ingressos. Se for 0, a divisão dá
+      ZeroDivisionError e a vista fica 0. Com erro ou sem, avise **Bilheteria fechada.** no
+      fim.
+    codigo: |
+      try:
+          vista = 1200 // ingressos
+      except ZeroDivisionError:
+          vista = 0
+      finally:
+          print("Bilheteria fechada.")
+    extras:
+      - texto: 'else:'
+        porque: >-
+          O `else` só roda quando não houve erro: com 0 ingressos, a bilheteria nunca seria
+          fechada. O que roda sempre é o `finally`.
+    dica: >-
+      A parte que roda sempre, com erro ou sem.
+    explicacao: >-
+      O `finally` roda nos dois caminhos: depois da divisão que deu certo e depois do plano B
+      do ZeroDivisionError.
+
+  - tipo: montar
+    titulo: Placa do mirante
+    contexto: >-
+      Mostre a vista de cada pessoa: **Cada um vê 240 m de serra**.
+    linha: 'print(f"Cada um vê {`vista`} m de serra")'
+    extras:
+      - texto: 'ingressos'
+        porque: >-
+          `ingressos` é quantas pessoas são, não quantos metros cada uma vê.
+      - texto: '1200'
+        porque: >-
+          1200 é a vista inteira, antes de dividir: só valeria para uma pessoa.
+    dica: >-
+      O resultado da divisão ficou guardado numa variável.
+    explicacao: >-
+      `vista` tem a divisão, ou o 0 do plano B.
+
+  - tipo: digitar
+    titulo: Teste da função
+    contexto: >-
+      Mostre o que a função `conferir` devolve para **2** ingressos.
+    codigo: 'print(conferir(2))'
+    dica: >-
+      Chame a função dentro do `print`.
+    explicacao: >-
+      Com 2, a condição do `if` é falsa, o `raise` não roda, e a função devolve 2.

@@ -1,0 +1,112 @@
+id: almoxarifado
+ordem: 19
+mapa: serra-verde
+nome: Almoxarifado
+conceito: Arquivos
+nivel: avancado
+modelo: armazem
+aula:
+  titulo: Guardar para depois
+  texto: |
+    Variável some quando o programa acaba. Para guardar de verdade, escreva num **arquivo**: `open("estoque.txt", "w")` abre para escrever (`w`, de write), e `"r"`, o padrão, abre para ler.
+
+    Use `with open(...) as arquivo:`: o bloco usa o arquivo e, no fim, o Python fecha sozinho. `arquivo.write(texto)` escreve, e `arquivo.read()` lê tudo.
+
+    `write` não pula linha: ponha `\n` no fim de cada uma. O modo `"a"` (append) escreve no fim, sem apagar o que já havia.
+  exemplo: |
+    with open("nota.txt", "w") as arquivo:
+        arquivo.write("Olá, arquivo!\n")
+    with open("nota.txt") as arquivo:
+        print(arquivo.read())
+  saida: |
+    Olá, arquivo!
+desafios:
+  - tipo: empilhar
+    titulo: Primeiro inventário
+    contexto: >-
+      Crie o arquivo `estoque.txt` e escreva **pregos** e **tábuas**, um em cada linha.
+    codigo: |
+      with open("estoque.txt", "w") as arquivo:
+          arquivo.write("pregos\n")
+          arquivo.write("tábuas\n")
+    extras:
+      - texto: 'with open("estoque.txt", "r") as arquivo:'
+        porque: >-
+          `"r"` abre para ler, e o arquivo ainda não existe: dá FileNotFoundError. Para criar
+          e escrever, o modo é `"w"`.
+    dica: >-
+      O modo de escrever é a primeira letra de write.
+    explicacao: >-
+      `open` com `"w"` cria o arquivo (ou apaga o que havia nele) e o `with` fecha no fim do
+      bloco. O `\n` no fim de cada texto pula para a linha de baixo.
+    verificar: |
+      print(repr(open("estoque.txt").read()))
+
+  - tipo: empilhar
+    titulo: Chegaram telhas
+    contexto: >-
+      Acrescente **telhas** no fim do estoque, sem apagar o que já estava escrito.
+    codigo: |
+      with open("estoque.txt", "a") as arquivo:
+          arquivo.write("telhas\n")
+    extras:
+      - texto: 'with open("estoque.txt", "w") as arquivo:'
+        porque: >-
+          `"w"` apaga tudo antes de escrever: o arquivo ficaria só com telhas, sem pregos nem
+          tábuas. Para escrever no fim, o modo é `"a"`.
+    dica: >-
+      O modo que acrescenta no fim é a primeira letra de append.
+    explicacao: >-
+      Com `"a"`, o Python abre o arquivo e escreve depois da última linha. Agora são três
+      itens.
+    verificar: |
+      print(repr(open("estoque.txt").read()))
+
+  - tipo: empilhar
+    titulo: Lendo o estoque
+    contexto: >-
+      Leia o arquivo inteiro, guarde em `conteudo` e mostre.
+    codigo: |
+      with open("estoque.txt") as arquivo:
+          conteudo = arquivo.read()
+      print(conteudo)
+    extras:
+      - texto: '    conteudo = arquivo.readline()'
+        porque: >-
+          `readline` lê uma linha só, a primeira: mostraria apenas pregos.
+    dica: >-
+      Sem modo, o `open` abre para ler; `read()` traz tudo.
+    explicacao: >-
+      `arquivo.read()` devolve o arquivo inteiro num texto só, com as quebras de linha. O
+      `print` mostra os três itens e mais uma linha em branco: a do último `\n`.
+
+  - tipo: empilhar
+    titulo: Linha por linha
+    contexto: >-
+      Percorra o arquivo linha por linha e mostre cada item com um traço na frente:
+      **- pregos**.
+    codigo: |
+      with open("estoque.txt") as arquivo:
+          for linha in arquivo:
+              print("-", linha.strip())
+    extras:
+      - texto: '        print("-", linha)'
+        porque: >-
+          Cada linha lida vem com o `\n` do fim, e o `print` põe outro: sairia uma linha em
+          branco depois de cada item. O `strip()` tira o `\n`.
+    dica: >-
+      Um `for` passa pelas linhas do arquivo; o `strip()` limpa o fim de cada uma.
+    explicacao: >-
+      O `for` lê o arquivo uma linha por vez. `linha.strip()` tira o `\n` do fim para o
+      `print` não pular duas linhas.
+
+  - tipo: digitar
+    titulo: Quantos itens?
+    contexto: >-
+      Mostre quantos itens há no estoque, contando as linhas do `conteudo`:
+      **3 itens no estoque**.
+    codigo: 'print(len(conteudo.splitlines()), "itens no estoque")'
+    dica: >-
+      `splitlines()` corta o texto nas quebras de linha e devolve uma lista.
+    explicacao: >-
+      `conteudo.splitlines()` dá ["pregos", "tábuas", "telhas"], e o `len` conta 3.

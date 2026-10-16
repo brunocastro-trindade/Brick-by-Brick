@@ -10,6 +10,7 @@ import type { Desafio, Linha, Obra } from './tipos';
 import { criarSorteio } from './embaralhar';
 import { progressoNovo } from './progresso';
 import { candidatas, ERRADAS_MINIMAS, gerarPergunta } from './qualSaida';
+import { aplicar, candidatasDoErro, ERRADAS_MINIMAS as ERRADAS_MINIMAS_DO_ERRO, filaVariada, gerarPerguntaDoErro } from './leiaOErro';
 import { avaliarTentativa } from './validacao';
 import { MARCA_COMENTARIO_FIM, MARCA_COMENTARIO_INICIO } from '../python/tipos';
 import { avaliarVistoria, moldeDaVistoria, programaDaSaidaEsperada, saidaComComentarios, verificacaoDaObra } from './vistoria';
@@ -82,6 +83,14 @@ describe.each(OBRAS.map((obra) => [obra.nome, obra] as const))('obra %s', (_nome
         expect(resultado.erro, `${desafio.id} com entradas ${JSON.stringify(entradas)}`).toBeNull();
       }
     }
+  });
+
+  it('o exemplo da aula mostra a saída escrita na aula', async () => {
+    // Exemplo com input() mostra a resposta digitada na saída da aula, e aqui não há quem digite: fica de fora.
+    if (obra.aula.saida === undefined || obra.aula.exemplo.includes('input(')) return;
+    const resultado = await rodar(obra.aula.exemplo);
+    expect(resultado.erro).toBeNull();
+    expect(resultado.saida.replace(/\n+$/, '')).toBe(obra.aula.saida);
   });
 
   it('a obra completa mostra a saída esperada', async () => {
@@ -263,3 +272,32 @@ describe('"Qual é a saída?" no Python de verdade (ADR-0017)', () => {
   });
 });
 
+
+describe('"Leia o erro" no Python de verdade (ADR-0019)', () => {
+  const todas = candidatasDoErro(OBRAS, { ...progressoNovo(), modoLivre: true });
+
+  it.each(OBRAS.map((item) => [item.nome, item] as const))('%s: o estrago dá erro, a certa conserta e as erradas não', async (_, item) => {
+    let perguntas = 0;
+    // Uma amostra variada por obra: rodar todas as candidatas custaria minutos.
+    for (const candidata of filaVariada(todas.filter(({ obra }) => obra.id === item.id), criarSorteio(item.ordem)).slice(0, 12)) {
+      const pergunta = await gerarPerguntaDoErro(candidata, executor, criarSorteio(candidata.indice + 1));
+      if (!pergunta) continue;
+      perguntas += 1;
+      const quebrado = await rodar(textoDoPrograma(pergunta.programa), pergunta.entradas);
+      expect(quebrado.erro?.tipo).toBe(pergunta.erro.tipo);
+      expect(pergunta.correcoes.filter((correcao) => correcao.certa)).toHaveLength(1);
+      expect(pergunta.correcoes.length).toBeGreaterThanOrEqual(ERRADAS_MINIMAS_DO_ERRO + 1);
+      const obraInteira = await rodar(textoDoPrograma(linhasAntesDoPasso(item, item.desafios.length)), pergunta.entradas);
+      for (const correcao of pergunta.correcoes) {
+        const rodado = await rodar(textoDoPrograma(aplicar(pergunta.programa, correcao)), pergunta.entradas);
+        if (correcao.certa) {
+          expect(rodado.erro).toBeNull();
+          expect(rodado.saida).toBe(obraInteira.saida);
+        } else {
+          expect(rodado.erro !== null || rodado.saida !== obraInteira.saida).toBe(true);
+        }
+      }
+    }
+    expect(perguntas).toBeGreaterThanOrEqual(3);
+  });
+});

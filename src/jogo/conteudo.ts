@@ -1,6 +1,7 @@
 // Lê uma obra em YAML (já parseada) e devolve o modelo tipado, acusando erro de autoria
 // com caminho claro: "correio.yaml › desafio 2 › linha". Formato descrito no ADR-0003.
 import {
+  MAPAS,
   MODELOS_DE_PREDIO,
   type Classificacao,
   type Desafio,
@@ -200,6 +201,10 @@ export function processarObra(bruta: unknown, origem: string): Obra {
     conceito: texto(dados, 'conceito', origem),
     nivel: escolha(dados, 'nivel', NIVEIS, origem),
     modelo: escolha(dados, 'modelo', MODELOS_DE_PREDIO as readonly ModeloPredio[], origem),
+    // Sem `mapa`, a obra é da Vila: as 10 primeiras nasceram antes de existir outro mapa (ADR-0021).
+    mapa: dados.mapa === undefined ? 'vila' : escolha(dados, 'mapa', MAPAS, origem),
+    // Provisório: a posição no mapa só se sabe com todas as obras (processarCidade).
+    numero: inteiro(dados, 'ordem', origem),
     arquivo: `${id}.py`,
     aula: {
       titulo: texto(dadosDaAula, 'titulo', `${origem} › aula`),
@@ -225,5 +230,12 @@ export function processarCidade(brutas: Array<{ origem: string; dados: unknown }
     ids.add(obra.id);
     ordens.add(obra.ordem);
   }
-  return obras;
+  // Na ordem das obras, os mapas vêm em bloco e na ordem de MAPAS: o desbloqueio conta com isso (ADR-0021).
+  obras.forEach((obra, indice) => {
+    const anterior = obras[indice - 1];
+    if (anterior && MAPAS.indexOf(obra.mapa) < MAPAS.indexOf(anterior.mapa)) {
+      throw new ErroDeConteudo(obra.arquivo, `a obra do mapa ${obra.mapa} vem depois de uma do mapa ${anterior.mapa}: ajuste a ordem`);
+    }
+  });
+  return obras.map((obra) => ({ ...obra, numero: obras.filter((outra) => outra.mapa === obra.mapa).indexOf(obra) + 1 }));
 }

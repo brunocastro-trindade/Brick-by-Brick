@@ -1,0 +1,131 @@
+id: trilha
+ordem: 13
+mapa: serra-verde
+nome: Trilha
+conceito: Tuplas
+nivel: basico
+modelo: torre
+aula:
+  titulo: Tuplas guardam o que não muda
+  texto: |
+    Uma **tupla** é uma sequência entre parênteses, como `(3, 7)`. Ela parece uma lista, com uma diferença: depois de criada, **não muda**. Não dá para trocar, pôr nem tirar item.
+
+    Use tupla para dados que andam juntos e não mudam, como as duas coordenadas de um ponto. Os itens se leem por posição, começando do 0: `ponto[0]`.
+
+    Dá para **desempacotar** a tupla em variáveis numa linha só: `x, y = ponto`.
+  exemplo: |
+    ponto = (2, 5)
+    x, y = ponto
+    print(x + y)
+  saida: |
+    7
+desafios:
+  - tipo: montar
+    titulo: Onde a trilha começa
+    contexto: >-
+      No mapa da trilha, o começo fica na coluna **3** e na linha **7**, e isso não muda.
+      Guarde as duas coordenadas na tupla `inicio`.
+    linha: 'inicio = `(3, 7)`'
+    extras:
+      - texto: '[3, 7]'
+        porque: >-
+          Colchetes criam uma lista, que pode mudar. Para um par que nunca muda, como um
+          ponto do mapa, a tupla deixa isso claro e protege os valores.
+      - texto: '(3 7)'
+        porque: >-
+          Sem a vírgula, o Python não entende os dois números: dá erro de sintaxe. Na tupla,
+          os itens se separam por vírgula.
+    dica: >-
+      Parênteses por fora, vírgula entre os itens.
+    explicacao: >-
+      `(3, 7)` cria uma tupla com dois itens. Ela fica guardada em `inicio` e, daqui para a
+      frente, ninguém consegue trocar a coluna nem a linha dela.
+
+  - tipo: montar
+    titulo: Qual coluna?
+    contexto: >-
+      Mostre só a coluna do começo da trilha, que é o primeiro item da tupla.
+    linha: 'print(inicio`[0]`)'
+    extras:
+      - texto: '[1]'
+        porque: >-
+          A contagem começa do 0: `[1]` é o segundo item, a linha 7.
+      - texto: '(0)'
+        porque: >-
+          Com parênteses, o Python tenta chamar a tupla como se fosse função, e tupla não se
+          chama: dá TypeError. Para ler um item, use colchetes.
+    dica: >-
+      Como na lista: colchetes e a posição, começando do zero.
+    explicacao: >-
+      `inicio[0]` lê o item da posição 0, a coluna 3. Ler uma tupla é igual a ler uma lista;
+      o que muda é que ela não aceita escrita.
+
+  - tipo: empilhar
+    titulo: Desempacotando
+    contexto: >-
+      Separe a tupla em duas variáveis, `coluna` e `linha`, numa linha só, e mostre
+      **Coluna 3 linha 7**.
+    codigo: |
+      coluna, linha = inicio
+      print("Coluna", coluna, "linha", linha)
+    extras:
+      - texto: 'coluna, linha = inicio[0]'
+        porque: >-
+          `inicio[0]` é só o número 3, e um número não se divide em duas variáveis: dá
+          TypeError. Para desempacotar, use a tupla inteira.
+    dica: >-
+      Duas variáveis do lado esquerdo do `=`, separadas por vírgula, e a tupla do lado
+      direito.
+    explicacao: >-
+      `coluna, linha = inicio` desempacota a tupla: o primeiro item vai para `coluna` e o
+      segundo para `linha`. O número de variáveis tem que ser igual ao de itens.
+
+  - tipo: digitar
+    titulo: Marcos da trilha
+    contexto: >-
+      A trilha tem três marcos: o `inicio`, o ponto **(5, 2)** e o ponto **(8, 9)**. Guarde
+      os três numa tupla chamada `marcos`.
+    codigo: 'marcos = (inicio, (5, 2), (8, 9))'
+    dica: >-
+      Uma tupla pode ter outras tuplas dentro, separadas por vírgula.
+    explicacao: >-
+      `marcos` é uma tupla de tuplas: cada item é um ponto com coluna e linha. O `inicio`
+      entra com o valor que já tinha, (3, 7).
+
+  - tipo: empilhar
+    titulo: Placas no caminho
+    contexto: >-
+      Percorra os `marcos` e mostre uma placa para cada um, como **Marco em 3, 7**,
+      desempacotando cada ponto no próprio `for`.
+    codigo: |
+      for x, y in marcos:
+          print(f"Marco em {x}, {y}")
+    extras:
+      - texto: 'for x in marcos:'
+        porque: >-
+          Com uma variável só, `x` recebe a tupla inteira e `y` não existe: o `print` daria
+          NameError. Para separar coluna e linha, ponha as duas variáveis no `for`.
+    dica: >-
+      O `for` também desempacota: duas variáveis antes do `in`.
+    explicacao: >-
+      A cada volta, o `for` pega um ponto e desempacota em `x` e `y`. É o mesmo truque de
+      `coluna, linha = inicio`, feito a cada marco.
+
+  - tipo: empilhar
+    titulo: O começo mudou
+    contexto: >-
+      Uma ponte caiu, e a trilha agora começa na coluna **4**, linha **7**. Como a tupla não
+      muda, crie uma tupla nova para `inicio` e mostre o novo começo.
+    codigo: |
+      inicio = (4, 7)
+      print(inicio)
+    extras:
+      - texto: 'inicio[0] = 4'
+        porque: >-
+          Tupla não aceita troca de item: dá TypeError, 'tuple' object does not support item
+          assignment. Para mudar, crie uma tupla nova e guarde no mesmo nome.
+    dica: >-
+      Não dá para mexer dentro da tupla, mas dá para pôr outra no lugar.
+    explicacao: >-
+      `inicio = (4, 7)` não altera a tupla antiga: cria outra e guarda no nome `inicio`. Os
+      `marcos`, que já tinham guardado o (3, 7), continuam com ele.

@@ -76,7 +76,8 @@
   font-family: var(--fonte-titulo);
   font-weight: var(--peso-titulo);
   font-size: 20px; /* fora-da-escala: unidade do SVG do mapa */
-  fill: var(--cor-texto);
+  /* O fundo do selo é cor de ilustração, a mesma nos dois temas: o número também (no escuro, --cor-texto é claro). */
+  fill: var(--cor-ilustra-contorno);
 }
 
 .cadeado circle {
@@ -158,6 +159,50 @@
   font-family: var(--fonte-titulo);
   font-weight: var(--peso-titulo);
   font-size: 16px; /* fora-da-escala: unidade do SVG do mapa */
+  fill: var(--cor-texto-suave);
+}
+
+/* Placa do mapa seguinte (ADR-0021): botão no próprio mapa, como o outdoor; fechada, fica apagada e com cadeado. */
+.placaDoFim {
+  cursor: pointer;
+  outline: none;
+}
+
+.placaDoFim > rect {
+  fill: var(--cor-ilustra-destaque);
+  stroke: var(--cor-ilustra-contorno);
+  stroke-width: 3;
+  transition: stroke-width var(--duracao-media);
+}
+
+.placaDoFim > text {
+  font-family: var(--fonte-titulo);
+  font-weight: var(--peso-titulo);
+  font-size: 26px; /* fora-da-escala: unidade do SVG do mapa */
+  fill: var(--cor-ilustra-contorno);
+}
+
+.placaDoFim > path {
+  stroke: var(--cor-ilustra-contorno);
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.placaDoFim:hover > rect {
+  stroke-width: 5;
+}
+
+.placaDoFim:focus-visible > rect {
+  stroke: var(--cor-foco);
+  stroke-width: 6;
+}
+
+.placaFechada > rect {
+  fill: var(--cor-ilustra-placa);
+}
+
+.placaFechada > text {
   fill: var(--cor-texto-suave);
 }
 

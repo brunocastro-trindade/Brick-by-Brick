@@ -23,6 +23,10 @@ export interface ResultadoDaVistoria {
   espiadas: number;
 }
 
+/** Vídeos que tocam uma vez (ADR-0020): a abertura da cidade e a cidade pronta. */
+export type VideoDoJogo = 'abertura' | 'cidade-pronta';
+export const VIDEOS_DO_JOGO: readonly VideoDoJogo[] = ['abertura', 'cidade-pronta'];
+
 export interface Progresso {
   versao: 1;
   obras: Record<string, ProgressoObra>;
@@ -34,6 +38,10 @@ export interface Progresso {
   gugloWars: RecordeDoGugloWars;
   /** Recorde do "Qual é a saída?" (ADR-0017). */
   qualSaida: RecordeDoGugloWars;
+  /** Recorde do "Leia o erro" (ADR-0019). */
+  leiaOErro: RecordeDoGugloWars;
+  /** Vídeos que já apareceram (ADR-0020): cada um toca sozinho uma vez só. */
+  videosVistos: VideoDoJogo[];
   /** Tema do site (ADR-0018): claro (o canteiro), escuro (Drácula) ou o que o aparelho pedir. */
   tema: Tema;
 }
@@ -53,7 +61,7 @@ export interface Armazenamento {
 export const CHAVE_DO_PROGRESSO = 'brick-by-brick:progresso:v1';
 
 export function progressoNovo(): Progresso {
-  return { versao: 1, obras: {}, som: true, modoLivre: false, ultimaObra: null, mecanicasVistas: [], gugloWars: { recorde: 0, partidas: 0 }, qualSaida: { recorde: 0, partidas: 0 }, tema: 'aparelho' };
+  return { versao: 1, obras: {}, som: true, modoLivre: false, ultimaObra: null, mecanicasVistas: [], gugloWars: { recorde: 0, partidas: 0 }, qualSaida: { recorde: 0, partidas: 0 }, leiaOErro: { recorde: 0, partidas: 0 }, videosVistos: [], tema: 'aparelho' };
 }
 
 export function progressoDeObraNovo(): ProgressoObra {
@@ -141,6 +149,8 @@ function sanearProgresso(bruto: unknown): Progresso | null {
     mecanicasVistas: Array.isArray(dados.mecanicasVistas) ? tipos.filter((tipo) => (dados.mecanicasVistas as unknown[]).includes(tipo)) : [],
     gugloWars: sanearRecorde(dados.gugloWars),
     qualSaida: sanearRecorde(dados.qualSaida),
+    leiaOErro: sanearRecorde(dados.leiaOErro),
+    videosVistos: Array.isArray(dados.videosVistos) ? VIDEOS_DO_JOGO.filter((video) => (dados.videosVistos as unknown[]).includes(video)) : [],
     tema: sanearTema(dados),
   };
 }
@@ -183,10 +193,17 @@ export function salvarProgresso(progresso: Progresso, armazenamento: Armazenamen
   }
 }
 
+/**
+ * Dentro do mapa, a obra abre quando a anterior está concluída; a primeira de um mapa abre quando todas as obras
+ * dos mapas de antes estão concluídas (ADR-0021). `obras` vem na ordem, com os mapas em bloco. Modo livre abre tudo.
+ */
 export function obraLiberada(obras: Obra[], progresso: Progresso, indice: number): boolean {
-  if (indice === 0 || progresso.modoLivre) return true;
+  const obra = obras[indice];
+  if (!obra) return false;
+  if (progresso.modoLivre) return true;
   const anterior = obras[indice - 1];
-  return anterior !== undefined && progressoDaObra(progresso, anterior.id).concluida;
+  if (anterior && anterior.mapa === obra.mapa) return progressoDaObra(progresso, anterior.id).concluida;
+  return obras.slice(0, indice).every((outra) => progressoDaObra(progresso, outra.id).concluida);
 }
 
 function comObra(progresso: Progresso, obraId: string, mudar: (obra: ProgressoObra) => ProgressoObra): Progresso {
@@ -238,6 +255,11 @@ export function marcarMecanicaVista(progresso: Progresso, tipo: TipoDesafio): Pr
   return { ...progresso, mecanicasVistas: [...progresso.mecanicasVistas, tipo] };
 }
 
+export function marcarVideoVisto(progresso: Progresso, video: VideoDoJogo): Progresso {
+  if (progresso.videosVistos.includes(video)) return progresso;
+  return { ...progresso, videosVistos: [...progresso.videosVistos, video] };
+}
+
 export function totalDeEstrelas(progresso: Progresso): number {
   return Object.values(progresso.obras).reduce((soma, obra) => soma + obra.estrelas, 0);
 }
@@ -257,4 +279,9 @@ export function registrarPartidaDoGugloWars(progresso: Progresso, pontos: number
 export function registrarRodadaDoQualSaida(progresso: Progresso, pontos: number): Progresso {
   const { recorde, partidas } = progresso.qualSaida;
   return { ...progresso, qualSaida: { recorde: Math.max(recorde, pontos), partidas: partidas + 1 } };
+}
+
+export function registrarRodadaDoLeiaOErro(progresso: Progresso, pontos: number): Progresso {
+  const { recorde, partidas } = progresso.leiaOErro;
+  return { ...progresso, leiaOErro: { recorde: Math.max(recorde, pontos), partidas: partidas + 1 } };
 }
