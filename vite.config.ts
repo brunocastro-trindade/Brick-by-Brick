@@ -1,7 +1,7 @@
 /// <reference types="vitest/config" />
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { createReadStream } from 'node:fs';
+import { createReadStream, readdirSync, readFileSync } from 'node:fs';
 import { readdir, readFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import path from 'node:path';
@@ -9,7 +9,9 @@ import react from '@vitejs/plugin-react';
 import { defineConfig, type Plugin, type Rolldown } from 'vite';
 import { parse } from 'yaml';
 import { arquivoDeCabecalhos, CABECALHOS_DE_SEGURANCA, POLITICA_NA_META } from './src/publicacao/cabecalhos';
-import { etiquetas, publicacao, robots, sitemap } from './src/publicacao/metadados';
+import { processarCidade } from './src/jogo/conteudo';
+import { apresentacaoEstatica, dadosEstruturados, llmsTxt } from './src/publicacao/descoberta';
+import { DOMINIO_DE_PRODUCAO, etiquetas, publicacao, robots, sitemap } from './src/publicacao/metadados';
 
 const require = createRequire(import.meta.url);
 const PASTA_PYODIDE = path.dirname(require.resolve('pyodide/package.json'));
@@ -62,13 +64,36 @@ function politicaDeConteudo(): Plugin {
  * Etiquetas de compartilhamento, robots.txt e sitemap.xml (ADR-0013), conforme URL_DO_SITE e AMBIENTE_DO_SITE
  * (ou a branch do Workers Builds, ADR-0014). Prévia e teste saem com noindex.
  */
+/** As obras lidas direto dos YAMLs, com a mesma validação do jogo (ADR-0003): o que a descoberta descreve (ADR-0023). */
+function obrasDoConteudo() {
+  const pasta = path.resolve('conteudo/obras');
+  return processarCidade(
+    readdirSync(pasta)
+      .filter((nome) => nome.endsWith('.yaml'))
+      .map((nome) => ({ origem: nome, dados: parse(readFileSync(path.join(pasta, nome), 'utf8')) as unknown })),
+  );
+}
+
 function metadadosDePublicacao(): Plugin {
   const site = publicacao(process.env);
+  // URLs absolutas dos dados estruturados e do llms.txt: o site de produção, mesmo num build local (que é noindex).
+  const endereco = site.url ?? DOMINIO_DE_PRODUCAO;
   return {
     name: 'brick:metadados-de-publicacao',
     apply: 'build',
-    transformIndexHtml: () => etiquetas(site).map((etiqueta) => ({ ...etiqueta, injectTo: 'head' as const })),
+    transformIndexHtml(html) {
+      const obras = obrasDoConteudo();
+      return {
+        // A apresentação vai dentro do #raiz: o React a troca pelo jogo ao montar (ADR-0023).
+        html: html.replace('<div id="raiz"></div>', `<div id="raiz">${apresentacaoEstatica(obras)}</div>`),
+        tags: [
+          ...etiquetas(site).map((etiqueta) => ({ ...etiqueta, injectTo: 'head' as const })),
+          { tag: 'script', attrs: { type: 'application/ld+json' }, children: dadosEstruturados(endereco, obras), injectTo: 'head' as const },
+        ],
+      };
+    },
     generateBundle() {
+      this.emitFile({ type: 'asset', fileName: 'llms.txt', source: llmsTxt(endereco, obrasDoConteudo()) });
       this.emitFile({ type: 'asset', fileName: 'robots.txt', source: robots(site) });
       const mapa = sitemap(site);
       if (mapa) this.emitFile({ type: 'asset', fileName: 'sitemap.xml', source: mapa });

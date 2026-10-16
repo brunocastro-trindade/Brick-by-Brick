@@ -291,6 +291,22 @@ await passo('no celular (360 px), nada passa da largura da tela, nem o modal da 
 await passo('nenhuma requisição a outro domínio (INV-09)', async () => {
   if (deFora.size > 0) throw new Error(`o jogo pediu algo a: ${[...deFora].join(', ')}`);
 });
+await passo('quem não roda JavaScript lê o jogo: apresentação, JSON-LD e llms.txt (ADR-0023)', async () => {
+  const html = await (await pagina.request.get(`${URL_DO_JOGO}/`)).text();
+  if (!/<title>Brick by Brick: aprenda Python/.test(html)) throw new Error('título sem os termos de busca');
+  if (!html.includes('<main class="apresentacao">') || !html.includes('Leia o erro')) throw new Error('apresentação ausente do HTML inicial');
+  const bloco = /<script type="application\/ld\+json">([\s\S]*?)<\/script>/.exec(html)?.[1];
+  if (!bloco) throw new Error('JSON-LD ausente');
+  const tipos = JSON.parse(bloco)['@graph'].map((item) => item['@type']).join(',');
+  if (tipos !== 'WebSite,Course,WebApplication,FAQPage') throw new Error(`JSON-LD inesperado: ${tipos}`);
+  const llms = await pagina.request.get(`${URL_DO_JOGO}/llms.txt`);
+  if (!llms.ok() || !(await llms.text()).startsWith('# Brick by Brick')) throw new Error('llms.txt ausente');
+  // Com JavaScript, o jogo troca a apresentação pela tela inicial.
+  await pagina.goto(`${URL_DO_JOGO}/#/`);
+  await pagina.getByRole('button', { name: /Começar a construir|Continuar construindo/ }).waitFor({ timeout: 10_000 });
+  if ((await pagina.locator('main.apresentacao').count()) > 0) throw new Error('a apresentação ficou na tela depois de o jogo montar');
+});
+
 await passo('política de segurança de conteúdo na meta e no cabeçalho, sem barrar o jogo (ADR-0009, ADR-0014)', async () => {
   const politica = await pagina.locator('meta[http-equiv="Content-Security-Policy"]').getAttribute('content');
   if (!politica?.includes("default-src 'self'")) throw new Error(`política ausente ou sem default-src 'self': ${politica}`);

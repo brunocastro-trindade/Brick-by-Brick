@@ -92,3 +92,49 @@ kbd {
     scroll-behavior: auto !important;
   }
 }
+
+/* Apresentação do HTML inicial (ADR-0023): o que quem não roda JavaScript lê, e o que aparece por um instante antes
+   de o jogo montar. Texto simples e legível, nos tokens do jogo. */
+.apresentacao {
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: var(--espaco-8) var(--espaco-5);
+}
+
+.apresentacao h1 {
+  font-family: var(--fonte-titulo);
+  font-size: var(--tipo-titulo-tamanho);
+  line-height: var(--tipo-titulo-altura);
+}
+
+.apresentacao h2,
+.apresentacao h3 {
+  font-family: var(--fonte-titulo);
+  margin-top: var(--espaco-7);
+}
+
+.apresentacao a {
+  color: var(--cor-texto);
+}
+
+.apresentacao dt {
+  font-weight: var(--peso-forte);
+  margin-top: var(--espaco-4);
+}
+
+.apresentacao dd {
+  margin: 0;
+  color: var(--cor-texto-suave);
+}
+
+.apresentacao-carregando,
+.apresentacao-sem-js {
+  font-weight: var(--peso-forte);
+  color: var(--cor-texto-suave);
+}
+
+.apresentacao-sem-js {
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: 0 var(--espaco-5) var(--espaco-8);
+}
