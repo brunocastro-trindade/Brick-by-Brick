@@ -74,6 +74,12 @@ await passo('a primeira entrada na cidade toca a abertura num player pequeno, um
   await player().waitFor({ timeout: 10_000 });
   const fonte = (await player().locator('video').getAttribute('src')) ?? '';
   if (new URL(fonte, pagina.url()).origin !== new URL(URL_DO_JOGO).origin) throw new Error(`vídeo de fora do site: ${fonte}`);
+  // O jogo marca o vídeo como visto logo depois de mostrá-lo; numa máquina lenta (o CI), recarregar no mesmo instante
+  // chegava antes da gravação. Espera a marcação estar no armazenamento, como estaria para quem joga.
+  await pagina.waitForFunction(() => {
+    const salvo = JSON.parse(localStorage.getItem('brick-by-brick:progresso:v1') ?? '{}');
+    return Array.isArray(salvo.videosVistos) && salvo.videosVistos.includes('abertura');
+  });
   await pagina.reload();
   await pagina.getByRole('button', { name: 'Entrar na obra' }).waitFor({ timeout: 10_000 });
   if ((await player().count()) > 0) throw new Error('a abertura tocou de novo');
