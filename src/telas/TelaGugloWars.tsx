@@ -4,6 +4,7 @@ import { ArrowLeft, Keyboard, Pause, Play, RotateCcw, Swords } from 'lucide-reac
 import { useEffect, useMemo, useReducer, useRef, useState, type CSSProperties, type KeyboardEvent } from 'react';
 import { Botao } from '../components/Botao';
 import { CabecalhoDoModo } from '../components/CabecalhoDoModo';
+import { GugloComFerramenta } from '../components/GugloComFerramenta';
 import { GugloPixelado, type AcaoDoGuglo } from '../components/GugloPixelado';
 import { Modal } from '../components/Modal';
 import { PecaDeEntulho, PecaQueCai, SilhuetaDaPeca } from '../components/PecaQueCai';
@@ -148,7 +149,7 @@ export function TelaGugloWars({ obras, progresso, atualizarProgresso, aoVoltar, 
         <main className={styles.inicio}>
           <section className={styles.convite}>
             <div className={styles.gugloDoConvite}>
-              <GugloPixelado acao="parado" />
+              <GugloComFerramenta ferramenta="pa" />
             </div>
             <div className={styles.conviteTexto}>
               <h2 className={styles.conviteTitulo}>O Guglo Wars usa as linhas que você já construiu</h2>
@@ -170,7 +171,7 @@ export function TelaGugloWars({ obras, progresso, atualizarProgresso, aoVoltar, 
         <main className={styles.inicio}>
           <section className={styles.convite}>
             <div className={styles.gugloDoConvite}>
-              <GugloPixelado acao="acenando" />
+              <GugloComFerramenta ferramenta="martelo-erguido" />
             </div>
             <div className={styles.conviteTexto}>
               <h2 className={styles.conviteTitulo}>Digite o código antes de a peça chegar ao fundo</h2>

@@ -8,6 +8,7 @@ import { ChipDoPython } from '../components/ChipDoPython';
 import { BlocoDeCodigo } from '../components/CodigoColorido';
 import { ConsoleDaObra } from '../components/ConsoleDaObra';
 import { Estrelas } from '../components/Estrelas';
+import { FERRAMENTAS_DO_GUGLO, GugloComFerramenta } from '../components/GugloComFerramenta';
 import { GugloPixelado, type AcaoDoGuglo } from '../components/GugloPixelado';
 import { PecaDeEntulho, PecaQueCai, SilhuetaDaPeca } from '../components/PecaQueCai';
 import { Pinguim, type PoseDoPinguim } from '../components/Pinguim';
@@ -161,6 +162,16 @@ export default function TelaVitrine() {
           <Amostra key={acao} rotulo={acao}>
             <div className={styles.pinguim}>
               <GugloPixelado acao={acao} />
+            </div>
+          </Amostra>
+        ))}
+      </Secao>
+
+      <Secao titulo="Guglo com ferramenta (janelas dos modos)">
+        {FERRAMENTAS_DO_GUGLO.map((ferramenta) => (
+          <Amostra key={ferramenta} rotulo={ferramenta}>
+            <div className={styles.pinguim}>
+              <GugloComFerramenta ferramenta={ferramenta} />
             </div>
           </Amostra>
         ))}
