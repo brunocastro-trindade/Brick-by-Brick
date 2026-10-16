@@ -7,6 +7,9 @@ import type { Executor, PedidoExecucao, ResultadoExecucao } from '../python/tipo
 import { OBRAS } from './obras';
 import { CORPO_DE_SONDAGEM, fecharBlocoAberto, linhasAntesDoPasso, textoDoPrograma } from './programa';
 import type { Desafio, Linha, Obra } from './tipos';
+import { criarSorteio } from './embaralhar';
+import { progressoNovo } from './progresso';
+import { candidatas, ERRADAS_MINIMAS, gerarPergunta } from './qualSaida';
 import { avaliarTentativa } from './validacao';
 import { MARCA_COMENTARIO_FIM, MARCA_COMENTARIO_INICIO } from '../python/tipos';
 import { avaliarVistoria, moldeDaVistoria, programaDaSaidaEsperada, saidaComComentarios, verificacaoDaObra } from './vistoria';
@@ -234,6 +237,29 @@ describe('vistoria no Python de verdade (ADR-0016)', () => {
     const prints = saida.length <= molde.length ? saida.map((linha) => `print(${JSON.stringify(linha)})`) : [`print(${JSON.stringify(saida.join('\n'))})`];
     const textos = [...prints, ...Array.from({ length: molde.length - prints.length }, () => 'pass')];
     expect(await avaliarVistoria({ obra: item, textos, executor })).not.toMatchObject({ tipo: 'certo' });
+  });
+});
+
+describe('"Qual é a saída?" no Python de verdade (ADR-0017)', () => {
+  const todas = candidatas(OBRAS, { ...progressoNovo(), modoLivre: true });
+
+  it.each(OBRAS.map((item) => [item.nome, item] as const))('%s: rende perguntas com uma certa e erradas distintas', async (_, item) => {
+    let perguntas = 0;
+    for (const candidata of todas.filter(({ obra }) => obra.id === item.id)) {
+      const pergunta = await gerarPergunta(candidata, executor, criarSorteio(candidata.inicio + 1));
+      if (!pergunta) continue;
+      perguntas += 1;
+      const saidas = pergunta.alternativas.map((alternativa) => alternativa.saida);
+      expect(pergunta.alternativas.filter((alternativa) => alternativa.certa)).toHaveLength(1);
+      expect(new Set(saidas).size).toBe(saidas.length);
+      expect(saidas.length).toBeGreaterThanOrEqual(ERRADAS_MINIMAS + 1);
+      expect(saidas.every((saida) => saida.trim() !== '')).toBe(true);
+      // A certa é o que a linha mostra de verdade: rodar o trecho termina com ela.
+      const certa = pergunta.alternativas.find((alternativa) => alternativa.certa)?.saida ?? '';
+      const rodado = await rodar(textoDoPrograma(pergunta.trecho), [...pergunta.entradas, ...(item.entradas[0] ?? [])]);
+      if (pergunta.entradas.length === 0) expect(rodado.saida.endsWith(certa)).toBe(true);
+    }
+    expect(perguntas).toBeGreaterThanOrEqual(1);
   });
 });
 

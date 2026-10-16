@@ -11,6 +11,7 @@ import {
   progressoNovo,
   registrarAcerto,
   registrarPartidaDoGugloWars,
+  registrarRodadaDoQualSaida,
   registrarVistoria,
   reiniciarObra,
   salvarProgresso,
@@ -199,6 +200,22 @@ describe('vistoria no progresso (ADR-0016)', () => {
     expect(comVistoria({ dePrimeira: 'sim', espiadas: 0 })).toMatchObject({ concluida: true, vistoria: null });
     expect(comVistoria({ dePrimeira: true, espiadas: 2 }).vistoria).toEqual({ dePrimeira: false, espiadas: 2 });
     expect(comVistoria(undefined)).toMatchObject({ concluida: true, estrelas: 3, vistoria: null });
+  });
+});
+
+describe('"Qual é a saída?" no progresso (ADR-0017)', () => {
+  it('guarda o recorde e conta as rodadas', () => {
+    let progresso = registrarRodadaDoQualSaida(progressoNovo(), 640);
+    progresso = registrarRodadaDoQualSaida(progresso, 300);
+    expect(progresso.qualSaida).toEqual({ recorde: 640, partidas: 2 });
+  });
+
+  it('progresso antigo sem o campo, ou com lixo nele, carrega com recorde zero', () => {
+    const carregar = (qualSaida: unknown) =>
+      carregarProgresso(armazenamentoEmMemoria({ [CHAVE_DO_PROGRESSO]: JSON.stringify({ ...progressoNovo(), qualSaida }) })).qualSaida;
+    expect(carregar(undefined)).toEqual({ recorde: 0, partidas: 0 });
+    expect(carregar({ recorde: -5, partidas: 'muitas' })).toEqual({ recorde: 0, partidas: 0 });
+    expect(carregar({ recorde: 500, partidas: 3 })).toEqual({ recorde: 500, partidas: 3 });
   });
 });
 

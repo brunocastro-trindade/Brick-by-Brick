@@ -13,6 +13,7 @@ import { TelaCidade } from './telas/TelaCidade';
 import { TelaGugloWars } from './telas/TelaGugloWars';
 import { TelaInicial } from './telas/TelaInicial';
 import { TelaObra } from './telas/TelaObra';
+import { TelaQualSaida } from './telas/TelaQualSaida';
 import { TelaVistoria } from './telas/TelaVistoria';
 import styles from './App.module.css';
 
@@ -78,12 +79,24 @@ export function App() {
           aoFazerVistoria={(obra) => navegar({ tela: 'vistoria', obraId: obra.id })}
           aoIrParaInicio={() => navegar({ tela: 'inicio' })}
           aoAbrirGugloWars={() => navegar({ tela: 'guglo-wars' })}
+          aoAbrirQualSaida={() => navegar({ tela: 'qual-e-a-saida' })}
         />
       );
       break;
     case 'guglo-wars':
       tela = (
         <TelaGugloWars
+          obras={OBRAS}
+          progresso={progresso}
+          atualizarProgresso={atualizarProgresso}
+          aoVoltar={() => navegar({ tela: 'cidade' })}
+          aoIrParaInicio={() => navegar({ tela: 'inicio' })}
+        />
+      );
+      break;
+    case 'qual-e-a-saida':
+      tela = (
+        <TelaQualSaida
           obras={OBRAS}
           progresso={progresso}
           atualizarProgresso={atualizarProgresso}

@@ -32,6 +32,8 @@ export interface Progresso {
   ultimaObra: string | null;
   mecanicasVistas: TipoDesafio[];
   gugloWars: RecordeDoGugloWars;
+  /** Recorde do "Qual é a saída?" (ADR-0017). */
+  qualSaida: RecordeDoGugloWars;
   /** Tema da tela do Guglo Wars (ADR-0015). */
   temaDoGugloWars: TemaDoGugloWars;
 }
@@ -51,7 +53,7 @@ export interface Armazenamento {
 export const CHAVE_DO_PROGRESSO = 'brick-by-brick:progresso:v1';
 
 export function progressoNovo(): Progresso {
-  return { versao: 1, obras: {}, som: true, modoLivre: false, ultimaObra: null, mecanicasVistas: [], gugloWars: { recorde: 0, partidas: 0 }, temaDoGugloWars: 'canteiro' };
+  return { versao: 1, obras: {}, som: true, modoLivre: false, ultimaObra: null, mecanicasVistas: [], gugloWars: { recorde: 0, partidas: 0 }, qualSaida: { recorde: 0, partidas: 0 }, temaDoGugloWars: 'canteiro' };
 }
 
 export function progressoDeObraNovo(): ProgressoObra {
@@ -107,8 +109,8 @@ function sanearVistoria(bruto: unknown): ResultadoDaVistoria | null {
   return { dePrimeira: v.dePrimeira && v.espiadas === 0, espiadas: v.espiadas };
 }
 
-/** Campo que entrou depois (ADR-0007): ausente ou estranho vira recorde zero. */
-function sanearGugloWars(bruto: unknown): RecordeDoGugloWars {
+/** Campo que entrou depois (ADR-0007, e ADR-0017 para o "Qual é a saída?"): ausente ou estranho vira recorde zero. */
+function sanearRecorde(bruto: unknown): RecordeDoGugloWars {
   const c = (typeof bruto === 'object' && bruto !== null ? bruto : {}) as Record<string, unknown>;
   return { recorde: ehInteiro(c.recorde) ? c.recorde : 0, partidas: ehInteiro(c.partidas) ? c.partidas : 0 };
 }
@@ -131,7 +133,8 @@ function sanearProgresso(bruto: unknown): Progresso | null {
     modoLivre: dados.modoLivre === true,
     ultimaObra: typeof dados.ultimaObra === 'string' ? dados.ultimaObra : null,
     mecanicasVistas: Array.isArray(dados.mecanicasVistas) ? tipos.filter((tipo) => (dados.mecanicasVistas as unknown[]).includes(tipo)) : [],
-    gugloWars: sanearGugloWars(dados.gugloWars),
+    gugloWars: sanearRecorde(dados.gugloWars),
+    qualSaida: sanearRecorde(dados.qualSaida),
     temaDoGugloWars: dados.temaDoGugloWars === 'dracula' ? 'dracula' : 'canteiro',
   };
 }
@@ -243,4 +246,9 @@ export function totalDeLinhasAssentadas(progresso: Progresso): number {
 export function registrarPartidaDoGugloWars(progresso: Progresso, pontos: number): Progresso {
   const { recorde, partidas } = progresso.gugloWars;
   return { ...progresso, gugloWars: { recorde: Math.max(recorde, pontos), partidas: partidas + 1 } };
+}
+
+export function registrarRodadaDoQualSaida(progresso: Progresso, pontos: number): Progresso {
+  const { recorde, partidas } = progresso.qualSaida;
+  return { ...progresso, qualSaida: { recorde: Math.max(recorde, pontos), partidas: partidas + 1 } };
 }

@@ -1,0 +1,70 @@
+.barra {
+  position: sticky;
+  top: 0;
+  z-index: var(--camada-hud);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espaco-4) var(--espaco-6);
+  padding: var(--espaco-2) var(--espaco-6);
+  border-bottom: var(--borda-grossa) solid var(--cor-contorno);
+  background: var(--cor-superficie);
+}
+
+.logo {
+  display: inline-flex;
+  padding: var(--espaco-1);
+  border: none;
+  border-radius: var(--raio-medio);
+  background: transparent;
+}
+
+.logo img {
+  display: block;
+  width: auto;
+  height: var(--espaco-8);
+}
+
+.titulo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espaco-3);
+  font-size: var(--tipo-titulo-pequeno-tamanho);
+}
+
+.acento svg {
+  color: var(--cor-acento);
+}
+
+.sucesso svg {
+  color: var(--cor-sucesso);
+}
+
+.codigo svg {
+  color: var(--cor-codigo-palavra-chave);
+}
+
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-3);
+  margin-left: auto;
+}
+
+@media (max-width: 860px) /* fora-da-escala: breakpoint */ {
+  /* No celular o cabeçalho rola junto: fixo, ele comeria a tela quando o teclado abre. */
+  .barra {
+    position: static;
+    padding: var(--espaco-2) var(--espaco-4);
+  }
+
+  .logo {
+    display: none;
+  }
+
+  /* Ao lado do título se couber; senão, numa linha só abaixo dele, à direita. */
+  .acoes {
+    flex: 1 1 auto;
+    justify-content: flex-end;
+  }
+}

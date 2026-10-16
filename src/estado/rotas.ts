@@ -7,6 +7,7 @@ export type Rota =
   | { tela: 'obra'; obraId: string }
   | { tela: 'vistoria'; obraId: string }
   | { tela: 'guglo-wars' }
+  | { tela: 'qual-e-a-saida' }
   | { tela: 'anuncie' }
   | { tela: 'vitrine' };
 
@@ -16,6 +17,7 @@ export function lerRota(hash: string): Rota {
   if (partes[0] === 'obra' && partes[1]) return { tela: 'obra', obraId: partes[1] };
   if (partes[0] === 'vistoria' && partes[1]) return { tela: 'vistoria', obraId: partes[1] };
   if (partes[0] === 'guglo-wars') return { tela: 'guglo-wars' };
+  if (partes[0] === 'qual-e-a-saida') return { tela: 'qual-e-a-saida' };
   if (partes[0] === 'anuncie') return { tela: 'anuncie' };
   if (partes[0] === 'design-system' && import.meta.env.DEV) return { tela: 'vitrine' };
   return { tela: 'inicio' };
@@ -33,6 +35,8 @@ export function hashDaRota(rota: Rota): string {
       return `#/vistoria/${rota.obraId}`;
     case 'guglo-wars':
       return '#/guglo-wars';
+    case 'qual-e-a-saida':
+      return '#/qual-e-a-saida';
     case 'anuncie':
       return '#/anuncie';
     case 'vitrine':

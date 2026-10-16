@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Teste de fumaça (HARNESS §5.5): abre o jogo num Chromium de verdade, espera o Python carregar
 // no navegador e joga o primeiro mini desafio do Correio — errando uma vez e acertando depois —
-// acerta uma peça do Guglo Wars (e liga o tema Drácula), passa na vistoria do Correio, abre o Anuncie aqui e garante que nada veio de outro domínio (INV-09)
+// acerta uma peça do Guglo Wars (e liga o tema Drácula), passa na vistoria do Correio, responde um "Qual é a saída?", abre o Anuncie aqui e garante que nada veio de outro domínio (INV-09)
 // e que a política de segurança de conteúdo está no ar sem barrar o próprio jogo (ADR-0009). Por fim, tira
 // a rede e confere que o jogo abre do aparelho, com o Python saindo do service worker (ADR-0010).
 // Num celular de 360 px, confere que nenhuma tela rola para o lado e que o modal da aula cabe na tela.
@@ -156,6 +156,17 @@ await passo('Vistoria: reescrever o Correio espiando as fiadas aprova e põe o s
   await aprovada.getByRole('button', { name: 'Voltar à cidade' }).click();
   await pagina.getByLabel('vistoriada').first().waitFor({ timeout: 10_000 });
 });
+await passo('"Qual é a saída?": responder uma pergunta mostra a certa e leva à próxima (ADR-0017)', async () => {
+  await pagina.goto(`${URL_DO_JOGO}/#/qual-e-a-saida`);
+  await pagina.getByRole('button', { name: 'Começar rodada' }).click({ timeout: 60_000 });
+  const enunciado = pagina.getByRole('heading', { name: /^O que (a linha|o trecho) em destaque mostra na tela\?$/ });
+  await enunciado.waitFor({ timeout: 30_000 });
+  await pagina.getByRole('button', { name: /^Alternativa A/ }).click();
+  await pagina.getByText(/^(Isso! Mais \d+ pontos\.|Não era essa\.)/).waitFor({ timeout: 5_000 });
+  await pagina.getByRole('button', { name: /, a certa$/ }).waitFor({ timeout: 5_000 });
+  await pagina.getByRole('button', { name: 'Próxima pergunta' }).click();
+  await pagina.getByRole('button', { name: /^Alternativa A$/ }).waitFor({ timeout: 30_000 });
+});
 
 await passo('progresso vai para um arquivo e volta pelos Ajustes (ADR-0011)', async () => {
   await pagina.goto(`${URL_DO_JOGO}/#/cidade`);
@@ -197,7 +208,7 @@ await passo('sem internet, o jogo abre do aparelho e o Python carrega (ADR-0010)
 await passo('no celular (360 px), nada passa da largura da tela, nem o modal da aula', async () => {
   const celular = await navegador.newPage({ viewport: { width: 360, height: 756 }, isMobile: true, hasTouch: true });
   try {
-    for (const hash of ['#/', '#/cidade', '#/obra/correio', '#/vistoria/correio', '#/guglo-wars', '#/anuncie']) {
+    for (const hash of ['#/', '#/cidade', '#/obra/correio', '#/vistoria/correio', '#/guglo-wars', '#/qual-e-a-saida', '#/anuncie']) {
       await celular.goto(`${URL_DO_JOGO}/${hash}`);
       await celular.waitForTimeout(800);
       const sobra = await celular.evaluate(() => {
