@@ -1,6 +1,6 @@
-// Ajustes: som, modo livre (abre todas as obras), levar o progresso para outro aparelho (ADR-0011) e apagar o
-// progresso, com confirmação.
-import { Download, Upload } from 'lucide-react';
+// Ajustes: tema (ADR-0018), som, modo livre (abre todas as obras), feedback por e-mail (ADR-0012), levar o
+// progresso para outro aparelho (ADR-0011) e apagar o progresso, com confirmação.
+import { Download, MessageSquareText, Monitor, Moon, Sun, Upload } from 'lucide-react';
 import { useRef, useState, type ChangeEvent } from 'react';
 import {
   arquivoDeProgresso,
@@ -8,7 +8,9 @@ import {
   TAMANHO_MAXIMO_DO_ARQUIVO,
   totalDeEstrelas,
   type Progresso,
+  type Tema,
 } from '../jogo/progresso';
+import { enderecoDeRetornoAgora } from '../estado/retorno';
 import { Botao } from './Botao';
 import { Modal } from './Modal';
 import styles from './ModalDeAjustes.module.css';
@@ -17,6 +19,8 @@ export interface ModalDeAjustesProps {
   progresso: Progresso;
   som: boolean;
   modoLivre: boolean;
+  tema: Tema;
+  aoMudarTema: (tema: Tema) => void;
   aoAlternarSom: () => void;
   aoAlternarModoLivre: () => void;
   aoApagarProgresso: () => void;
@@ -36,6 +40,34 @@ function Chave({ ligada, rotulo, descricao, aoAlternar }: { ligada: boolean; rot
         <span className="somente-leitor">{rotulo}</span>
       </button>
     </label>
+  );
+}
+
+const TEMAS: Array<{ valor: Tema; rotulo: string; Icone: typeof Sun }> = [
+  { valor: 'claro', rotulo: 'Claro', Icone: Sun },
+  { valor: 'escuro', rotulo: 'Escuro (Drácula)', Icone: Moon },
+  { valor: 'aparelho', rotulo: 'Seguir o aparelho', Icone: Monitor },
+];
+
+/** Tema do site (ADR-0018): três rádios com cara de botão, navegáveis pelas setas como todo grupo de rádio. */
+function EscolhaDoTema({ tema, aoMudar }: { tema: Tema; aoMudar: (tema: Tema) => void }) {
+  return (
+    <fieldset className={styles.bloco}>
+      <legend className="somente-leitor">Tema</legend>
+      <span className={styles.textos} aria-hidden="true">
+        <span className={styles.rotulo}>Tema</span>
+        <span className={styles.descricao}>O escuro é inspirado no Dracula do VS Code. Seguindo o aparelho, o site acompanha o modo do sistema.</span>
+      </span>
+      <div className={styles.temas}>
+        {TEMAS.map(({ valor, rotulo, Icone }) => (
+          <label key={valor} className={styles.tema}>
+            <input type="radio" name="tema" value={valor} checked={tema === valor} onChange={() => aoMudar(valor)} />
+            <Icone size={18} aria-hidden="true" />
+            {rotulo}
+          </label>
+        ))}
+      </div>
+    </fieldset>
   );
 }
 
@@ -125,6 +157,8 @@ export function ModalDeAjustes({
   progresso,
   som,
   modoLivre,
+  tema,
+  aoMudarTema,
   aoAlternarSom,
   aoAlternarModoLivre,
   aoApagarProgresso,
@@ -135,6 +169,7 @@ export function ModalDeAjustes({
   return (
     <Modal titulo="Ajustes" aoFechar={aoFechar} rodape={<Botao aoClicar={aoFechar} autofoco>Fechar ajustes</Botao>}>
       <div className={styles.lista}>
+        <EscolhaDoTema tema={tema} aoMudar={aoMudarTema} />
         <Chave ligada={som} rotulo="Som" descricao="Tijolos encaixando, fiadas subindo e a fanfarra da obra pronta." aoAlternar={aoAlternarSom} />
         <Chave
           ligada={modoLivre}
@@ -142,6 +177,15 @@ export function ModalDeAjustes({
           descricao="Abre todas as obras, fora de ordem. Útil para revisar uma aula ou testar conteúdo novo."
           aoAlternar={aoAlternarModoLivre}
         />
+        <div className={styles.bloco}>
+          <span className={styles.textos}>
+            <span className={styles.rotulo}>Achou um erro ou tem uma ideia?</span>
+            <span className={styles.descricao}>Abre um e-mail para a equipe, já com a tela, o navegador e os erros recentes.</span>
+          </span>
+          <Botao variante="secundario" icone={<MessageSquareText size={18} aria-hidden="true" />} href={enderecoDeRetornoAgora()}>
+            Mande seu feedback
+          </Botao>
+        </div>
         <LevarProgresso progresso={progresso} aoCarregar={aoCarregarProgresso} />
         <div className={styles.perigo}>
           <span className={styles.textos}>

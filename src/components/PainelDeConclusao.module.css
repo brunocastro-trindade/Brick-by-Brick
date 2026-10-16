@@ -26,6 +26,7 @@
   border: var(--borda-fina) solid var(--cor-contorno);
   border-radius: var(--raio-grande);
   background: var(--cor-aviso);
+  color: var(--cor-texto-sobre-aviso);
   font-weight: var(--peso-forte);
 }
 

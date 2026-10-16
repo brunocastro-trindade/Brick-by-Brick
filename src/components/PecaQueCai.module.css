@@ -64,7 +64,7 @@
 
 /* Onde a digitação saiu do caminho. */
 .desvio {
-  text-decoration: underline wavy var(--cor-problema-fundo);
+  text-decoration: underline wavy var(--cor-codigo-problema);
   text-decoration-thickness: var(--espaco-1);
   text-underline-offset: var(--espaco-2);
 }
@@ -85,8 +85,8 @@
 
 .vagaComDesvio {
   border-style: solid;
-  border-color: var(--cor-problema-fundo);
-  color: var(--cor-problema-fundo);
+  border-color: var(--cor-codigo-problema);
+  color: var(--cor-codigo-problema);
 }
 
 .entulho {

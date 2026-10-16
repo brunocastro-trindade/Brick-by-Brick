@@ -1,8 +1,9 @@
 // A cidade: o mapa das obras, a placa da obra escolhida e a lista de todas elas.
-import { CircleCheck, CircleHelp, ClipboardCheck, SquareTerminal, Construction, Lock, MessageSquareText, Settings, Star, Swords, Volume2, VolumeX } from 'lucide-react';
+import { CircleCheck, CircleHelp, ClipboardCheck, Construction, Lock, Settings, Star, Volume2, VolumeX } from 'lucide-react';
 import { useState } from 'react';
 import { ChipDoPython } from '../components/ChipDoPython';
 import { MapaDaCidade, type ObraNoMapa } from '../components/MapaDaCidade';
+import { MenuDosModos } from '../components/MenuDosModos';
 import { ModalComoJogar } from '../components/ModalComoJogar';
 import { ModalDeAjustes } from '../components/ModalDeAjustes';
 import { PlacaDaObra } from '../components/PlacaDaObra';
@@ -11,7 +12,6 @@ import logo from '../assets/logo-pequeno.webp';
 import { linhasAntesDoPasso } from '../jogo/programa';
 import { obraLiberada, progressoDaObra, progressoNovo, totalDeEstrelas, type Progresso } from '../jogo/progresso';
 import type { Obra } from '../jogo/tipos';
-import { linkDeRetorno } from '../estado/retorno';
 import styles from './TelaCidade.module.css';
 
 export function situacaoDaObra(obras: Obra[], progresso: Progresso, indice: number): ObraNoMapa | null {
@@ -89,14 +89,7 @@ export function TelaCidade({
           </span>
         </div>
         <div className={styles.ferramentas}>
-          <button type="button" className={styles.modo} onClick={aoAbrirGugloWars}>
-            <Swords size={18} aria-hidden="true" />
-            Guglo Wars
-          </button>
-          <button type="button" className={styles.modo} onClick={aoAbrirQualSaida}>
-            <SquareTerminal size={18} aria-hidden="true" />
-            Qual é a saída?
-          </button>
+          <MenuDosModos aoAbrirGugloWars={aoAbrirGugloWars} aoAbrirQualSaida={aoAbrirQualSaida} />
           <button type="button" className={styles.icone} onClick={() => setModal('como-jogar')} aria-label="Como jogar">
             <CircleHelp size={20} aria-hidden="true" />
           </button>
@@ -116,9 +109,6 @@ export function TelaCidade({
             <ChipDoPython />
           </span>
         </div>
-        <a className={`${styles.icone} ${styles.retorno}`} {...linkDeRetorno()} aria-label="Mande seu feedback: achou um erro ou tem uma ideia?">
-          <MessageSquareText size={20} aria-hidden="true" />
-        </a>
       </header>
 
       <main className={styles.area}>
@@ -188,10 +178,12 @@ export function TelaCidade({
           progresso={progresso}
           som={progresso.som}
           modoLivre={progresso.modoLivre}
+          tema={progresso.tema}
+          aoMudarTema={(tema) => atualizarProgresso((atual) => ({ ...atual, tema }))}
           aoAlternarSom={() => atualizarProgresso((atual) => ({ ...atual, som: !atual.som }))}
           aoAlternarModoLivre={() => atualizarProgresso((atual) => ({ ...atual, modoLivre: !atual.modoLivre }))}
-          aoApagarProgresso={() => atualizarProgresso((atual) => ({ ...progressoNovo(), som: atual.som }))}
-          aoCarregarProgresso={(novo) => atualizarProgresso((atual) => ({ ...novo, som: atual.som }))}
+          aoApagarProgresso={() => atualizarProgresso((atual) => ({ ...progressoNovo(), som: atual.som, tema: atual.tema }))}
+          aoCarregarProgresso={(novo) => atualizarProgresso((atual) => ({ ...novo, som: atual.som, tema: atual.tema }))}
           aoFechar={() => setModal(null)}
         />
       ) : null}

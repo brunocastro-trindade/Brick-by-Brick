@@ -14,8 +14,6 @@ export interface BotaoProps {
   larguraTotal?: boolean;
   tipo?: 'button' | 'submit';
   rotulo?: string;
-  /** Botão de alternância (ligado/desligado): vira `aria-pressed`. */
-  pressionado?: boolean;
   /** Recebe o foco quando um modal abre. */
   autofoco?: boolean;
   aoClicar?: () => void;
@@ -34,7 +32,6 @@ export function Botao({
   larguraTotal = false,
   tipo = 'button',
   rotulo,
-  pressionado,
   autofoco = false,
   aoClicar,
   href,
@@ -55,7 +52,6 @@ export function Botao({
       disabled={desabilitado || carregando}
       aria-busy={carregando || undefined}
       aria-label={rotulo}
-      aria-pressed={pressionado}
       data-autofoco={autofoco || undefined}
       onClick={aoClicar}
     >

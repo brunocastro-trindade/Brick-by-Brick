@@ -62,13 +62,6 @@
   --cor-de-fundo: var(--cor-fundo-alternativo);
 }
 
-/* Alternância ligada: fica com cara de afundada, com o contorno à mostra. */
-.botao[aria-pressed='true'] {
-  --cor-de-fundo: var(--cor-fundo-alternativo);
-  border-color: var(--cor-contorno);
-  box-shadow: inset 0 var(--espaco-1) 0 var(--cor-sombra-difusa);
-}
-
 .grande {
   min-height: var(--espaco-9);
   padding: var(--espaco-4) var(--espaco-7);

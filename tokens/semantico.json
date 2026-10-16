@@ -42,6 +42,7 @@
     "codigo-simbolo": "{cor.creme-escuro}",
     "codigo-operador": "{cor.creme-escuro}",
     "codigo-entrada": "{cor.verde-petroleo-claro}",
+    "codigo-problema": "{cor.laranja-tijolo-palido}",
     "codigo-assentado": "{cor.verde-petroleo}",
 
     "tijolo-nome": "{cor.laranja-tijolo}",

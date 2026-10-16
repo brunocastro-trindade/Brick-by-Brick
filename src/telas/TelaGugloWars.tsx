@@ -1,6 +1,6 @@
 // Guglo Wars (ADR-0007): linhas das obras concluídas caem no poço; digite antes de chegarem ao fundo.
-// As regras moram em src/jogo/gugloWars.ts; aqui ficam o relógio, o teclado, o som, o recorde e o tema (ADR-0015).
-import { ArrowLeft, Keyboard, Moon, Pause, Play, RotateCcw, Swords } from 'lucide-react';
+// As regras moram em src/jogo/gugloWars.ts; aqui ficam o relógio, o teclado, o som e o recorde.
+import { ArrowLeft, Keyboard, Pause, Play, RotateCcw, Swords } from 'lucide-react';
 import { useEffect, useMemo, useReducer, useRef, useState, type CSSProperties, type KeyboardEvent } from 'react';
 import { Botao } from '../components/Botao';
 import { CabecalhoDoModo } from '../components/CabecalhoDoModo';
@@ -78,23 +78,6 @@ export function TelaGugloWars({ obras, progresso, atualizarProgresso, aoVoltar, 
 
   useEffect(() => definirSom(progresso.som), [progresso.som]);
 
-  // O tema vai no <html>, e não na tela: o modal de pausa e o de fim abrem num portal no <body>.
-  const tema = progresso.temaDoGugloWars;
-  useEffect(() => {
-    const raiz = document.documentElement;
-    if (tema === 'canteiro') delete raiz.dataset.tema;
-    else raiz.dataset.tema = tema;
-    return () => {
-      delete raiz.dataset.tema;
-    };
-  }, [tema]);
-
-  const alternarTema = () => {
-    atualizarProgresso((atual) => ({ ...atual, temaDoGugloWars: atual.temaDoGugloWars === 'dracula' ? 'canteiro' : 'dracula' }));
-    // No meio da partida, o foco volta para onde se digita.
-    entrada.current?.focus();
-  };
-
   // O relógio: a cada intervalo, a peça desce uma fileira.
   useEffect(() => {
     if (fase !== 'jogando' || !peca) return;
@@ -151,15 +134,6 @@ export function TelaGugloWars({ obras, progresso, atualizarProgresso, aoVoltar, 
           Pausar
         </Botao>
       ) : null}
-      <Botao
-        variante="fantasma"
-        icone={<Moon size={18} aria-hidden="true" />}
-        pressionado={tema === 'dracula'}
-        rotulo="Tema Drácula"
-        aoClicar={alternarTema}
-      >
-        Drácula
-      </Botao>
       {/* "Cidade", como na barra da obra: curto, cabe ao lado do título e do Pausar no celular. */}
       <Botao variante="fantasma" icone={<ArrowLeft size={18} aria-hidden="true" />} aoClicar={aoVoltar} rotulo="Voltar à cidade">
         Cidade

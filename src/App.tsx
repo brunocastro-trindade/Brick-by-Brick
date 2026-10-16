@@ -1,10 +1,11 @@
 // Rotas, progresso e a transição de tijolos entre as telas.
-import { lazy, Suspense, useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useLayoutEffect, useState } from 'react';
 import { Botao } from './components/Botao';
 import { TransicaoDeTijolos } from './components/TransicaoDeTijolos';
 import { navegar, useRota, type Rota } from './estado/rotas';
 import { useProgresso } from './estado/useProgresso';
 import { prefereMenosMovimento } from './estado/usePython';
+import { aplicarTema } from './estado/tema';
 import { OBRAS, obraPorId } from './jogo/obras';
 import { obraLiberada, progressoDaObra } from './jogo/progresso';
 import type { Obra } from './jogo/tipos';
@@ -28,6 +29,9 @@ export function App() {
   const [progresso, atualizarProgresso] = useProgresso();
   const [rotaVisivel, setRotaVisivel] = useState<Rota>(rota);
   const [fase, setFase] = useState<'parada' | 'cobrindo' | 'descobrindo'>('parada');
+
+  // Antes de pintar: o tema escolhido entra sem piscar o claro (o "seguir o aparelho" já sai do CSS).
+  useLayoutEffect(() => aplicarTema(progresso.tema), [progresso.tema]);
 
   // Cobre a tela, troca a rota visível por baixo dos tijolos...
   useEffect(() => {

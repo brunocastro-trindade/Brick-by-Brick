@@ -1,0 +1,129 @@
+.menu {
+  position: relative;
+}
+
+/* O botão tem a cara escura que os botões de modo já tinham no cabeçalho. */
+.botao {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espaco-2);
+  min-height: var(--espaco-8);
+  padding: 0 var(--espaco-5);
+  border: var(--borda-grossa) solid var(--cor-contorno);
+  border-radius: var(--raio-medio);
+  background: var(--cor-editor-fundo);
+  color: var(--cor-texto-sobre-escuro);
+  font-family: var(--fonte-titulo);
+  font-weight: var(--peso-titulo);
+  white-space: nowrap;
+  box-shadow: var(--sombra-baixa);
+}
+
+.botao svg {
+  color: var(--cor-codigo-palavra-chave);
+}
+
+.botao:hover {
+  background: var(--cor-editor-faixa);
+}
+
+.botao:focus-visible {
+  outline: var(--borda-grossa) solid var(--cor-foco);
+  outline-offset: var(--espaco-1);
+}
+
+.seta {
+  transition: transform var(--duracao-rapida) var(--curva-saida);
+}
+
+.botao[aria-expanded='true'] .seta {
+  transform: rotate(180deg);
+}
+
+.lista {
+  position: absolute;
+  top: calc(100% + var(--espaco-3));
+  right: 0;
+  z-index: var(--camada-flutuante);
+  display: grid;
+  gap: var(--espaco-2);
+  width: 20rem;
+  margin: 0;
+  padding: var(--espaco-3);
+  border: var(--borda-grossa) solid var(--cor-contorno);
+  border-radius: var(--raio-medio);
+  background: var(--cor-superficie);
+  box-shadow: var(--sombra-media);
+  list-style: none;
+}
+
+.lista[hidden] {
+  display: none;
+}
+
+.modo {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--espaco-3);
+  width: 100%;
+  min-height: var(--espaco-8);
+  padding: var(--espaco-3);
+  border: var(--borda-fina) solid transparent;
+  border-radius: var(--raio-pequeno);
+  background: transparent;
+  text-align: left;
+}
+
+.modo:hover {
+  border-color: var(--cor-contorno-suave);
+  background: var(--cor-fundo-alternativo);
+}
+
+.modo:focus-visible {
+  outline: var(--borda-grossa) solid var(--cor-foco);
+  outline-offset: calc(var(--espaco-1) * -1);
+}
+
+.icone {
+  flex: none;
+  margin-top: var(--espaco-1);
+  color: var(--cor-acento);
+}
+
+.textos {
+  display: grid;
+  gap: var(--espaco-1);
+}
+
+.nome {
+  font-family: var(--fonte-titulo);
+  font-weight: var(--peso-forte);
+}
+
+.frase {
+  font-size: var(--tipo-corpo-pequeno-tamanho);
+  color: var(--cor-texto-suave);
+}
+
+@media (max-width: 640px) /* fora-da-escala: breakpoint */ {
+  .menu {
+    flex: 1;
+  }
+
+  /* Cabe ao lado de ajuda, som e ajustes em 360 px: menos margem e sem o controle (a seta fica). */
+  .botao {
+    justify-content: center;
+    width: 100%;
+    padding: 0 var(--espaco-3);
+  }
+
+  .controle {
+    display: none;
+  }
+
+  /* No celular a lista ocupa a largura do botão, abaixo dele. */
+  .lista {
+    left: 0;
+    width: auto;
+  }
+}
