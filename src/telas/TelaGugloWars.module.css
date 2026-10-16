@@ -140,7 +140,9 @@
   justify-content: center;
   height: var(--altura-da-fileira);
   padding: var(--espaco-1) var(--espaco-3);
-  font-size: min(var(--tipo-corpo-tamanho), 2.6cqi);
+  /* Cada linha no maior tamanho que cabe na largura do poço, até o do corpo do texto: uma linha curta não encolhe
+     por causa da mais comprida. 0,6em é a largura de um caractere da fonte de código; somam-se 4 do respiro da peça. */
+  font-size: min(var(--tipo-corpo-tamanho), calc((100cqi - 2 * var(--espaco-3)) / ((var(--caracteres) + 4) * 0.6)));
   transform: translateY(calc(var(--altura-da-fileira) * var(--fileira)));
 }
 
