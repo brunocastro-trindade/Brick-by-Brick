@@ -147,7 +147,8 @@ export function App() {
           obra={obra}
           progresso={progresso}
           atualizarProgresso={atualizarProgresso}
-          proximaObra={OBRAS[indice + 1] ?? null}
+          // Só dentro do mesmo mapa: a última obra de um mapa volta para ele, onde o fim do mapa é festejado (ADR-0021).
+          proximaObra={OBRAS[indice + 1]?.mapa === obra.mapa ? (OBRAS[indice + 1] ?? null) : null}
           aoVoltar={() => navegar({ tela: 'cidade', mapa: obra.mapa, obraId: obra.id })}
           aoIrParaObra={entrar}
           aoFazerVistoria={() => navegar({ tela: 'vistoria', obraId: obra.id })}

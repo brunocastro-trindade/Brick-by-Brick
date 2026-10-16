@@ -82,6 +82,9 @@ async function executarPlanta(executor: Executor, codigo: string, verificacao: s
   const guardado = cacheDaPlanta.get(chave);
   if (guardado) return guardado;
   const resultado = await executor.executar({ codigo, verificacao, entradas });
+  // A planta sempre roda: sem resposta a tempo é o Python ocupado ou travado, não o resultado dela. Não guarda, e
+  // quem chamou cai no plano sem Python, em vez de comparar a pessoa com uma saída vazia até recarregar a página.
+  if (resultado.erro?.tipo === 'TempoEsgotado') throw new Error('A planta não rodou a tempo.');
   cacheDaPlanta.set(chave, resultado);
   return resultado;
 }

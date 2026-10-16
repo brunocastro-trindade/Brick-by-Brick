@@ -60,14 +60,20 @@ export function TelaQualSaida({ obras, progresso, atualizarProgresso, aoVoltar, 
   const buscar = useCallback(async (): Promise<Pergunta | null> => {
     const atual = rodada.current;
     if (!atual) return null;
-    while (atual.fila.length > 0) {
-      const candidata = atual.fila.shift();
+    // Cada candidata tem uma segunda chance se o Python reiniciar no meio: sem isso, a busca esvaziaria a fila em
+    // segundos (todo pedido recusado enquanto ele recarrega) e a rodada acabaria antes da hora.
+    let segundaChance: Candidata | null = null;
+    while (atual.fila.length > 0 || segundaChance) {
+      const candidata: Candidata | undefined = segundaChance ?? atual.fila.shift();
+      const jaTentou = segundaChance !== null;
+      segundaChance = null;
       if (!candidata) break;
       try {
         const encontrada = await gerarPergunta(candidata, pythonDoJogo, atual.sorteio);
         if (encontrada) return encontrada;
       } catch {
-        // Python ocupado ou reiniciado: segue para a próxima candidata.
+        if (!(await pythonDoJogo.esperarPronto())) return null;
+        if (!jaTentou) segundaChance = candidata;
       }
     }
     return null;

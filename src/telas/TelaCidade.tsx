@@ -236,7 +236,8 @@ export function TelaCidade({
         </aside>
       </main>
 
-      {video === 'abertura' && modal === null ? <PlayerDaAbertura somLigado={progresso.som} aoFechar={() => setVideo(null)} /> : null}
+      {/* Fica montado debaixo dos modais: desmontar faria o vídeo recomeçar do zero ao fechar os Ajustes. */}
+      {video === 'abertura' ? <PlayerDaAbertura somLigado={progresso.som} aoFechar={() => setVideo(null)} /> : null}
       {video === 'cidade-pronta' ? (
         <Modal
           titulo="A cidade está de pé!"
