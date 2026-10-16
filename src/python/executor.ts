@@ -8,9 +8,11 @@ export type EstadoDoPython = 'carregando' | 'pronto' | 'falhou';
 export const TEMPO_LIMITE_MS = 8000;
 
 interface Pendente {
+  pedido: PedidoExecucao;
   resolver: (resultado: ResultadoExecucao) => void;
   rejeitar: (erro: Error) => void;
-  temporizador: ReturnType<typeof setTimeout>;
+  /** Só existe depois que o pedido foi entregue ao worker: o tempo limite conta a execução, não a fila. */
+  temporizador: ReturnType<typeof setTimeout> | null;
 }
 
 export class PythonNoNavegador implements Executor {
@@ -19,6 +21,9 @@ export class PythonNoNavegador implements Executor {
   private motivo: string | null = null;
   private readonly ouvintes = new Set<(estado: EstadoDoPython) => void>();
   private readonly pendentes = new Map<number, Pendente>();
+  /** Pedidos esperando a vez: o worker roda um programa por vez, então só um vai para ele de cada vez. */
+  private readonly fila: number[] = [];
+  private emExecucao: number | null = null;
   private proximoId = 1;
 
   iniciar(): void {
@@ -48,17 +53,41 @@ export class PythonNoNavegador implements Executor {
     return () => this.ouvintes.delete(ouvinte);
   }
 
+  /** Espera o Python sair do "carregando" (por exemplo, depois de reiniciar): true se ficou pronto, false se falhou. */
+  esperarPronto(): Promise<boolean> {
+    if (this.estado !== 'carregando') return Promise.resolve(this.estado === 'pronto');
+    return new Promise((resolver) => {
+      const parar = this.aoMudarEstado((estado) => {
+        if (estado === 'carregando') return;
+        parar();
+        resolver(estado === 'pronto');
+      });
+    });
+  }
+
   executar(pedido: PedidoExecucao): Promise<ResultadoExecucao> {
-    const worker = this.worker;
-    if (!worker || this.estado !== 'pronto') return Promise.reject(new Error('O Python ainda não está pronto.'));
+    if (!this.worker || this.estado !== 'pronto') return Promise.reject(new Error('O Python ainda não está pronto.'));
     const id = this.proximoId;
     this.proximoId += 1;
     return new Promise((resolver, rejeitar) => {
-      const temporizador = setTimeout(() => this.estourarTempo(id), TEMPO_LIMITE_MS);
-      this.pendentes.set(id, { resolver, rejeitar, temporizador });
-      const mensagem: MensagemParaWorker = { tipo: 'executar', id, pedido };
-      worker.postMessage(mensagem);
+      this.pendentes.set(id, { pedido, resolver, rejeitar, temporizador: null });
+      this.fila.push(id);
+      this.despacharProximo();
     });
+  }
+
+  /** Entrega o próximo da fila ao worker, se ele estiver livre, e só então liga o relógio. */
+  private despacharProximo(): void {
+    const worker = this.worker;
+    if (!worker || this.emExecucao !== null) return;
+    const id = this.fila.shift();
+    if (id === undefined) return;
+    const pendente = this.pendentes.get(id);
+    if (!pendente) return this.despacharProximo();
+    this.emExecucao = id;
+    pendente.temporizador = setTimeout(() => this.estourarTempo(id), TEMPO_LIMITE_MS);
+    const mensagem: MensagemParaWorker = { tipo: 'executar', id, pedido: pendente.pedido };
+    worker.postMessage(mensagem);
   }
 
   /** Recria o worker do zero, por exemplo depois de um programa travado. */
@@ -66,10 +95,12 @@ export class PythonNoNavegador implements Executor {
     this.worker?.terminate();
     this.worker = null;
     for (const pendente of this.pendentes.values()) {
-      clearTimeout(pendente.temporizador);
+      if (pendente.temporizador) clearTimeout(pendente.temporizador);
       pendente.rejeitar(new Error('O Python foi reiniciado.'));
     }
     this.pendentes.clear();
+    this.fila.length = 0;
+    this.emExecucao = null;
     this.iniciar();
   }
 
@@ -77,6 +108,7 @@ export class PythonNoNavegador implements Executor {
     const pendente = this.pendentes.get(id);
     if (!pendente) return;
     this.pendentes.delete(id);
+    this.emExecucao = null;
     pendente.resolver({
       saida: '',
       saidaVerificacao: '',
@@ -90,11 +122,14 @@ export class PythonNoNavegador implements Executor {
     if (mensagem.tipo === 'pronto') return this.mudarEstado('pronto');
     if (mensagem.tipo === 'falhou') return this.falhar(mensagem.mensagem);
     const pendente = this.pendentes.get(mensagem.id);
-    if (!pendente) return;
-    clearTimeout(pendente.temporizador);
-    this.pendentes.delete(mensagem.id);
-    if (mensagem.tipo === 'resultado') pendente.resolver(mensagem.resultado);
-    else pendente.rejeitar(new Error(mensagem.mensagem));
+    if (mensagem.id === this.emExecucao) this.emExecucao = null;
+    if (pendente) {
+      if (pendente.temporizador) clearTimeout(pendente.temporizador);
+      this.pendentes.delete(mensagem.id);
+      if (mensagem.tipo === 'resultado') pendente.resolver(mensagem.resultado);
+      else pendente.rejeitar(new Error(mensagem.mensagem));
+    }
+    this.despacharProximo();
   }
 
   private falhar(motivo: string): void {

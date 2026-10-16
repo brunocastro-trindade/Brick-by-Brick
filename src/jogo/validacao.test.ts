@@ -128,3 +128,22 @@ describe('falaDoVeredito', () => {
     expect(fala.outros).toEqual([{ texto: '"x"', porque: 'Com aspas é texto.', classificacao: 'problema' }]);
   });
 });
+
+describe('planta que não roda a tempo', () => {
+  it('não fica guardada: a próxima tentativa compara com a planta de verdade', async () => {
+    let chamadas = 0;
+    const executorLento: Executor = {
+      pronto: () => true,
+      executar: async ({ codigo }) => {
+        chamadas += 1;
+        // Só a primeira execução (a da planta) esgota o tempo; depois o Python volta ao normal.
+        if (chamadas === 1) return { ...resultadoVazio, erro: { tipo: 'TempoEsgotado', mensagem: 'sem resposta', linha: null, fase: 'programa' } };
+        return { ...resultadoVazio, saida: codigo.includes('print') ? '1\n' : '' };
+      },
+    };
+    // Mesma saída da planta, escrita de outro jeito: só passa pelo comportamento.
+    const tentativa = { linhas: [{ recuo: 0, texto: 'print(x * 1)' }], tijolos: [] };
+    await expect(avaliarTentativa({ obra, passo: 0, tentativa, executor: executorLento })).rejects.toThrow('a tempo');
+    expect(await avaliarTentativa({ obra, passo: 0, tentativa, executor: executorLento })).toEqual({ tipo: 'certo', via: 'comportamento' });
+  });
+});

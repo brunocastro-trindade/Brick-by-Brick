@@ -210,8 +210,12 @@ function comObra(progresso: Progresso, obraId: string, mudar: (obra: ProgressoOb
   return { ...progresso, obras: { ...progresso.obras, [obraId]: mudar(progressoDaObra(progresso, obraId)) } };
 }
 
-/** Registra um desafio vencido; ao vencer o último, conclui a obra guardando o melhor placar. */
-export function registrarAcerto(progresso: Progresso, obra: Obra, resultado: ResultadoDesafio, combo: number): Progresso {
+/**
+ * Registra o desafio `indice` vencido; ao vencer o último, conclui a obra guardando o melhor placar. Só vale para o
+ * passo salvo: a mesma validação chegando duas vezes, ou outra aba já adiantada, não faz a obra pular um desafio.
+ */
+export function registrarAcerto(progresso: Progresso, obra: Obra, indice: number, resultado: ResultadoDesafio, combo: number): Progresso {
+  if (progressoDaObra(progresso, obra.id).passo !== indice) return progresso;
   return comObra(progresso, obra.id, (atual) => {
     const resultados = [...atual.resultados, resultado];
     const passo = atual.passo + 1;

@@ -298,7 +298,7 @@ export function TelaObra({ obra, progresso, atualizarProgresso, proximaObra, aoV
         usouDica: estado.usouDica,
         comboAtual: progressoDaObra(progresso, obra.id).combo,
       });
-      atualizarProgresso((atual) => marcarMecanicaVista(registrarAcerto(atual, obra, resultado, combo), desafio.tipo));
+      atualizarProgresso((atual) => marcarMecanicaVista(registrarAcerto(atual, obra, estado.passo, resultado, combo), desafio.tipo));
       sons.linha();
       despachar({ tipo: 'acertou', fala, quantasNovas: desafio.linhas.length });
       return;

@@ -118,13 +118,22 @@ describe('progresso', () => {
     let progresso = progressoNovo();
     expect(obraLiberada(OBRAS, progresso, 1)).toBe(false);
     for (const desafio of correio.desafios) {
-      progresso = registrarAcerto(progresso, correio, { ...resultado(true), desafioId: desafio.id }, 1);
+      progresso = registrarAcerto(progresso, correio, desafio.indice, { ...resultado(true), desafioId: desafio.id }, 1);
     }
     expect(progresso.obras.correio).toMatchObject({ concluida: true, estrelas: 3, melhorPontuacao: 500 });
     expect(obraLiberada(OBRAS, progresso, 1)).toBe(true);
 
     progresso = reiniciarObra(progresso, 'correio');
     expect(progresso.obras.correio).toMatchObject({ passo: 0, resultados: [], concluida: true, estrelas: 3 });
+  });
+
+  it('o mesmo acerto registrado duas vezes conta uma vez só', () => {
+    const correio = OBRAS[0]!;
+    const primeiro = correio.desafios[0]!;
+    let progresso = registrarAcerto(progressoNovo(), correio, 0, { ...resultado(true), desafioId: primeiro.id }, 1);
+    progresso = registrarAcerto(progresso, correio, 0, { ...resultado(true), desafioId: primeiro.id }, 1);
+    expect(progresso.obras.correio).toMatchObject({ passo: 1 });
+    expect(progresso.obras.correio?.resultados).toHaveLength(1);
   });
 
   it('modo livre abre todas as obras', () => {
