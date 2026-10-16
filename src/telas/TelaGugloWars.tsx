@@ -2,8 +2,8 @@
 // As regras moram em src/jogo/gugloWars.ts; aqui ficam o relógio, o teclado, o som, o recorde e o tema (ADR-0015).
 import { ArrowLeft, Keyboard, Moon, Pause, Play, RotateCcw, Swords } from 'lucide-react';
 import { useEffect, useMemo, useReducer, useRef, useState, type CSSProperties, type KeyboardEvent } from 'react';
-import logo from '../assets/logo-pequeno.webp';
 import { Botao } from '../components/Botao';
+import { CabecalhoDoModo } from '../components/CabecalhoDoModo';
 import { GugloPixelado, type AcaoDoGuglo } from '../components/GugloPixelado';
 import { Modal } from '../components/Modal';
 import { PecaDeEntulho, PecaQueCai, SilhuetaDaPeca } from '../components/PecaQueCai';
@@ -145,35 +145,26 @@ export function TelaGugloWars({ obras, progresso, atualizarProgresso, aoVoltar, 
   };
 
   const cabecalho = (
-    <header className={styles.barra}>
-      <button type="button" className={styles.logo} onClick={aoIrParaInicio} aria-label="Brick by Brick: voltar ao início">
-        <img src={logo} alt="" width={90} height={67} />
-      </button>
-      <h1 className={styles.titulo}>
-        <Swords size={26} aria-hidden="true" />
-        Guglo Wars
-      </h1>
-      <div className={styles.acoes}>
-        {fase === 'jogando' ? (
-          <Botao variante="secundario" icone={<Pause size={18} aria-hidden="true" />} aoClicar={() => despachar({ tipo: 'pausar' })}>
-            Pausar
-          </Botao>
-        ) : null}
-        <Botao
-          variante="fantasma"
-          icone={<Moon size={18} aria-hidden="true" />}
-          pressionado={tema === 'dracula'}
-          rotulo="Tema Drácula"
-          aoClicar={alternarTema}
-        >
-          Drácula
+    <CabecalhoDoModo titulo="Guglo Wars" icone={<Swords size={26} aria-hidden="true" />} tom="acento" aoIrParaInicio={aoIrParaInicio}>
+      {fase === 'jogando' ? (
+        <Botao variante="secundario" icone={<Pause size={18} aria-hidden="true" />} aoClicar={() => despachar({ tipo: 'pausar' })}>
+          Pausar
         </Botao>
-        {/* "Cidade", como na barra da obra: curto, cabe ao lado do título e do Pausar no celular. */}
-        <Botao variante="fantasma" icone={<ArrowLeft size={18} aria-hidden="true" />} aoClicar={aoVoltar} rotulo="Voltar à cidade">
-          Cidade
-        </Botao>
-      </div>
-    </header>
+      ) : null}
+      <Botao
+        variante="fantasma"
+        icone={<Moon size={18} aria-hidden="true" />}
+        pressionado={tema === 'dracula'}
+        rotulo="Tema Drácula"
+        aoClicar={alternarTema}
+      >
+        Drácula
+      </Botao>
+      {/* "Cidade", como na barra da obra: curto, cabe ao lado do título e do Pausar no celular. */}
+      <Botao variante="fantasma" icone={<ArrowLeft size={18} aria-hidden="true" />} aoClicar={aoVoltar} rotulo="Voltar à cidade">
+        Cidade
+      </Botao>
+    </CabecalhoDoModo>
   );
 
   if (linhas.length === 0) {

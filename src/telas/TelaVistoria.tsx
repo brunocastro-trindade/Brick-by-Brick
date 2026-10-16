@@ -2,9 +2,9 @@
 // As regras moram em src/jogo/vistoria.ts; aqui ficam o teclado, o Python, o som e o progresso.
 import { ArrowLeft, ClipboardCheck, Eye, RotateCcw } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
-import logo from '../assets/logo-pequeno.webp';
 import { BalaoDoPinguim } from '../components/BalaoDoPinguim';
 import { Botao } from '../components/Botao';
+import { CabecalhoDoModo } from '../components/CabecalhoDoModo';
 import { ConsoleDaObra, type ExecucaoNoConsole } from '../components/ConsoleDaObra';
 import { GugloPixelado } from '../components/GugloPixelado';
 import { Modal } from '../components/Modal';
@@ -153,20 +153,11 @@ export function TelaVistoria({ obra, progresso, atualizarProgresso, aoVoltar, ao
 
   return (
     <div className={styles.tela}>
-      <header className={styles.barra}>
-        <button type="button" className={styles.logo} onClick={aoIrParaInicio} aria-label="Brick by Brick: voltar ao início">
-          <img src={logo} alt="" width={90} height={67} />
-        </button>
-        <h1 className={styles.titulo}>
-          <ClipboardCheck size={26} aria-hidden="true" />
-          Vistoria: {obra.nome}
-        </h1>
-        <div className={styles.acoesDaBarra}>
-          <Botao variante="fantasma" icone={<ArrowLeft size={18} aria-hidden="true" />} aoClicar={aoVoltar} rotulo="Voltar à cidade">
-            Cidade
-          </Botao>
-        </div>
-      </header>
+      <CabecalhoDoModo titulo={`Vistoria: ${obra.nome}`} icone={<ClipboardCheck size={26} aria-hidden="true" />} tom="sucesso" aoIrParaInicio={aoIrParaInicio}>
+        <Botao variante="fantasma" icone={<ArrowLeft size={18} aria-hidden="true" />} aoClicar={aoVoltar} rotulo="Voltar à cidade">
+          Cidade
+        </Botao>
+      </CabecalhoDoModo>
 
       <main className={styles.area}>
         <div className={styles.colunaDoTrabalho}>
